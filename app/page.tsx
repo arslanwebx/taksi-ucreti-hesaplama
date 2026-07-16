@@ -9,7 +9,7 @@ import { posts } from '@/src/data/posts';
 import { canonical, site } from '@/src/data/site';
 import { pageMetadata } from '@/lib/seo';
 
-const title = 'Taksi Ücreti Hesaplama 2026 | 81 İl Güncel Tarifeler';
+const title = 'Taksi Ücreti Hesaplama 2026 | 81 İl Güncel Taksi Tarifesi';
 const description = 'Şehrinizi seçin, mesafeyi girin ve açılış, kilometre ve minimum ücret tarifesine göre tahmini taksi ücretinizi hesaplayın. 81 il ve kaynak bilgileri.';
 export const metadata: Metadata = pageMetadata(title, description, '/');
 

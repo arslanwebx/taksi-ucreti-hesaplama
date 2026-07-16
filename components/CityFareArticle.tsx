@@ -41,9 +41,16 @@ const editorial: Record<string, { intro: string; routeAdvice: string; planning: 
   },
 };
 
+const seoTitles: Record<string, string> = {
+  ankara: 'Ankara Taksi Ücreti Hesaplama 2026 – Kaç TL Tutar?',
+  istanbul: 'İstanbul Taksi Ücreti Hesaplama | Güncel Fiyatlar 2026',
+  antalya: 'Antalya Taksi Ücreti Hesaplama | Güncel Tarife 2026',
+  izmir: 'İzmir Taksi Ücreti Hesaplama | Güncel Fiyatlar 2026',
+};
+
 export function cityFareMetadata(city: PublishedCity): Metadata {
   return pageMetadata(
-    `${city.city} Taksi Ücreti Hesaplama 2026`,
+    seoTitles[city.slug] ?? `${city.city} Taksi Ücreti Hesaplama 2026`,
     `${city.city} taksi ücretini açılış, kilometre ve minimum ücret verileriyle hesaplayın; örnek rotaları, kaynak ve son kontrol bilgisini inceleyin.`,
     city.path,
     'article',

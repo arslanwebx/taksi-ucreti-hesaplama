@@ -53,7 +53,7 @@ for (const { file, html } of pages) {
 
 const home = readFileSync(join(outputDirectory, 'index.html'), 'utf8');
 if (/2026 taksi tarifesi karşılaştırması/i.test(home) || /id="tarife-karsilastirma"/i.test(home)) errors.push('Ana sayfadaki 81 şehir karşılaştırma tablosu kaldırılmadı.');
-if (!home.includes('<title>Taksi Ücreti Hesaplama 2026 | 81 İl Güncel Tarifeler</title>')) errors.push('Ana sayfa title değeri hedef metinle eşleşmiyor.');
+if (!home.includes('<title>Taksi Ücreti Hesaplama 2026 | 81 İl Güncel Taksi Tarifesi</title>')) errors.push('Ana sayfa title değeri hedef metinle eşleşmiyor.');
 if (!home.includes('Şehrinizi seçin, mesafeyi girin ve açılış, kilometre ve minimum ücret tarifesine göre tahmini taksi ücretinizi hesaplayın. 81 il ve kaynak bilgileri.')) errors.push('Ana sayfa meta açıklaması hedef metinle eşleşmiyor.');
 const cityOptions = home.match(/role="option"/g)?.length ?? 0;
 if (cityOptions !== 81) errors.push(`Şehir seçicisinde 81 yerine ${cityOptions} seçenek var.`);
@@ -79,6 +79,16 @@ for (const slug of ['ankara-taksi-ucreti','antalya-taksi-ucreti','istanbul-taksi
   if ((html.match(/class="author-box/g)?.length ?? 0) !== 1) errors.push(`${slug}: tek yazar kutusu bulunmalı.`);
   if (!html.includes('class="article-meta"')) errors.push(`${slug}: yazı üst bilgisi bulunamadı.`);
   if (!/class="toc"[\s\S]*?aria-expanded="false"/i.test(html)) errors.push(`${slug}: İçindekiler kapalı başlamıyor.`);
+}
+const expectedCityTitles = {
+  'ankara-taksi-ucreti': 'Ankara Taksi Ücreti Hesaplama 2026 – Kaç TL Tutar?',
+  'istanbul-taksi-ucreti': 'İstanbul Taksi Ücreti Hesaplama | Güncel Fiyatlar 2026',
+  'antalya-taksi-ucreti': 'Antalya Taksi Ücreti Hesaplama | Güncel Tarife 2026',
+  'izmir-taksi-ucreti': 'İzmir Taksi Ücreti Hesaplama | Güncel Fiyatlar 2026',
+};
+for (const [slug, expectedTitle] of Object.entries(expectedCityTitles)) {
+  const html = readFileSync(join(outputDirectory, slug, 'index.html'), 'utf8');
+  if (!html.includes(`<title>${expectedTitle}</title>`)) errors.push(`${slug}: SEO title hedef metinle eşleşmiyor.`);
 }
 for (const asset of ['logo.svg','logo-mark.svg','favicon.svg','og-brand.svg','_redirects']) if (!existsSync(join(outputDirectory, asset))) errors.push(`Varlık eksik: ${asset}`);
 const redirects = readFileSync(join(outputDirectory, '_redirects'), 'utf8');
