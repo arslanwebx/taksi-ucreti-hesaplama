@@ -7,3 +7,40 @@
 @media(max-width:580px){body{font-size:16px}.container{width:min(calc(100% - 22px),var(--container))}.site-logo .logo-mark{width:42px;height:38px}.site-logo>span:last-child{display:none}.hero{padding-top:44px}.hero-grid{gap:32px}.hero-copy h1{font-size:clamp(3.1rem,17vw,4.5rem)}.calculator{border-radius:18px}.calc-heading{padding:22px 17px}.calc-badge{display:none}.calculator form,.result{padding:20px 17px}.calc-fields,.optional-fields{grid-template-columns:1fr}.city-field,.quick-distance,.extras-toggle,.optional-fields{grid-column:auto}.quick-distance div{display:grid;grid-template-columns:repeat(3,1fr)}.quick-distance button{padding-inline:4px}.fare-result header h3{font-size:2.8rem}.factor-grid,.cards,.article-grid,.sitemap-grid,.category-cards{grid-template-columns:1fr}.worked-example dl{grid-template-columns:1fr}.author-box,.profile-intro{grid-template-columns:1fr}.author-avatar{width:70px;height:70px}.footer-grid{grid-template-columns:1fr}.footer-bottom{gap:0}.article-meta span:nth-of-type(odd){display:none}}
 .city-listbox[hidden]{display:none}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation:none!important;transition:none!important}}
+
+/* Responsive containment for cards and embedded calculators. */
+.article-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+.article-card{min-width:0;overflow:hidden}
+.article-card-meta{flex-wrap:wrap;gap:6px 12px}
+.article-card h2{font-size:clamp(1.12rem,1.45vw,1.32rem);line-height:1.22;margin:16px 0 10px;overflow-wrap:anywhere}
+.article-card p{font-size:.9rem;line-height:1.58;overflow-wrap:anywhere}
+.article-card-author{font-size:.78rem;margin:9px 0 15px}
+.mini-avatar{flex:0 0 auto}
+.card-link{font-size:.9rem;line-height:1.45;overflow-wrap:anywhere}
+#son-rehberler .article-card{padding:22px}
+#son-rehberler .article-card h2{font-size:clamp(1.08rem,1.35vw,1.24rem)}
+.calculator{container-type:inline-size;overflow:hidden}
+.hero-grid,.hero-copy,.hero-facts,.calculator,.calculator>*,.calc-heading>div,.calculator form,.calc-fields,.field,.quick-distance,.quick-distance div,.extras-toggle>span:last-child{min-width:0;max-width:100%}
+.hero-copy h1,.hero-copy .lead,.hero-facts,.hero-facts p,.hero-facts a{overflow-wrap:anywhere}
+.quick-distance button{min-width:0}
+.result{min-width:0;overflow:hidden}
+.fare-result,.fare-result header>div{min-width:0}
+.fare-result header{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px}
+.fare-result header span{display:block;overflow-wrap:anywhere}
+.fare-result header h3{max-width:100%;font-size:clamp(2.15rem,4.2vw,4.1rem);overflow-wrap:anywhere}
+.fare-result header>strong{white-space:nowrap}
+@container(max-width:900px){
+  .calculator{grid-template-columns:1fr}
+  .calculator form{border-right:0;border-bottom:1px solid var(--line)}
+  .result{border-radius:0 0 24px 24px}
+  .fare-result header h3{font-size:clamp(2.2rem,9cqi,3.8rem)}
+}
+@media(max-width:580px){
+  .article-grid{grid-template-columns:1fr}
+  .fare-result header{grid-template-columns:1fr}
+  .fare-result header>strong{justify-self:start}
+  .fare-result header h3{font-size:clamp(2rem,13vw,2.8rem)}
+}
+@media(min-width:581px) and (max-width:1000px){
+  .article-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}

@@ -73,7 +73,8 @@ for (const slug of ['ankara-taksi-ucreti','antalya-taksi-ucreti','istanbul-taksi
 }
 for (const asset of ['logo.svg','logo-mark.svg','favicon.svg','og-brand.svg','_redirects']) if (!existsSync(join(outputDirectory, asset))) errors.push(`Varlık eksik: ${asset}`);
 const redirects = readFileSync(join(outputDirectory, '_redirects'), 'utf8');
-if (!redirects.includes('/yazar/oguzhan-arslan/ /taksi-rehberi/ 301')) errors.push('Eski yazar URL yönlendirmesi eksik.');
+if (!redirects.includes('/taksi-rehberi/ /yazar/oguzhan-arslan/ 301')) errors.push('Eski yazar URL yönlendirmesi eksik.');
+if (!existsSync(join(outputDirectory, 'yazar', 'oguzhan-arslan', 'index.html'))) errors.push('Yazar profil sayfası üretilmedi.');
 if (!existsSync(join(outputDirectory, 'sitemap', 'index.html'))) errors.push('HTML site haritası üretilmedi.');
 const sitemapPath = join(outputDirectory, 'sitemap.xml');
 if (!existsSync(sitemapPath)) errors.push('GSC için sitemap.xml üretilmedi.');

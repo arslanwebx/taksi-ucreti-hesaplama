@@ -2,9 +2,9 @@
 /category/taksi-rehberi/ /blog/ 301
 /kategori/sehirler/ /sehirler/ 301
 /kategori/taksi-rehberi/ /blog/ 301
-/author/oguzhan-arslan/ /taksi-rehberi/ 301
-/author/admin/ /taksi-rehberi/ 301
-/yazar/oguzhan-arslan/ /taksi-rehberi/ 301
+/taksi-rehberi/ /yazar/oguzhan-arslan/ 301
+/author/oguzhan-arslan/ /yazar/oguzhan-arslan/ 301
+/author/admin/ /yazar/oguzhan-arslan/ 301
 /sitemap-index.xml /sitemap.xml 301
 /kullanim-sartlari/ /kullanim-kosullari/ 301
 /tag/taksi-ucreti/ /blog/ 301
