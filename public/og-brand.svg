@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">Taksi Ücreti Hesaplama</title><desc id="desc">Şehir tarifeleriyle taksi yolculuğu tahmini</desc>
+  <rect width="1200" height="630" fill="#182013"/><circle cx="1040" cy="60" r="330" fill="#DBFF3D" opacity=".16"/>
+  <rect x="96" y="120" width="132" height="132" rx="36" fill="#DBFF3D"/>
+  <path d="M128 204h68l-8-25a10 10 0 0 0-10-7h-32a10 10 0 0 0-10 7l-8 25Z" fill="none" stroke="#182013" stroke-width="8" stroke-linejoin="round"/>
+  <path d="M140 204v12m44-12v12m-34-25h24m-12-35h24" stroke="#182013" stroke-width="8" stroke-linecap="round"/>
+  <text x="96" y="355" fill="#fff" font-family="system-ui,sans-serif" font-size="82" font-weight="850">Taksi Ücreti Hesaplama</text>
+  <text x="96" y="430" fill="#dce7d4" font-family="system-ui,sans-serif" font-size="38">Doğrulanmış şehir tarifeleriyle yolculuk tahmini</text>
+</svg>

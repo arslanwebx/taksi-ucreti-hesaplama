@@ -88,6 +88,33 @@ const nightInputs = pages.reduce(
 );
 if (nightInputs > 0) errors.push(`Doğrulanmış gece tarifesi yokken ${nightInputs} gece tarifesi alanı üretildi.`);
 
+const homeHtml = readFileSync(join(outputDirectory, 'index.html'), 'utf8');
+const tariffSection = homeHtml.match(/id="tarife-karsilastirma"[\s\S]*?<tbody>([\s\S]*?)<\/tbody>/i)?.[1] ?? '';
+const tariffRows = tariffSection.match(/<tr>/g)?.length ?? 0;
+if (tariffRows !== 81) errors.push(`Ana sayfa tarife tablosunda 81 yerine ${tariffRows} şehir satırı var.`);
+if (/<a\s/i.test(tariffSection)) errors.push('Ana sayfa tarife karşılaştırma tablosunda şehir makale bağlantısı bulundu.');
+const cityOptions = homeHtml.match(/<datalist[^>]*>([\s\S]*?)<\/datalist>/i)?.[1].match(/<option\s/g)?.length ?? 0;
+if (cityOptions !== 81) errors.push(`Hesaplayıcı şehir aramasında 81 yerine ${cityOptions} seçenek var.`);
+if ((homeHtml.match(/class="article-card"/g)?.length ?? 0) !== 3) errors.push('Ana sayfada tam olarak üç blog kartı bulunmalı.');
+if ((homeHtml.match(/class="author-box/g)?.length ?? 0) !== 1) errors.push('Ana sayfa makalesinin sonunda tek yazar kutusu bulunmalı.');
+
+const blogHtml = readFileSync(join(outputDirectory, 'blog', 'index.html'), 'utf8');
+if ((blogHtml.match(/class="article-card"/g)?.length ?? 0) !== 7) errors.push('Blog arşivinde yayımlanmış yedi yazının tamamı bulunmalı.');
+const articlePaths = ['ankara-taksi-ucreti','antalya-taksi-ucreti','istanbul-taksi-ucreti','izmir-taksi-ucreti','istanbul-havalimani-taksi-ucreti','taksi-ucreti-nasil-hesaplanir','indi-bindi-ucreti-nedir'];
+for (const articlePath of articlePaths) {
+  const html = readFileSync(join(outputDirectory, articlePath, 'index.html'), 'utf8');
+  if ((html.match(/class="author-box/g)?.length ?? 0) !== 1) errors.push(`${articlePath}: tek yazar kutusu bulunmalı.`);
+  if (!html.includes('class="article-meta"')) errors.push(`${articlePath}: yazı üst bilgisi bulunamadı.`);
+  if (!/<details class="toc">/i.test(html) || /<details class="toc"[^>]*\sopen/i.test(html)) errors.push(`${articlePath}: İçindekiler kapalı başlangıç durumunda değil.`);
+}
+
+for (const asset of ['logo.svg','logo-mark.svg','favicon.svg','og-brand.svg']) {
+  if (!existsSync(join(outputDirectory, asset))) errors.push(`Logo varlığı eksik: ${asset}`);
+}
+const redirects = readFileSync(join(outputDirectory, '_redirects'), 'utf8');
+if (!redirects.includes('/yazar/oguzhan-arslan/ /taksi-rehberi/ 301')) errors.push('Eski yazar URL’si doğrudan /taksi-rehberi/ adresine yönlenmiyor.');
+if (!existsSync(join(outputDirectory, 'sitemap', 'index.html'))) errors.push('HTML sitemap sayfası üretilmedi.');
+
 const sitemap = readFileSync(join(outputDirectory, 'sitemap-index.xml'), 'utf8');
 const sitemapUrls = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
 for (const url of sitemapUrls) {
@@ -102,5 +129,5 @@ if (errors.length > 0) {
 }
 
 console.log(
-  `${htmlFiles.length} HTML sayfası, ${sitemapUrls.length} sitemap adresi, canonical, H1, meta, JSON-LD ve iç bağlantılar doğrulandı.`,
+  `${htmlFiles.length} HTML sayfası, ${sitemapUrls.length} sitemap adresi, 81 şehir, yazar kutuları, kapalı İçindekiler, canonical, H1, meta, JSON-LD ve iç bağlantılar doğrulandı.`,
 );

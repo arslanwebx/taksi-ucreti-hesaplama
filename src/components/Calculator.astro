@@ -1,33 +1,31 @@
 ---
-import { cities } from '../data/cities';
+import { cities, publishedCities } from '../data/cities';
 interface Props { fixedCity?: string }
 const { fixedCity } = Astro.props;
-const available = fixedCity ? cities.filter((city) => city.slug === fixedCity) : cities;
+const available = fixedCity ? publishedCities.filter((city) => city.slug === fixedCity) : cities;
 const data = Object.fromEntries(available.map((city) => [city.slug, city]));
 const calculatorId = `calc-${fixedCity ?? 'all'}`;
 const hasNightTariff = available.some((city) => city.nightTariff.enabled && city.nightTariff.sourceUrl);
-const hasWaitingTariff = available.some((city) => city.categories.some((category) => category.waitingPerHour));
+const hasWaitingTariff = available.some((city) => city.status === 'published' && city.categories.some((category) => category.waitingPerHour));
 ---
 <section class="calculator" data-calculator data-cities={JSON.stringify(data)} aria-labelledby={calculatorId}>
   <header class="calc-heading">
-    <p class="eyebrow">2026 güncel tarifeleri</p>
     <h2 id={calculatorId}>{fixedCity ? `${available[0]?.name} taksi ücreti hesaplama` : 'Taksi ücreti hesaplama'}</h2>
-    <p>Şehri ve mesafeyi girin; tüm geçerli taksi türlerini ayrıntılı karşılaştırın.</p>
+    <p>81 ilden birini arayın. Tarife doğrulanmışsa mesafenizi hesaplayın; doğrulanmamış şehirlerde tahmin üretilmez.</p>
   </header>
 
   <form novalidate>
     <div class="calc-fields">
       <label class="field city-field">
         <span>Şehir seçin</span>
-        <select name="city" required disabled={Boolean(fixedCity)}>
-          {!fixedCity && <option value="">Şehrinizi seçin</option>}
-          {available.map((city) => <option value={city.slug}>{city.name}</option>)}
-        </select>
+        <input name="city" list={`${calculatorId}-cities`} value={fixedCity ? available[0]?.name : ''} placeholder="Şehir adı yazın" autocomplete="off" required readonly={Boolean(fixedCity)} aria-describedby={`${calculatorId}-city-help`} />
+        <datalist id={`${calculatorId}-cities`}>{available.map((city) => <option value={city.name}>{city.status === 'published' ? 'Tarife mevcut' : 'Doğrulama bekliyor'}</option>)}</datalist>
+        <small id={`${calculatorId}-city-help`}>Türkçe karakterlerle arayabilir, ok tuşlarıyla seçim yapabilirsiniz.</small>
       </label>
 
       <label class="field distance-field">
         <span>Mesafe (km)</span>
-        <input name="km" type="number" min="0.1" max="500" step="0.1" inputmode="decimal" placeholder="Örn. 20" required />
+        <input name="km" type="text" inputmode="decimal" placeholder="Örn. 20 veya 20,5" required />
       </label>
 
       <fieldset class="quick-distance">
@@ -55,7 +53,7 @@ const hasWaitingTariff = available.some((city) => city.categories.some((category
         </label>}
         <label class="field">
           <span>Köprü, tünel veya ek ücret (TL)</span>
-          <input name="extra" type="number" min="0" max="100000" step="0.01" inputmode="decimal" value="0" />
+          <input name="extra" type="text" inputmode="decimal" value="0" />
         </label>
       </div>
     </div>
@@ -67,7 +65,7 @@ const hasWaitingTariff = available.some((city) => city.categories.some((category
 
   <section class="result" aria-live="polite" aria-atomic="true" aria-label="Hesaplama sonucu">
     <div class="result-empty">
-      <p class="result-kicker">Tahmini ücretiniz</p>
+      <p class="result-title">Tahmini ücret</p>
       <strong>₺0</strong>
       <p>Hesaplama yapmak için şehir seçin ve mesafeyi girin.</p>
     </div>
@@ -88,18 +86,24 @@ const hasWaitingTariff = available.some((city) => city.categories.some((category
     const error = root.querySelector('.form-error');
     const currency = new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' });
     const decimal = new Intl.NumberFormat('tr-TR', { maximumFractionDigits: 2 });
-    const selectedCity = () => cityData[citySelect.value || Object.keys(cityData)[0]];
+    const normalize = (value) => String(value).trim().toLocaleLowerCase('tr');
+    const selectedCity = () => Object.values(cityData).find((city) => normalize(city.name) === normalize(citySelect.value) || city.slug === citySelect.value) ?? (citySelect.readOnly ? Object.values(cityData)[0] : undefined);
     const safeNumber = (value) => Number(String(value).replace(',', '.'));
     const escapeHtml = (value) => String(value).replace(/[&<>'"]/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[char]);
     const updateCityOptions = () => {
       const city = selectedCity();
-      const hasWaiting = Boolean(city?.categories?.some((category) => category.waitingPerHour));
+      const hasWaiting = Boolean(city?.status === 'published' && city.categories?.some((category) => category.waitingPerHour));
       if (waitingField) waitingField.hidden = !hasWaiting;
       const nightAvailable = Boolean(city?.nightTariff?.enabled && city?.nightTariff?.sourceUrl);
       if (nightRow) nightRow.hidden = !nightAvailable;
       if (!nightAvailable && form.elements.night) form.elements.night.checked = false;
     };
     citySelect.addEventListener('change', updateCityOptions);
+    citySelect.addEventListener('input', updateCityOptions);
+    if (!citySelect.readOnly) try {
+      const savedCity = localStorage.getItem('taksi-son-sehir');
+      if (savedCity && Object.values(cityData).some((city) => city.name === savedCity)) citySelect.value = savedCity;
+    } catch {}
     updateCityOptions();
 
     root.querySelectorAll('[data-km]').forEach((button) => {
@@ -129,11 +133,17 @@ const hasWaitingTariff = available.some((city) => city.categories.some((category
       const extra = trafficInput.checked ? safeNumber(form.elements.extra.value || 0) : 0;
 
       if (!city) { error.textContent = 'Lütfen bir şehir seçin.'; citySelect.focus(); return; }
+      if (city.status !== 'published') {
+        error.textContent = '';
+        result.innerHTML = `<div class="result-empty pending-result"><p class="result-title">${escapeHtml(city.name)}</p><strong>Tarife doğrulanıyor</strong><p>Bu şehir için güncel ve güvenilir tarife henüz doğrulanmadı. Yanlış bir ücret göstermemek için hesaplama kapalıdır.</p><a href="/iletisim/">Resmî tarife kaynağı bildirin</a></div>`;
+        return;
+      }
       if (!Number.isFinite(km) || km <= 0 || km > 500) { error.textContent = 'Mesafeyi 0,1 ile 500 km arasında girin.'; kmInput.focus(); return; }
       if (!Number.isFinite(minutes) || minutes < 0 || minutes > 600 || !Number.isFinite(extra) || extra < 0 || extra > 100000) {
         error.textContent = 'Bekleme süresi veya ek ücret geçerli aralıkta değil.'; return;
       }
       error.textContent = '';
+      if (!citySelect.readOnly) try { localStorage.setItem('taksi-son-sehir', city.name); } catch {}
 
       const nightEnabled = Boolean(form.elements.night?.checked && city.nightTariff.enabled && city.nightTariff.sourceUrl);
       const calculations = city.categories.map((category) => {
@@ -147,11 +157,12 @@ const hasWaitingTariff = available.some((city) => city.categories.some((category
         return { category, distanceCharge, waitingCharge, nightCharge, minimumAdjustment, subtotal, total: subtotal + extra };
       });
       const lowest = Math.min(...calculations.map((item) => item.total));
+      const sourceLabel = city.sourceTier === 'official' ? 'Resmî kaynak' : 'İkincil kaynak';
       const nightNote = nightEnabled ? `<p class="result-note">Doğrulanmış gece tarifesi (${decimal.format(city.nightTariff.multiplier)}×) uygulandı.</p>` : '';
 
       result.innerHTML = `
         <header class="result-summary">
-          <p class="result-kicker">${calculations.length > 1 ? 'En düşük kategori tahmini' : 'Tahmini ücretiniz'}</p>
+          <p class="result-title">${calculations.length > 1 ? 'En düşük kategori tahmini' : 'Tahmini ücret'}</p>
           <strong>${currency.format(lowest)}</strong>
           <p>${escapeHtml(city.name)} için ${decimal.format(km)} km${minutes ? ` ve ${decimal.format(minutes)} dakika bekleme` : ''} hesabı</p>
           ${nightNote}
@@ -177,6 +188,7 @@ const hasWaitingTariff = available.some((city) => city.categories.some((category
         </div>
         <footer class="result-footer">
           <p>Tarife başlangıcı: <time datetime="${city.effectiveDate}">${city.effectiveDate.split('-').reverse().join('.')}</time> · Son kontrol: ${city.verifiedDate.split('-').reverse().join('.')}</p>
+          <p>Kaynak durumu: ${sourceLabel} · ${escapeHtml(city.sourceName)}</p>
           <a href="${city.path}">${escapeHtml(city.name)} taksi tarifesinin ayrıntıları</a>
         </footer>`;
       result.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'nearest' });

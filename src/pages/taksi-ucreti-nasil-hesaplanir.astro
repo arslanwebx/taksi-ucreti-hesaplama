@@ -1,0 +1,25 @@
+---
+import ContentLayout from '../layouts/ContentLayout.astro';
+import ArticleMeta from '../components/ArticleMeta.astro';
+import AuthorBox from '../components/AuthorBox.astro';
+import TableOfContents from '../components/TableOfContents.astro';
+import { canonical, site } from '../data/site';
+const title = 'Taksi Ücreti Nasıl Hesaplanır?';
+const description = 'Taksi ücretinde açılış, mesafe, minimum ücret, bekleme ve ücretli geçişlerin rolünü; doğru mesafe seçimini ve tahmin sınırlarını öğrenin.';
+const modified = '2026-07-16';
+const schema = [
+  {'@context':'https://schema.org','@type':'BlogPosting',headline:title,description,datePublished:modified,dateModified:modified,mainEntityOfPage:canonical('/taksi-ucreti-nasil-hesaplanir/'),author:{'@type':'Person',name:site.author.name,url:canonical(site.author.url)},publisher:{'@type':'Organization',name:site.publisher,url:site.url}},
+  {'@context':'https://schema.org','@type':'BreadcrumbList',itemListElement:[{'@type':'ListItem',position:1,name:'Ana Sayfa',item:canonical('/')},{'@type':'ListItem',position:2,name:'Blog',item:canonical('/blog/')},{'@type':'ListItem',position:3,name:title,item:canonical('/taksi-ucreti-nasil-hesaplanir/')}]},
+];
+---
+<ContentLayout {title} {description} path="/taksi-ucreti-nasil-hesaplanir/" {schema} type="article">
+  <ArticleMeta slot="meta" {modified} category="Taksi Rehberleri" readingMinutes={5}/>
+  <p class="notice">Kısa cevap: Taksimetre açılış bedeliyle başlar, gidilen yol ve varsa doğrulanmış zaman bedeliyle ilerler. Hesap minimum sınırın altında kalırsa şehirdeki minimum yolculuk ücreti uygulanır.</p>
+  <TableOfContents items={[{id:'kalemler',label:'Ücreti oluşturan kalemler'},{id:'mesafe',label:'Doğru mesafe nasıl seçilir?'},{id:'bekleme',label:'Bekleme ve düşük hız'},{id:'gecisler',label:'Köprü, tünel ve otoyol'},{id:'fark',label:'Tahmin ile taksimetre neden farklı olabilir?'}]}/>
+  <section id="kalemler"><h2>Ücreti oluşturan kalemler</h2><p>Açılış bedeli yolculuğun başlangıcında görünür. Araç ilerledikçe şehrin kilometre tarifesi taksimetreye yansır. Kısa yolculukta hesaplanan tutar alt sınırın altında kalırsa minimum ücret geçerli olur.</p><p><a href="/">Taksi ücreti hesaplayıcı</a> bu kalemleri sonuçta ayrı gösterir.</p></section>
+  <section id="mesafe"><h2>Doğru mesafe nasıl seçilir?</h2><p>Haritadaki kuş uçuşu uzaklığı değil, araçla gidilecek yaklaşık yol uzunluğunu kullanın. Tek yönler, dönüş yasakları, çalışmalar ve tercih edilen güzergâh mesafeyi değiştirebilir.</p></section>
+  <section id="bekleme"><h2>Bekleme ve düşük hız</h2><p>Bazı şehir tarifelerinde araç belirli bir hızın altına indiğinde zaman bedeli devreye girer. Site yalnızca yayımlanmış bir saatlik tarife bulunduğunda bekleme alanını açar; Türkiye geneli için ortak oran kullanmaz.</p></section>
+  <section id="gecisler"><h2>Köprü, tünel ve otoyol</h2><p>Ücretli geçişler taksi tarifesinden ayrı olabilir. Yalnızca gerçekten kullanılacak geçişi ekleyin ve güzergâhı yolculuk başlamadan önce sürücüyle netleştirin.</p></section>
+  <section id="fark"><h2>Tahmin ile taksimetre neden farklı olabilir?</h2><p>Gerçek rota, trafikte geçen süre, araç kategorisi, geçişler ve yeni tarife kararları sonucu değiştirebilir. Hesap bilgilendirme amaçlıdır; kesin tutarı araçtaki geçerli taksimetre belirler.</p><p><a href="/veri-kaynaklari-ve-hesaplama-yontemi/">Kaynak ve güncelleme yöntemini</a> veya <a href="/sehirler/">şehir yazılarını</a> inceleyin.</p></section>
+  <AuthorBox />
+</ContentLayout>

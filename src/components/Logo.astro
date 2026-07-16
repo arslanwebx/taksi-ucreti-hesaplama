@@ -1,0 +1,13 @@
+---
+interface Props { dark?: boolean; compact?: boolean }
+const { dark = false, compact = false } = Astro.props;
+const textColor = dark ? '#ffffff' : '#182013';
+---
+<svg class:list={['site-logo', { compact }]} viewBox={compact ? '0 0 44 44' : '0 0 244 44'} role="img" aria-label="Taksi Ücreti Hesaplama">
+  <rect x="1" y="1" width="42" height="42" rx="12" fill="#DBFF3D" stroke={textColor} stroke-width="2"/>
+  <path d="M12 27.5h20l-2.2-7.2a3 3 0 0 0-2.9-2.1h-9.8a3 3 0 0 0-2.9 2.1L12 27.5Z" fill="none" stroke={textColor} stroke-width="2.4" stroke-linejoin="round"/>
+  <path d="M15 27.5v3m14-3v3M17.5 23h9" stroke={textColor} stroke-width="2.4" stroke-linecap="round"/>
+  <circle cx="16" cy="29" r="2" fill={textColor}/><circle cx="28" cy="29" r="2" fill={textColor}/>
+  <path d="M18 14h8" stroke={textColor} stroke-width="2.4" stroke-linecap="round"/>
+  {!compact && <><text x="54" y="19" fill={textColor} font-family="system-ui, sans-serif" font-size="15" font-weight="850">TAKSİ ÜCRETİ</text><text x="54" y="36" fill={textColor} font-family="system-ui, sans-serif" font-size="15" font-weight="650">HESAPLAMA</text></>}
+</svg>

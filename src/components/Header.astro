@@ -1,14 +1,16 @@
 ---
 import { site } from '../data/site';
+import Logo from './Logo.astro';
 const current = Astro.url.pathname;
 ---
 <a class="skip" href="#main">Ana içeriğe geç</a>
 <header class="header">
   <div class="container nav-wrap">
-    <a class="brand" href="/" aria-label="Taksi Ücreti Hesaplama ana sayfa"><span aria-hidden="true">T</span> Taksi Ücreti</a>
+    <a class="brand" href="/" aria-label="Taksi Ücreti Hesaplama ana sayfa"><Logo /></a>
     <button class="menu-button" type="button" aria-expanded="false" aria-controls="main-nav">Menü</button>
     <nav id="main-nav" aria-label="Ana menü">
       {site.navigation.map(([label, href]) => <a href={href} aria-current={current === href ? 'page' : undefined}>{label}</a>)}
+      <a class="contact-link" href="/iletisim/" aria-current={current === '/iletisim/' ? 'page' : undefined}>İletişim</a>
     </nav>
   </div>
 </header>
@@ -19,4 +21,7 @@ const current = Astro.url.pathname;
     const open = button.getAttribute('aria-expanded') === 'true';
     button.setAttribute('aria-expanded', String(!open)); nav?.classList.toggle('open', !open);
   });
+  nav?.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => {
+    button?.setAttribute('aria-expanded', 'false'); nav.classList.remove('open');
+  }));
 </script>

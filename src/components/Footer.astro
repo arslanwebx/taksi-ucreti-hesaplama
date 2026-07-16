@@ -1,13 +1,16 @@
 ---
+import Logo from './Logo.astro';
 import { site } from '../data/site';
 const columns = [
-  ['Hesaplama ve şehirler', [['Taksi Ücreti Hesaplama','/'],['İstanbul Taksi Ücreti','/istanbul-taksi-ucreti/'],['Ankara Taksi Ücreti','/ankara-taksi-ucreti/'],['İzmir Taksi Ücreti','/izmir-taksi-ucreti/'],['Antalya Taksi Ücreti','/antalya-taksi-ucreti/'],['Tüm Şehirler','/sehirler/']]],
-  ['Rehberler', [['Taksi Rehberi','/taksi-rehberi/'],['Havalimanı Taksi Ücretleri','/havalimani-taksi-ucretleri/'],['Taksi Ücreti Nasıl Hesaplanır?','/taksi-rehberi/#hesaplama'],['İndi Bindi Ücreti','/taksi-rehberi/#indi-bindi'],['Taksi Bekleme Ücreti','/taksi-rehberi/#bekleme'],['Veri Kaynakları','/veri-kaynaklari-ve-hesaplama-yontemi/']]],
-  ['Güven', [['Hakkımızda','/hakkimizda/'],['İletişim','/iletisim/'],['Yazar','/yazar/oguzhan-arslan/'],['Editoryal Politika','/editoryal-politika/'],['Düzeltme Politikası','/duzeltme-politikasi/']]],
-  ['Yasal', [['Gizlilik Politikası','/gizlilik-politikasi/'],['Çerez Politikası','/cerez-politikasi/'],['Kullanım Koşulları','/kullanim-kosullari/'],['Sorumluluk Reddi','/sorumluluk-reddi/']]]
+  ['Hesaplayıcılar', [['Ana hesaplayıcı','/'],['Şehir Hesaplayıcıları','/#sehir-hesaplayicilari'],['İstanbul Taksi Ücreti','/istanbul-taksi-ucreti/'],['Ankara Taksi Ücreti','/ankara-taksi-ucreti/'],['Tüm tarife karşılaştırması','/#tarife-karsilastirma']]],
+  ['Blog', [['Tüm Yazılar','/blog/'],['Şehirler','/sehirler/'],['Havalimanı Taksi Ücretleri','/havalimani-taksi-ucretleri/'],['Taksi Ücreti Nasıl Hesaplanır?','/taksi-ucreti-nasil-hesaplanir/'],['İndi Bindi Ücreti Nedir?','/indi-bindi-ucreti-nedir/'],['İstanbul Havalimanı','/istanbul-havalimani-taksi-ucreti/']]],
+  ['Güven ve yasal', [['Hakkımızda','/hakkimizda/'],['İletişim','/iletisim/'],['Yazar','/taksi-rehberi/'],['Editoryal Politika','/editoryal-politika/'],['Düzeltme Politikası','/duzeltme-politikasi/'],['Gizlilik Politikası','/gizlilik-politikasi/'],['Çerez Politikası','/cerez-politikasi/'],['Kullanım Koşulları','/kullanim-kosullari/'],['Sorumluluk Reddi','/sorumluluk-reddi/'],['Sitemap','/sitemap/']]],
 ] as const;
 ---
 <footer>
-  <div class="container footer-grid">{columns.map(([title, links]) => <section><h2>{title}</h2>{links.map(([label, href]) => <a href={href}>{label}</a>)}</section>)}</div>
+  <div class="container footer-grid">
+    <section class="footer-brand"><a href="/" aria-label="Ana sayfa"><Logo dark /></a><p>Şehir bazlı taksi tarifelerini, kaynak durumunu ve yolculuk tahminlerini tek yerde sunar.</p><a href={`mailto:${site.contactEmail}`}>{site.contactEmail}</a><p class="footer-trust">Doğrulanmayan ücretler hesaplamaya açılmaz.</p></section>
+    {columns.map(([title, links]) => <section><h2>{title}</h2>{links.map(([label, href]) => <a href={href}>{label}</a>)}</section>)}
+  </div>
   <div class="container footer-bottom"><p>{site.disclaimer}</p><p>© {new Date().getFullYear()} {site.name}. Tüm hakları saklıdır.</p></div>
 </footer>

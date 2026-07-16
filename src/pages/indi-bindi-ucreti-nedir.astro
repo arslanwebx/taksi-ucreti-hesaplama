@@ -1,0 +1,24 @@
+---
+import ContentLayout from '../layouts/ContentLayout.astro';
+import ArticleMeta from '../components/ArticleMeta.astro';
+import AuthorBox from '../components/AuthorBox.astro';
+import TableOfContents from '../components/TableOfContents.astro';
+import { canonical, site } from '../data/site';
+const title = 'İndi Bindi Ücreti Nedir?';
+const description = 'İndi bindi olarak bilinen minimum taksi ücretinin kısa yolculuklarda ne zaman uygulandığını, nasıl kontrol edildiğini ve ne olmadığını öğrenin.';
+const modified = '2026-07-16';
+const schema = [
+  {'@context':'https://schema.org','@type':'BlogPosting',headline:title,description,datePublished:modified,dateModified:modified,mainEntityOfPage:canonical('/indi-bindi-ucreti-nedir/'),author:{'@type':'Person',name:site.author.name,url:canonical(site.author.url)},publisher:{'@type':'Organization',name:site.publisher,url:site.url}},
+  {'@context':'https://schema.org','@type':'BreadcrumbList',itemListElement:[{'@type':'ListItem',position:1,name:'Ana Sayfa',item:canonical('/')},{'@type':'ListItem',position:2,name:'Blog',item:canonical('/blog/')},{'@type':'ListItem',position:3,name:title,item:canonical('/indi-bindi-ucreti-nedir/')}]},
+];
+---
+<ContentLayout {title} {description} path="/indi-bindi-ucreti-nedir/" {schema} type="article">
+  <ArticleMeta slot="meta" {modified} category="Taksi Rehberleri" readingMinutes={4}/>
+  <p class="notice">İndi bindi, kısa yolculuk için belirlenen minimum ücrettir. Her hesaba ayrıca eklenen bir ceza veya ikinci açılış bedeli değildir.</p>
+  <TableOfContents items={[{id:'uygulama',label:'Minimum ücret ne zaman uygulanır?'},{id:'ek-ucret',label:'Ayrı bir ek ücret midir?'},{id:'sehir-farki',label:'Neden şehirden şehre değişir?'},{id:'kontrol',label:'Yolculuk öncesi nasıl kontrol edilir?'}]}/>
+  <section id="uygulama"><h2>Minimum ücret ne zaman uygulanır?</h2><p>Açılış ve gidilen yol için oluşan taksimetre tutarı şehirde belirlenen alt sınırın altında kalırsa minimum yolculuk ücreti geçerli olur. Hesap alt sınırı aşarsa normal taksimetre tutarı ödenir.</p></section>
+  <section id="ek-ucret"><h2>Ayrı bir ek ücret midir?</h2><p>Hayır. Minimum ücret, hesaplanan düşük tutarın tamamlandığı alt sınırdır. Normal yolculuk bedelinin üzerine ikinci kez eklenmez.</p></section>
+  <section id="sehir-farki"><h2>Neden şehirden şehre değişir?</h2><p>Açılış, kilometre ve minimum ücret yerel tarife kararlarıyla belirlenir. Bu nedenle Türkiye geneli tek bir indi bindi tutarı yoktur ve güncel şehir kaynağı kontrol edilmelidir.</p></section>
+  <section id="kontrol"><h2>Yolculuk öncesi nasıl kontrol edilir?</h2><p><a href="/">Ana hesaplayıcıdan</a> şehrinizi seçin veya <a href="/sehirler/">yayımlanmış şehir yazısını</a> açın. Güvenilir tarife bulunmayan şehirlerde site tutar göstermez.</p></section>
+  <AuthorBox />
+</ContentLayout>

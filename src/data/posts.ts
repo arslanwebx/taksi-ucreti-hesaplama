@@ -1,0 +1,22 @@
+export interface PostSummary {
+  title: string;
+  summary: string;
+  path: string;
+  category: 'Şehirler' | 'Havalimanı Taksi Ücretleri' | 'Taksi Rehberleri';
+  modified: string;
+  cta: string;
+}
+
+export const posts: PostSummary[] = [
+  { title: 'Taksi Ücreti Nasıl Hesaplanır?', summary: 'Açılış, mesafe, minimum ücret, bekleme ve ücretli geçişlerin yolculuk tahminini nasıl etkilediğini sade örneklerle öğrenin.', path: '/taksi-ucreti-nasil-hesaplanir/', category: 'Taksi Rehberleri', modified: '2026-07-16', cta: 'Taksi ücreti hesabını adım adım incele' },
+  { title: 'İndi Bindi Ücreti Nedir?', summary: 'Kısa yolculuklarda minimum ücretin ne zaman uygulandığını ve neden ayrı bir ek ücret olmadığını öğrenin.', path: '/indi-bindi-ucreti-nedir/', category: 'Taksi Rehberleri', modified: '2026-07-16', cta: 'Minimum ücret uygulamasını öğren' },
+  { title: 'İstanbul Taksi Ücreti Hesaplama 2026', summary: 'Sarı, turkuaz, 8+1 ve siyah taksi tarifelerini; iki yaka, trafik ve ücretli geçişlerle birlikte inceleyin.', path: '/istanbul-taksi-ucreti/', category: 'Şehirler', modified: '2026-07-16', cta: 'İstanbul taksi ücretini hesapla' },
+  { title: 'Ankara Taksi Ücreti Hesaplama 2026', summary: 'Ankara merkez tarifesiyle Kızılay, AŞTİ ve çevre ilçeler için mesafe ve bekleme tahmini yapın.', path: '/ankara-taksi-ucreti/', category: 'Şehirler', modified: '2026-07-16', cta: 'Ankara taksi tarifesini incele' },
+  { title: 'İzmir Taksi Ücreti Hesaplama 2026', summary: 'İzmir merkez tarifesini, minimum ücreti ve Konak, Bornova, Karşıyaka bağlantılarını kaynaklarıyla görün.', path: '/izmir-taksi-ucreti/', category: 'Şehirler', modified: '2026-07-16', cta: 'İzmir taksi ücretini hesapla' },
+  { title: 'Antalya Taksi Ücreti Hesaplama 2026', summary: 'Antalya merkez tarifesiyle Lara, Konyaaltı ve turizm bölgelerine yönelik yolculuğunuzu planlayın.', path: '/antalya-taksi-ucreti/', category: 'Şehirler', modified: '2026-07-16', cta: 'Antalya taksi tarifesini incele' },
+  { title: 'İstanbul Havalimanı Taksi Ücreti 2026', summary: 'İstanbul Havalimanı ile popüler varış noktaları arasındaki mesafeyi güncel taksi kategorileriyle değerlendirin.', path: '/istanbul-havalimani-taksi-ucreti/', category: 'Havalimanı Taksi Ücretleri', modified: '2026-07-16', cta: 'İstanbul Havalimanı taksi rehberini aç' },
+];
+
+export const cityPosts = posts.filter((post) => post.category === 'Şehirler');
+export const airportPosts = posts.filter((post) => post.category === 'Havalimanı Taksi Ücretleri');
+export const guidePosts = posts.filter((post) => post.category === 'Taksi Rehberleri');

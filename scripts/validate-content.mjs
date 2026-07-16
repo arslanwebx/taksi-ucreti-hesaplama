@@ -6,6 +6,8 @@ const cityPath = new URL('../src/data/cities.ts', import.meta.url);
 const citySource = readFileSync(cityPath, 'utf8');
 const pageSource = readFileSync(new URL('../src/data/pages.ts', import.meta.url), 'utf8');
 const errors = [];
+const registryBlock = citySource.slice(citySource.indexOf('const provinceRegistry'), citySource.indexOf('] as const;', citySource.indexOf('const provinceRegistry')));
+const provinces = [...registryBlock.matchAll(/\[(\d+),\s*'([^']+)',\s*'([^']+)'\]/g)].map((match) => ({ code:Number(match[1]), name:match[2], slug:match[3] }));
 const cityPattern = /name:\s*'([^']+)',\s*slug:\s*'([^']+)',\s*path:\s*'([^']+)',\s*opening:\s*([\d.]+),\s*perKm:\s*([\d.]+),\s*minimum:\s*([\d.]+)[\s\S]*?effectiveDate:\s*'([^']+)',\s*verifiedDate:\s*'([^']+)',\s*sourceName:\s*'([^']+)',\s*sourceUrl:\s*'([^']+)',\s*sourceTier:\s*'([^']+)',\s*status:\s*'([^']+)'/g;
 const matches = [...citySource.matchAll(cityPattern)];
 const cities = matches.map((match, index) => {
@@ -17,12 +19,18 @@ const cities = matches.map((match, index) => {
 });
 const pages = [...pageSource.matchAll(/\{slug:'([^']+)',title:'([^']+)',description:'([^']+)'/g)].map((match) => ({ slug:match[1], title:match[2], description:match[3] }));
 
-if (!cities.length) errors.push('Hiç şehir kaydı bulunamadı.');
-const slugs = [...cities.map((city) => city.slug), ...pages.map((page) => page.slug)];
+if (provinces.length !== 81) errors.push(`İl kayıt sayısı 81 olmalı; ${provinces.length} bulundu.`);
+if (!cities.length) errors.push('Doğrulanmış tarife kaydı bulunamadı.');
+const provinceCodes = provinces.map((province) => province.code).sort((a,b) => a-b);
+if (provinceCodes.some((code,index) => code !== index + 1)) errors.push('İl plaka kodları 1–81 aralığını eksiksiz kapsamıyor.');
+const provinceSlugs = provinces.map((province) => province.slug);
+if (new Set(provinceSlugs).size !== provinces.length || new Set(provinces.map((province) => province.name)).size !== provinces.length) errors.push('İl adı veya slug kaydı tekrarlanıyor.');
+const slugs = [...provinceSlugs, ...pages.map((page) => page.slug)];
 const duplicates = slugs.filter((slug, index) => slugs.indexOf(slug) !== index);
 if (duplicates.length) errors.push(`Tekrarlanan slug: ${[...new Set(duplicates)].join(', ')}`);
 
 for (const city of cities) {
+  if (!provinces.some((province) => province.slug === city.slug)) errors.push(`${city.name}: 81 il kayıt listesinde bulunamadı.`);
   if (city.path !== `/${city.slug}-taksi-ucreti/`) errors.push(`${city.name}: canonical path şehir slug'ıyla eşleşmiyor.`);
   if (!/^\d{4}-\d{2}-\d{2}$/.test(city.effectiveDate) || Number.isNaN(Date.parse(city.effectiveDate))) errors.push(`${city.name}: geçersiz yürürlük tarihi.`);
   if (!/^\d{4}-\d{2}-\d{2}$/.test(city.verifiedDate) || Number.isNaN(Date.parse(city.verifiedDate))) errors.push(`${city.name}: geçersiz doğrulama tarihi.`);
@@ -43,6 +51,9 @@ for (const page of pages) {
 const walk = (directory) => readdirSync(directory).flatMap((name) => {
   const path = join(directory, name); return statSync(path).isDirectory() ? walk(path) : [path];
 });
+if (/\beyebrow\b/i.test(walk(new URL('../src', import.meta.url).pathname.replace(/^\/(.:)/, '$1')).filter((file)=>['.ts','.astro','.css'].includes(extname(file))).map((file)=>readFileSync(file,'utf8')).join('\n'))) {
+  errors.push('Site kaynaklarında eyebrow etiketi veya stili kaldı.');
+}
 for (const file of walk(new URL('../src', import.meta.url).pathname.replace(/^\/(.:)/, '$1'))) {
   if (!['.ts','.astro'].includes(extname(file)) || file.replaceAll('\\','/').endsWith('/data/cities.ts')) continue;
   const source = readFileSync(file, 'utf8');
@@ -53,4 +64,4 @@ if (errors.length) {
   console.error(`İçerik doğrulaması başarısız:\n- ${errors.join('\n- ')}`);
   process.exit(1);
 }
-console.log(`${cities.length} şehir ve ${pages.length} kurumsal içerik doğrulandı; tarife tekrarına rastlanmadı.`);
+console.log(`${provinces.length} il, ${cities.length} doğrulanmış tarife ve ${pages.length} kurumsal içerik doğrulandı; tarife tekrarına rastlanmadı.`);

@@ -2,7 +2,7 @@
 import ContentLayout from '../layouts/ContentLayout.astro';
 import { site } from '../data/site';
 ---
-<ContentLayout title="İletişim" description="Tarife hatası, hesaplama sorunu veya içerik düzeltme talebinizi Taksi Ücreti Hesaplama ekibine güvenli form üzerinden iletin." path="/iletisim/" eyebrow="Bize ulaşın">
+<ContentLayout title="İletişim" description="Tarife hatası, hesaplama sorunu veya içerik düzeltme talebinizi Taksi Ücreti Hesaplama ekibine güvenli form üzerinden iletin." path="/iletisim/">
   <p>Tarife bildirimlerinde mümkünse resmî karar veya kurum bağlantısını paylaşın. Form verileri yalnızca talebinizi incelemek ve size yanıt vermek için kullanılır.</p>
   <form class="contact-form" id="contact-form" action="/api/contact" method="post">
     <label>Adınız<input name="name" autocomplete="name" required maxlength="100" /></label>

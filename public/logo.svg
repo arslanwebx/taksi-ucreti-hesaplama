@@ -1,6 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 44 44">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 244 44" role="img" aria-labelledby="title">
+  <title id="title">Taksi Ücreti Hesaplama</title>
   <rect x="1" y="1" width="42" height="42" rx="12" fill="#DBFF3D" stroke="#182013" stroke-width="2"/>
   <path d="M12 27.5h20l-2.2-7.2a3 3 0 0 0-2.9-2.1h-9.8a3 3 0 0 0-2.9 2.1L12 27.5Z" fill="none" stroke="#182013" stroke-width="2.4" stroke-linejoin="round"/>
   <path d="M15 27.5v3m14-3v3M17.5 23h9M18 14h8" stroke="#182013" stroke-width="2.4" stroke-linecap="round"/>
   <circle cx="16" cy="29" r="2" fill="#182013"/><circle cx="28" cy="29" r="2" fill="#182013"/>
+  <text x="54" y="19" fill="#182013" font-family="system-ui,sans-serif" font-size="15" font-weight="850">TAKSİ ÜCRETİ</text>
+  <text x="54" y="36" fill="#182013" font-family="system-ui,sans-serif" font-size="15" font-weight="650">HESAPLAMA</text>
 </svg>

@@ -1,0 +1,13 @@
+---
+import { formatDate } from '../data/cities';
+import { site } from '../data/site';
+interface Props { title: string; summary: string; path: string; category: string; modified: string; cta: string }
+const { title, summary, path, category, modified, cta } = Astro.props;
+---
+<article class="article-card">
+  <p class="card-category">{category}</p>
+  <h2><a href={path}>{title}</a></h2>
+  <p>{summary}</p>
+  <p class="card-meta"><a href={site.author.url}>{site.author.name}</a><span aria-hidden="true">·</span><time datetime={modified}>{formatDate(modified)}</time></p>
+  <a class="card-cta" href={path}>{cta} <span aria-hidden="true">→</span></a>
+</article>
