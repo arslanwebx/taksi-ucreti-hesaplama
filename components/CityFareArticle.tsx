@@ -12,7 +12,7 @@ const municipalLinks: Record<string, { label: string; url: string }> = {
   istanbul: { label: 'İBB TUHİM ücret tarifeleri arşivi', url: 'https://tuhim.ibb.gov.tr/ucret-tarifeler/' },
   ankara: { label: 'Ankara Esnaf ve Sanatkârlar Odaları Birliği tarife komisyonu', url: 'https://www.ankesob.org.tr/birlik-ucret-tarifeleri-degerlendirme-komisyonu/' },
   izmir: { label: '17 Nisan 2026 tarihli İzmir Büyükşehir Belediyesi toplantı tutanağı', url: 'https://www.izmir.bel.tr/YuklenenDosyalar/MeclisToplantiTutanak/03062026165449.pdf' },
-  antalya: { label: 'Antalya Büyükşehir Belediyesi UKOME karar arşivi', url: 'https://www.antalya.bel.tr/tr/ukome-kararlari' },
+  antalya: { label: '28 Mart 2025 tarihli 178 sayılı Antalya UKOME taksi tarife kararı', url: 'https://www.antalya.bel.tr/tr/ukome-kararlari?ukome-yil=2025&ukome-ay=3' },
 };
 
 const editorial: Record<string, { intro: string; routeAdvice: string; planning: string; mistake: string }> = {
@@ -142,7 +142,12 @@ export function CityFareArticle({ city }: { city: PublishedCity }) {
       <section className="source-box" id="kaynak">
         <h2>Kaynak ve doğrulama</h2>
         <p><strong>Tarife referansı:</strong> {city.referenceDate}. Kayıt <time dateTime={city.lastVerified}>{formatDate(city.lastVerified)}</time> tarihinde yeniden kontrol edildi.</p>
-        <ul><li><a href={city.sourceUrl} rel="external">Kullanılan tarife kaynağını aç</a></li><li><a href={municipal.url} rel="external">{municipal.label}</a></li><li><a href={trafficLawUrl} rel="external">2918 sayılı Karayolları Trafik Kanunu</a></li></ul>
+        <ul>
+          {city.slug === 'antalya'
+            ? <li><a href={municipal.url} rel="external">{municipal.label}</a></li>
+            : <><li><a href={city.sourceUrl} rel="external">Kullanılan tarife kaynağını aç</a></li><li><a href={municipal.url} rel="external">{municipal.label}</a></li></>}
+          <li><a href={trafficLawUrl} rel="external">2918 sayılı Karayolları Trafik Kanunu</a></li>
+        </ul>
         <p>Yeni bir karar yayımlandığı hâlde burada farklı bir tarife görüyorsanız belge bağlantısıyla <Link href="/iletisim/">düzeltme talebi gönderin</Link>.</p>
       </section>
     </ArticlePage>

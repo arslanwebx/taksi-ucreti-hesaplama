@@ -71,9 +71,10 @@ const officialSourceOverrides = {
     note: 'Tarife rakamları 1 Mart 2026 Ankara kaydıdır; bağlantı yetkili fiyat tarifesi komisyonu kaynağıdır.',
   },
   antalya: {
-    sourceUrl: 'https://www.antalya.bel.tr/tr/ukome-kararlari',
+    sourceUrl: 'https://www.antalya.bel.tr/tr/ukome-kararlari?ukome-yil=2025&ukome-ay=3',
     dataStatus: 'İkincil tarife kaydı - resmî UKOME arşivi bağlantısı',
-    note: 'Tarife rakamları ikincil kayıttan derlenmiştir. Antalya UKOME karar arşivi resmî referans olarak verilir; araçtaki onaylı fiyat tarife kartı yolculuk öncesi kontrol edilmelidir.',
+    referenceDate: '28.03.2025 tarihli 178 sayılı UKOME kararı (resmî karşılaştırma)',
+    note: '2026 tarife rakamları ikincil kayıttan derlenmiştir. Bağlantı, belediyenin yayımladığı en güncel taksi tarifesi olan 28.03.2025 tarihli 178 sayılı UKOME kararını gösterecek şekilde filtrelenmiştir; araçtaki onaylı fiyat tarife kartı yolculuk öncesi kontrol edilmelidir.',
   },
   izmir: {
     sourceUrl: 'https://www.izmir.bel.tr/YuklenenDosyalar/MeclisToplantiTutanak/03062026165449.pdf',
@@ -113,14 +114,17 @@ const records = dataRows.map((row, rowIndex) => {
   const fiveKm = asPositiveNumber(row[index['5 km Tahmini (TL)']], '5 km tahmini', city);
   const tenKm = asPositiveNumber(row[index['10 km Tahmini (TL)']], '10 km tahmini', city);
   let dataStatus = asText(row[index['Veri Durumu']]);
-  const referenceDate = asDateText(row[index['Referans / Yürürlük']]);
+  let referenceDate = asDateText(row[index['Referans / Yürürlük']]);
   const lastVerified = asDateText(row[index['Son Kontrol']]);
   let sourceUrl = asText(row[index['Kaynak URL']]);
   const implementationStatus = asText(row[index['Codex Kullanımı']]);
   let note = asText(row[index.Not]);
   const slug = slugify(city);
   const sourceOverride = officialSourceOverrides[slug];
-  if (sourceOverride) ({ sourceUrl, dataStatus, note } = sourceOverride);
+  if (sourceOverride) {
+    ({ sourceUrl, dataStatus, note } = sourceOverride);
+    if (sourceOverride.referenceDate) referenceDate = sourceOverride.referenceDate;
+  }
   const isEstimated = /tahmini|teyit gerekli|ilçe bazlı|genelleme riski/i.test(`${dataStatus} ${note}`);
 
   for (const [label, value] of [['İl', city], ['Bölge', region], ['Veri Durumu', dataStatus], ['Referans / Yürürlük', referenceDate], ['Codex Kullanımı', implementationStatus], ['Not', note]]) {

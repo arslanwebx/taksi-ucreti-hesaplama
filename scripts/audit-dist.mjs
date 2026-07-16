@@ -100,6 +100,11 @@ for (const [slug, expectedTitle] of Object.entries(expectedCityTitles)) {
   if (h2Texts.some((heading, index) => h2Texts.indexOf(heading) !== index)) errors.push(`${slug}: yinelenen H2 başlığı bulundu.`);
   if (!/<h3[^>]*>Yolculuk bilgileri<\/h3>/i.test(html)) errors.push(`${slug}: hesaplayıcı H3 başlığı bulunamadı.`);
   if (/Şehir rehberini aç/i.test(html)) errors.push(`${slug}: aynı şehir sayfasına dönen rehber bağlantısı kaldırılmadı.`);
+  if (slug === 'antalya-taksi-ucreti') {
+    if (!html.includes('Hesaplanan tutar minimum ücrete eşittir.')) errors.push('Antalya: 3 km minimum ücret eşitliği açıklaması bulunamadı.');
+    if (!html.includes('28.03.2025 tarihli 178 sayılı UKOME kararı')) errors.push('Antalya: kesin UKOME karar referansı bulunamadı.');
+    if (!html.includes('ukome-kararlari?ukome-yil=2025&amp;ukome-ay=3')) errors.push('Antalya: UKOME kaynağı Mart 2025 kararlarına doğrudan filtrelenmiyor.');
+  }
 }
 for (const asset of ['logo.svg','logo-mark.svg','favicon.svg','og-brand.svg','_redirects']) if (!existsSync(join(outputDirectory, asset))) errors.push(`Varlık eksik: ${asset}`);
 const redirects = readFileSync(join(outputDirectory, '_redirects'), 'utf8');
