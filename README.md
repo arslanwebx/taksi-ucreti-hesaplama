@@ -1,11 +1,12 @@
 # Taksi Ücreti Hesaplama
 
-WordPress bağımlılığı olmadan çalışan, Astro ve TypeScript ile statik üretilen Türkçe taksi tarifesi ve hesaplama sitesi. Tarife tabloları ile hesaplayıcılar `src/data/cities.ts` içindeki tek kaynağı kullanır.
+WordPress bağımlılığı olmadan çalışan, Next.js ve TypeScript ile statik üretilen Türkçe taksi tarifesi ve hesaplama sitesi. 81 il tarifesi Excel çalışma kitabından üretilir; hesaplayıcı ve şehir içerikleri aynı merkezî veriyi kullanır.
 
 ## Kurulum ve komutlar
 
 ```bash
 npm install
+npm run import:fares
 npm run dev
 npm run build
 npm run preview
@@ -21,7 +22,7 @@ Version command: npx wrangler deploy
 Root directory: /
 ```
 
-Astro statik çıktıyı `dist/` içine üretir. `wrangler.jsonc`, bu dizini Cloudflare Workers Static Assets olarak yayımlar. Worker önce ana host/HTTPS yönlendirmesini ve `/api/contact` isteğini işler, diğer istekleri statik varlıklara aktarır.
+Next.js statik çıktıyı `out/` içine üretir. `wrangler.jsonc`, bu dizini Cloudflare Workers Static Assets olarak yayımlar. Worker önce ana host/HTTPS yönlendirmesini ve `/api/contact` isteğini işler, diğer istekleri statik varlıklara aktarır.
 
 ## Ortam değişkeni
 
@@ -35,9 +36,13 @@ Webhook JSON kabul etmeli ve başarılı işlemde 2xx dönmelidir. Secret yoksa 
 
 ## İçerik ve tarife iş akışı
 
-- Tarife değişikliklerinde önce resmî kararın kapsamı, yürürlük tarihi ve kategorileri doğrulanır.
-- `src/data/cities.ts` içindeki tek şehir kaydı güncellenir; tablolar ve hesaplayıcı otomatik yenilenir.
-- Yeni şehir için `City` şemasını eksiksiz doldurun, kaynak düzeyini belirtin ve `getStaticPaths` çıktısını build ile doğrulayın. Build öncesi `scripts/validate-content.mjs` yinelenen slug, tarih, metadata ve kaynak alanlarını denetler.
+- Ana tarife kaynağı `Turkiye_81_Il_Taksi_Tarifeleri_Tek_Sayfa_2026.xlsx` çalışma kitabıdır.
+- Çalışma kitabını proje köküne veya kullanıcının `Downloads` klasörüne yerleştirin ve `npm run import:fares` komutunu çalıştırın.
+- `scripts/import-taxi-fares.mjs` sayfa adını, zorunlu sütunları, tam 81 satırı, plaka/şehir/slug tekrarlarını, pozitif ücretleri, HTTPS kaynaklarını ve Excel'deki 5 km/10 km kontrol toplamlarını doğrular.
+- Üretilen `src/data/taxi-fares.ts` dosyasındaki tarife rakamlarını elle değiştirmeyin. Hesaplayıcı 81 ilin tamamında `max(minimum, açılış + kilometre × km) + kullanıcı ek ücretleri` formülünü kullanır.
+- Durum veya not alanında tahmini/teyit gerekli/ilçe bazlı/genelleme riski ifadesi bulunan kayıtlar tahmini işaretlenir ve sonuç ekranında uyarı gösterilir.
+- Ayrı şehir yazıları yalnızca İstanbul, Ankara, İzmir ve Antalya için korunur; 81 adet ince içerik sayfası üretilmez.
+- Build öncesi `scripts/validate-content.mjs` 81 kayıt, kontrol şehirleri, tahmini satırlar, metadata, kaynak görünürlüğü ve merkezî tarife kullanımını denetler.
 - Yeni politika/kurumsal içerik `src/data/pages.ts` üzerinden eklenebilir.
 - Yeni özel rehber gerekiyorsa `src/pages/` altında tek kanonik slug ile oluşturun.
 - Eski URL değişiyorsa `public/_redirects` içine doğrudan nihai URL'ye 301 ekleyin; zincir oluşturmayın.

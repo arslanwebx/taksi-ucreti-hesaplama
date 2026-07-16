@@ -2,67 +2,114 @@ import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { extname, join, relative } from 'node:path';
 
 const root = new URL('..', import.meta.url);
-const cityPath = new URL('../src/data/cities.ts', import.meta.url);
-const citySource = readFileSync(cityPath, 'utf8');
+const fareSource = readFileSync(new URL('../src/data/taxi-fares.ts', import.meta.url), 'utf8');
 const pageSource = readFileSync(new URL('../src/data/pages.ts', import.meta.url), 'utf8');
+const calculatorSource = readFileSync(new URL('../components/Calculator.tsx', import.meta.url), 'utf8');
 const errors = [];
-const registryBlock = citySource.slice(citySource.indexOf('const provinceRegistry'), citySource.indexOf('] as const;', citySource.indexOf('const provinceRegistry')));
-const provinces = [...registryBlock.matchAll(/\[(\d+),\s*'([^']+)',\s*'([^']+)'\]/g)].map((match) => ({ code:Number(match[1]), name:match[2], slug:match[3] }));
-const cityPattern = /name:\s*'([^']+)',\s*slug:\s*'([^']+)',\s*path:\s*'([^']+)',\s*opening:\s*([\d.]+),\s*perKm:\s*([\d.]+),\s*minimum:\s*([\d.]+)[\s\S]*?effectiveDate:\s*'([^']+)',\s*verifiedDate:\s*'([^']+)',\s*sourceName:\s*'([^']+)',\s*sourceUrl:\s*'([^']+)',\s*sourceTier:\s*'([^']+)',\s*status:\s*'([^']+)'/g;
-const matches = [...citySource.matchAll(cityPattern)];
-const cities = matches.map((match, index) => {
-  const end = matches[index + 1]?.index ?? citySource.indexOf('\n];', match.index);
-  const block = citySource.slice(match.index, end);
-  const firstCategory = block.match(/categories:\s*\[\s*\{[\s\S]*?opening:\s*([\d.]+),\s*perKm:\s*([\d.]+),\s*minimum:\s*([\d.]+)/);
-  const night = block.match(/nightTariff:\s*\{\s*enabled:\s*(true|false),\s*multiplier:\s*([\d.]+),\s*sourceUrl:\s*(null|'[^']+'),\s*note:\s*'([^']+)'/);
-  return { name:match[1], slug:match[2], path:match[3], opening:Number(match[4]), perKm:Number(match[5]), minimum:Number(match[6]), effectiveDate:match[7], verifiedDate:match[8], sourceName:match[9], sourceUrl:match[10], sourceTier:match[11], status:match[12], firstCategory, night };
-});
-const pages = [...pageSource.matchAll(/\{slug:'([^']+)',title:'([^']+)',description:'([^']+)'/g)].map((match) => ({ slug:match[1], title:match[2], description:match[3] }));
 
-if (provinces.length !== 81) errors.push(`İl kayıt sayısı 81 olmalı; ${provinces.length} bulundu.`);
-if (!cities.length) errors.push('Doğrulanmış tarife kaydı bulunamadı.');
-const provinceCodes = provinces.map((province) => province.code).sort((a,b) => a-b);
-if (provinceCodes.some((code,index) => code !== index + 1)) errors.push('İl plaka kodları 1–81 aralığını eksiksiz kapsamıyor.');
-const provinceSlugs = provinces.map((province) => province.slug);
-if (new Set(provinceSlugs).size !== provinces.length || new Set(provinces.map((province) => province.name)).size !== provinces.length) errors.push('İl adı veya slug kaydı tekrarlanıyor.');
-const slugs = [...provinceSlugs, ...pages.map((page) => page.slug)];
-const duplicates = slugs.filter((slug, index) => slugs.indexOf(slug) !== index);
-if (duplicates.length) errors.push(`Tekrarlanan slug: ${[...new Set(duplicates)].join(', ')}`);
+const arrayBody = fareSource.match(/export const taxiFares:[\s\S]*?=\s*\[([\s\S]*?)\n\];/)?.[1] ?? '';
+const blocks = [...arrayBody.matchAll(/\{\s*plateCode:[\s\S]*?\n\s*\}/g)].map((match) => match[0]);
+const readNumber = (block, field) => Number(block.match(new RegExp(`${field}:\\s*([\\d.]+)`))?.[1]);
+const readString = (block, field) => {
+  const literal = block.match(new RegExp(`${field}:\\s*("(?:[^"\\\\]|\\\\.)*")`))?.[1];
+  return literal ? JSON.parse(literal) : '';
+};
+const fares = blocks.map((block) => ({
+  plateCode: readNumber(block, 'plateCode'),
+  city: readString(block, 'city'),
+  slug: readString(block, 'slug'),
+  region: readString(block, 'region'),
+  openingFare: readNumber(block, 'openingFare'),
+  perKmFare: readNumber(block, 'perKmFare'),
+  minimumFare: readNumber(block, 'minimumFare'),
+  dataStatus: readString(block, 'dataStatus'),
+  referenceDate: readString(block, 'referenceDate'),
+  lastVerified: readString(block, 'lastVerified'),
+  sourceUrl: readString(block, 'sourceUrl'),
+  implementationStatus: readString(block, 'implementationStatus'),
+  note: readString(block, 'note'),
+  isEstimated: /isEstimated:\s*true/.test(block),
+}));
+const pages = [...pageSource.matchAll(/\{slug:'([^']+)',title:'([^']+)',description:'([^']+)'/g)]
+  .map((match) => ({ slug: match[1], title: match[2], description: match[3] }));
 
-for (const city of cities) {
-  if (!provinces.some((province) => province.slug === city.slug)) errors.push(`${city.name}: 81 il kayıt listesinde bulunamadı.`);
-  if (city.path !== `/${city.slug}-taksi-ucreti/`) errors.push(`${city.name}: canonical path şehir slug'ıyla eşleşmiyor.`);
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(city.effectiveDate) || Number.isNaN(Date.parse(city.effectiveDate))) errors.push(`${city.name}: geçersiz yürürlük tarihi.`);
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(city.verifiedDate) || Number.isNaN(Date.parse(city.verifiedDate))) errors.push(`${city.name}: geçersiz doğrulama tarihi.`);
-  if (!city.sourceName || !/^https:\/\//.test(city.sourceUrl)) errors.push(`${city.name}: tarife kaynağı eksik veya HTTPS değil.`);
-  if (!['official','secondary','unverified'].includes(city.sourceTier)) errors.push(`${city.name}: geçersiz kaynak düzeyi.`);
-  if (city.sourceTier === 'unverified' && city.status === 'published') errors.push(`${city.name}: doğrulanmamış kayıt yayımlanamaz.`);
-  if (!city.firstCategory) errors.push(`${city.name}: standart kategori bulunamadı.`);
-  else if (city.opening !== Number(city.firstCategory[1]) || city.perKm !== Number(city.firstCategory[2]) || city.minimum !== Number(city.firstCategory[3])) errors.push(`${city.name}: üst seviye tarife standart kategoriyle eşleşmiyor.`);
-  if (!city.night) errors.push(`${city.name}: gece tarifesi yapılandırması eksik.`);
-  else if (city.night[1] === 'true' && (Number(city.night[2]) <= 1 || city.night[3] === 'null')) errors.push(`${city.name}: etkin gece tarifesi için katsayı ve kaynak zorunludur.`);
+if (fares.length !== 81) errors.push(`Tarife kayıt sayısı 81 olmalı; ${fares.length} bulundu.`);
+const plates = fares.map((fare) => fare.plateCode).sort((a, b) => a - b);
+if (plates.some((plate, index) => plate !== index + 1)) errors.push('Plaka kodları 1–81 aralığını eksiksiz kapsamıyor.');
+for (const [label, values] of [
+  ['şehir', fares.map((fare) => fare.city)],
+  ['slug', fares.map((fare) => fare.slug)],
+  ['plaka', fares.map((fare) => fare.plateCode)],
+]) {
+  if (new Set(values).size !== values.length) errors.push(`Tekrarlanan ${label} kaydı bulundu.`);
 }
 
+for (const item of fares) {
+  if (!item.city || !item.slug || !item.region || !item.dataStatus || !item.referenceDate || !item.lastVerified || !item.implementationStatus || !item.note) {
+    errors.push(`${item.city || item.plateCode}: zorunlu tarife alanı boş.`);
+  }
+  if (![item.openingFare, item.perKmFare, item.minimumFare].every((value) => Number.isFinite(value) && value > 0)) {
+    errors.push(`${item.city}: ücret alanı sıfır, negatif veya geçersiz.`);
+  }
+  try {
+    if (new URL(item.sourceUrl).protocol !== 'https:') throw new Error();
+  } catch {
+    errors.push(`${item.city}: kaynak adresi geçerli HTTPS URL değil.`);
+  }
+  const shouldBeEstimated = /tahmini|teyit gerekli|ilçe bazlı|genelleme riski/i.test(`${item.dataStatus} ${item.note}`);
+  if (shouldBeEstimated !== item.isEstimated) errors.push(`${item.city}: tahmini veri işareti durum/not alanıyla eşleşmiyor.`);
+}
+
+const checkpoints = {
+  istanbul: [65.4, 43.56, 210],
+  ankara: [65, 40, 200],
+  izmir: [40, 54, 210],
+  antalya: [50, 50, 200],
+};
+for (const [slug, expected] of Object.entries(checkpoints)) {
+  const item = fares.find((fare) => fare.slug === slug);
+  if (!item) errors.push(`${slug}: kontrol kaydı bulunamadı.`);
+  else if ([item.openingFare, item.perKmFare, item.minimumFare].some((value, index) => value !== expected[index])) {
+    errors.push(`${item.city}: Excel kontrol değerleri uyuşmuyor.`);
+  }
+}
+
+const estimatedCount = fares.filter((fare) => fare.isEstimated).length;
+if (estimatedCount !== 6) errors.push(`Tahmini tarife sayısı 6 olmalı; ${estimatedCount} bulundu.`);
+const warning = 'Bu şehir için kullanılan tarife mevcut kaynaklara dayalı tahmini bir değerdir. Güncel taksimetre tutarı farklı olabilir.';
+if (!calculatorSource.includes(warning)) errors.push('Tahmini tarife uyarısı hesaplayıcıda eksik.');
+if (!calculatorSource.includes('Tarife kaynağını inceleyin') || !calculatorSource.includes('Tarife referansı:') || !calculatorSource.includes('Son kontrol:')) {
+  errors.push('Hesap sonucunda kaynak, referans veya son kontrol bilgisi eksik.');
+}
+
+const fareSlugs = new Set(fares.map((fare) => fare.slug));
+const pageSlugs = pages.map((page) => page.slug);
+const duplicates = pageSlugs.filter((slug, index) => pageSlugs.indexOf(slug) !== index || fareSlugs.has(slug));
+if (duplicates.length) errors.push(`Tekrarlanan slug: ${[...new Set(duplicates)].join(', ')}`);
 for (const page of pages) {
   if (!page.title.trim()) errors.push(`${page.slug}: başlık eksik.`);
   if (page.description.trim().length < 70) errors.push(`${page.slug}: meta açıklaması çok kısa.`);
 }
 
 const walk = (directory) => readdirSync(directory).flatMap((name) => {
-  const path = join(directory, name); return statSync(path).isDirectory() ? walk(path) : [path];
+  const path = join(directory, name);
+  return statSync(path).isDirectory() ? walk(path) : [path];
 });
-const sourceRoots = ['app','components','src'].map((directory) => new URL(`../${directory}`, import.meta.url).pathname.replace(/^\/(.:)/, '$1'));
-if (/\beyebrow\b/i.test(sourceRoots.flatMap(walk).filter((file)=>['.ts','.tsx','.astro','.css'].includes(extname(file))).map((file)=>readFileSync(file,'utf8')).join('\n'))) {
+const sourceRoots = ['app', 'components', 'src'].map((directory) => new URL(`../${directory}`, import.meta.url).pathname.replace(/^\/(.:)/, '$1'));
+const sourceFiles = sourceRoots.flatMap(walk).filter((file) => ['.ts', '.tsx', '.astro', '.css'].includes(extname(file)));
+if (/\beyebrow\b/i.test(sourceFiles.map((file) => readFileSync(file, 'utf8')).join('\n'))) {
   errors.push('Site kaynaklarında eyebrow etiketi veya stili kaldı.');
 }
-for (const file of sourceRoots.flatMap(walk)) {
-  if (!['.ts','.tsx','.astro'].includes(extname(file)) || file.replaceAll('\\','/').endsWith('/data/cities.ts')) continue;
+for (const file of sourceFiles) {
+  if (!['.ts', '.tsx', '.astro'].includes(extname(file)) || file.replaceAll('\\', '/').endsWith('/data/taxi-fares.ts')) continue;
   const source = readFileSync(file, 'utf8');
-  if (/(?:opening|perKm|minimum|waitingPerHour)\s*:\s*\d/.test(source)) errors.push(`${relative(new URL('..', root).pathname, file)}: tarife değeri merkezî şehir dosyası dışında tekrarlandı.`);
+  if (/(?:openingFare|perKmFare|minimumFare)\s*:\s*\d/.test(source)) {
+    errors.push(`${relative(new URL('..', root).pathname, file)}: tarife değeri üretilen merkezî veri dosyası dışında tekrarlandı.`);
+  }
 }
 
 if (errors.length) {
   console.error(`İçerik doğrulaması başarısız:\n- ${errors.join('\n- ')}`);
   process.exit(1);
 }
-console.log(`${provinces.length} il, ${cities.length} doğrulanmış tarife ve ${pages.length} kurumsal içerik doğrulandı; tarife tekrarına rastlanmadı.`);
+console.log(`${fares.length} il tarifesi, ${estimatedCount} tahmini kayıt ve ${pages.length} kurumsal içerik doğrulandı; tarife tekrarına rastlanmadı.`);
