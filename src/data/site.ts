@@ -9,7 +9,7 @@ export const site = {
   analyticsId: 'G-9DE2SY0711',
   socialLinks: [] as string[],
   navigation: [
-    ['Ana Sayfa', '/'], ['Şehir Hesaplayıcıları', '/sehirler/'], ['Blog', '/blog/'], ['Hakkımızda', '/hakkimizda/']
+    ['Ana Sayfa', '/'], ['Şehir Hesaplayıcıları', '/sehirler/'], ['Blog', '/blog/'], ['Hakkımızda', '/hakkimizda/'], ['İletişim', '/iletisim/']
   ] as const,
   disclaimer: 'Bu sitedeki hesaplamalar bilgilendirme amaçlı tahminlerdir. Trafik, bekleme süresi, güzergâh, köprü, tünel, otoyol ve yerel tarife değişiklikleri nedeniyle gerçek taksimetre tutarı farklı olabilir.'
 };

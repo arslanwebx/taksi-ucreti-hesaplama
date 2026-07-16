@@ -170,3 +170,18 @@
 .popular-cities button,.all-cities button{width:100%;min-height:44px;display:flex;align-items:center;gap:7px;min-width:0;border:1px solid var(--line);border-radius:9px;background:white;padding:9px 10px;font-size:.84rem;font-weight:800;text-align:left;overflow-wrap:anywhere}
 .popular-cities button:hover,.all-cities button:hover{background:var(--yellow-soft);border-color:#b79b34}
 .all-cities button span{display:inline-grid;place-items:center;flex:0 0 auto;min-width:25px;height:23px;border-radius:6px;background:var(--yellow-soft);font-size:.66rem}
+
+/* Cleaner footer navigation */
+.site-footer a{text-decoration:none}
+.footer-links{list-style:none;padding:0;margin:0;display:grid;gap:8px}
+.footer-links li{position:relative;padding-left:15px;line-height:1.45}
+.footer-links li:before{content:"";position:absolute;left:0;top:.62em;width:5px;height:5px;border-radius:50%;background:var(--yellow)}
+.footer-links a{display:inline-block;transition:color .15s ease,transform .15s ease}
+.footer-links a:hover{color:var(--yellow);transform:translateX(2px)}
+.footer-contact-links{max-width:100%}
+.footer-contact-links a{overflow-wrap:anywhere}
+.footer-contact-note{max-width:280px;margin:8px 0 0}
+@media(max-width:580px){
+  .footer-links{gap:10px}
+  .footer-contact-note{margin-top:6px}
+}

@@ -10,9 +10,9 @@ export function Footer() {
     <footer className="site-footer">
       <div className="container footer-grid">
         <div className="footer-brand"><Logo footer /><p>Türkiye’de şehir bazlı taksi tarifelerini anlaşılır hesaplara dönüştüren bağımsız yolculuk rehberi.</p></div>
-        <div><h2>Hızlı bağlantılar</h2>{guides.map(([name, href]) => <Link key={href} href={href}>{name}</Link>)}</div>
-        <div><h2>Şeffaflık</h2>{policies.map(([name, href]) => <Link key={href} href={href}>{name}</Link>)}</div>
-        <div><h2>İletişim</h2><a href={`mailto:${site.contactEmail}`}>{site.contactEmail}</a><p>Tarife bildirirken mümkünse resmî kaynak bağlantısını ekleyin.</p></div>
+        <div><h2>Hızlı bağlantılar</h2><ul className="footer-links">{guides.map(([name, href]) => <li key={href}><Link href={href}>{name}</Link></li>)}</ul></div>
+        <div><h2>Şeffaflık</h2><ul className="footer-links">{policies.map(([name, href]) => <li key={href}><Link href={href}>{name}</Link></li>)}</ul></div>
+        <div><h2>İletişim</h2><ul className="footer-links footer-contact-links"><li><a href={`mailto:${site.contactEmail}`}>{site.contactEmail}</a></li></ul><p className="footer-contact-note">Tarife bildirirken mümkünse resmî kaynak bağlantısını ekleyin.</p></div>
       </div>
       <div className="container footer-bottom"><p>© 2026 {site.name}</p><p>{site.disclaimer}</p></div>
     </footer>
