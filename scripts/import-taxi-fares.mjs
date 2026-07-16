@@ -72,8 +72,8 @@ const officialSourceOverrides = {
   },
   antalya: {
     sourceUrl: 'https://www.antalya.bel.tr/tr/ukome-kararlari',
-    dataStatus: 'Resmî UKOME arşivi - tarife kartı kontrolü önerilir',
-    note: 'Antalya UKOME karar arşivi kullanılır; araçtaki onaylı fiyat tarife kartı yolculuk öncesi kontrol edilmelidir.',
+    dataStatus: 'İkincil tarife kaydı - resmî UKOME arşivi bağlantısı',
+    note: 'Tarife rakamları ikincil kayıttan derlenmiştir. Antalya UKOME karar arşivi resmî referans olarak verilir; araçtaki onaylı fiyat tarife kartı yolculuk öncesi kontrol edilmelidir.',
   },
   izmir: {
     sourceUrl: 'https://www.izmir.bel.tr/YuklenenDosyalar/MeclisToplantiTutanak/03062026165449.pdf',

@@ -5,6 +5,7 @@ import { Calculator } from './Calculator';
 import { TableOfContents } from './TableOfContents';
 import { fare, formatDate, money, type PublishedCity } from '@/src/data/cities';
 import { pageMetadata } from '@/lib/seo';
+import { tariffSourceNeedsCaution } from '@/lib/taxi-calculator';
 
 const trafficLawUrl = 'https://www.mevzuat.gov.tr/mevzuatmetin/1.5.2918.pdf';
 const municipalLinks: Record<string, { label: string; url: string }> = {
@@ -48,6 +49,14 @@ const seoTitles: Record<string, string> = {
   izmir: 'İzmir Taksi Ücreti Hesaplama | Güncel Fiyatlar 2026',
 };
 
+function minimumFareExplanation(city: PublishedCity, km: number) {
+  const calculatedCents = Math.round((city.openingFare + km * city.perKmFare) * 100);
+  const minimumCents = Math.round(city.minimumFare * 100);
+  if (calculatedCents < minimumCents) return 'Hesaplanan tutar minimum ücretin altında kaldığı için minimum ücret uygulanır.';
+  if (calculatedCents === minimumCents) return 'Hesaplanan tutar minimum ücrete eşittir.';
+  return 'Açılış ve kilometre hesabı minimumu aşar.';
+}
+
 export function cityFareMetadata(city: PublishedCity): Metadata {
   return pageMetadata(
     seoTitles[city.slug] ?? `${city.city} Taksi Ücreti Hesaplama 2026`,
@@ -80,6 +89,7 @@ export function CityFareArticle({ city }: { city: PublishedCity }) {
     <ArticlePage title={title} description={description} path={city.path} modified={city.lastVerified} category="Şehirler" readingMinutes={9} faqs={faqs}>
       <p className="notice"><strong>Kısa cevap:</strong> {copy.intro}</p>
       {city.isEstimated && <p className="notice"><strong>Tahmini veri:</strong> Bu şehir için kullanılan tarife mevcut kaynaklara dayalı tahmini bir değerdir. Güncel taksimetre tutarı farklı olabilir.</p>}
+      {!city.isEstimated && tariffSourceNeedsCaution(city.dataStatus) && <p className="notice"><strong>Kaynak uyarısı:</strong> Tarife rakamları ikincil bir kayıttan derlenmiştir. Resmî belediye arşivi bağlantısı verilmiştir; yolculuk öncesinde araçtaki onaylı fiyat tarife kartını da kontrol edin.</p>}
       <p>Bu sayfadaki hesaplayıcı, tarife tablosu ve örnek rotalar aynı merkezî veri kaydından üretilir. Böylece rakamlar birbiriyle tutarlı kalır. Kesin yolculuk tutarını ise her zaman araçtaki taksimetre belirler.</p>
       <TableOfContents items={[
         { id: 'hesaplama', label: `${city.city} taksi ücreti hesaplama` },
@@ -108,7 +118,7 @@ export function CityFareArticle({ city }: { city: PublishedCity }) {
       <section id="ornekler">
         <h2>Mesafeye göre örnek ücretler</h2>
         <p>Aşağıdaki sonuçlar ek ücret girilmeden hesaplanır. Amaç, tarifenin farklı mesafelerde nasıl davrandığını anlaşılır biçimde göstermektir.</p>
-        <div className="table-wrap"><table><thead><tr><th>Örnek mesafe</th><th>Temel tahmin</th><th>Yorum</th></tr></thead><tbody>{examples.map((example) => <tr key={example.km}><th scope="row">{example.km} km</th><td>{money(example.total)}</td><td>{city.openingFare + example.km * city.perKmFare < city.minimumFare ? 'Minimum ücret uygulanır.' : 'Açılış ve kilometre hesabı minimumu aşar.'}</td></tr>)}</tbody></table></div>
+        <div className="table-wrap"><table><thead><tr><th>Örnek mesafe</th><th>Temel tahmin</th><th>Yorum</th></tr></thead><tbody>{examples.map((example) => <tr key={example.km}><th scope="row">{example.km} km</th><td>{money(example.total)}</td><td>{minimumFareExplanation(city, example.km)}</td></tr>)}</tbody></table></div>
         <p>{copy.planning}</p>
         <p><Link href="/indi-bindi-ucreti-nedir/">Minimum ücretin nasıl çalıştığını</Link> veya <Link href="/taksi-ucreti-nasil-hesaplanir/">taksi hesabının bütün kalemlerini</Link> ayrıntılı okuyabilirsiniz.</p>
       </section>

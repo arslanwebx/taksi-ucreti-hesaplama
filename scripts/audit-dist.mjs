@@ -98,6 +98,8 @@ for (const [slug, expectedTitle] of Object.entries(expectedCityTitles)) {
   if (!html.includes(`<title>${expectedTitle}</title>`)) errors.push(`${slug}: SEO title hedef metinle eşleşmiyor.`);
   const h2Texts = [...html.matchAll(/<h2[^>]*>([^<]+)<\/h2>/gi)].map((match) => match[1].trim().toLocaleLowerCase('tr-TR'));
   if (h2Texts.some((heading, index) => h2Texts.indexOf(heading) !== index)) errors.push(`${slug}: yinelenen H2 başlığı bulundu.`);
+  if (!/<h3[^>]*>Yolculuk bilgileri<\/h3>/i.test(html)) errors.push(`${slug}: hesaplayıcı H3 başlığı bulunamadı.`);
+  if (/Şehir rehberini aç/i.test(html)) errors.push(`${slug}: aynı şehir sayfasına dönen rehber bağlantısı kaldırılmadı.`);
 }
 for (const asset of ['logo.svg','logo-mark.svg','favicon.svg','og-brand.svg','_redirects']) if (!existsSync(join(outputDirectory, asset))) errors.push(`Varlık eksik: ${asset}`);
 const redirects = readFileSync(join(outputDirectory, '_redirects'), 'utf8');

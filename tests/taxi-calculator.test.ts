@@ -7,6 +7,7 @@ import {
   normalizeCitySearch,
   parseDecimal,
   readCalculatorQuery,
+  tariffSourceNeedsCaution,
 } from '../lib/taxi-calculator.ts';
 
 const standard = { openingFare: 65, perKmFare: 40, minimumFare: 200 };
@@ -76,7 +77,10 @@ test('Turkish lira formatting is stable', () => {
 test('estimated and verified records remain distinguishable', () => {
   assert.equal(fareQualityLabel(true, 'Tahmini - resmî teyit gerekli'), 'Tahmini tarife');
   assert.equal(fareQualityLabel(false, 'Resmî UKOME arşivi - tarife kartı kontrolü önerilir'), 'Tarife kartı kontrolü önerilir');
+  assert.equal(fareQualityLabel(false, 'İkincil tarife kaydı - resmî UKOME arşivi bağlantısı'), 'İkincil kaynak kaydı');
   assert.equal(fareQualityLabel(false, 'Resmî belediye meclis kararı'), 'Resmî / yetkili kaynak kaydı');
   assert.equal(fareQualityLabel(false, 'Güncel güçlü kaynak'), 'Güçlü kaynak kaydı');
   assert.equal(fareQualityLabel(false, 'İkincil 2026 tarife'), 'İkincil kaynak kaydı');
+  assert.equal(tariffSourceNeedsCaution('İkincil tarife kaydı - resmî UKOME arşivi bağlantısı'), true);
+  assert.equal(tariffSourceNeedsCaution('Resmî belediye meclis kararı'), false);
 });

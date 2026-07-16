@@ -83,8 +83,13 @@ export function formatCurrency(value: number): string {
 
 export function fareQualityLabel(isEstimated: boolean, dataStatus: string): string {
   if (isEstimated) return 'Tahmini tarife';
+  if (/[İi]kincil/.test(dataStatus)) return 'İkincil kaynak kaydı';
   if (/kontrolü önerilir/i.test(dataStatus)) return 'Tarife kartı kontrolü önerilir';
   if (/resmî|yetkili/i.test(dataStatus)) return 'Resmî / yetkili kaynak kaydı';
   if (/güçlü kaynak/i.test(dataStatus)) return 'Güçlü kaynak kaydı';
   return 'İkincil kaynak kaydı';
+}
+
+export function tariffSourceNeedsCaution(dataStatus: string): boolean {
+  return /[İi]kincil|kontrolü önerilir|teyidi bekliyor/i.test(dataStatus);
 }

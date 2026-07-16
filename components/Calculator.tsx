@@ -9,6 +9,7 @@ import {
   normalizeCitySearch,
   parseDecimal,
   readCalculatorQuery,
+  tariffSourceNeedsCaution,
 } from '@/lib/taxi-calculator';
 import { cityGuidePaths, formatDate } from '@/src/data/cities';
 import { taxiFareBySlug, taxiFares, type TaxiFare } from '@/src/data/taxi-fares';
@@ -381,6 +382,7 @@ export function Calculator({ fixedCity }: { fixedCity?: string }) {
               <a href={result.city.sourceUrl} target="_blank" rel="noopener noreferrer">{sourceName(result.city.sourceUrl)} kaynağını açın</a>
             </div>
             {result.city.isEstimated && <p className="estimated-warning">Bu şehir için kullanılan tarife mevcut kaynaklara dayalı tahmini bir değerdir. Güncel taksimetre tutarı farklı olabilir.</p>}
+            {!result.city.isEstimated && tariffSourceNeedsCaution(result.city.dataStatus) && <p className="estimated-warning">Tarife rakamları ikincil bir kayıttan derlenmiştir. Yolculuk öncesinde belediyenin UKOME arşivini ve araçtaki onaylı fiyat tarife kartını kontrol edin.</p>}
             <div className="result-actions">
               <button type="button" onClick={reset}>Hesaplamayı sıfırla</button>
               <button type="button" onClick={copyResult}>Sonucu kopyala</button>
@@ -394,7 +396,7 @@ export function Calculator({ fixedCity }: { fixedCity?: string }) {
       {selected && (
         <div className="calculator-insights">
           <section className="tariff-summary" aria-labelledby={`${id}-tariff-title`}>
-            <div className="insight-heading"><div><h3 id={`${id}-tariff-title`}>{selected.city} Taksi Tarifesi</h3><p>{fareQualityLabel(selected.isEstimated, selected.dataStatus)} · Son kontrol {formatDate(selected.lastVerified)}</p></div>{selectedGuidePath && <Link href={selectedGuidePath}>Şehir rehberini aç →</Link>}</div>
+            <div className="insight-heading"><div><h3 id={`${id}-tariff-title`}>{selected.city} Taksi Tarifesi</h3><p>{fareQualityLabel(selected.isEstimated, selected.dataStatus)} · Son kontrol {formatDate(selected.lastVerified)}</p></div>{!fixedCity && selectedGuidePath && <Link href={selectedGuidePath}>Şehir rehberini aç →</Link>}</div>
             <dl>
               <div><dt>Açılış ücreti</dt><dd>{formatCurrency(selected.openingFare)}</dd></div>
               <div><dt>Kilometre ücreti</dt><dd>{formatCurrency(selected.perKmFare)}</dd></div>
