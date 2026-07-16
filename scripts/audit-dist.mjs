@@ -81,6 +81,7 @@ for (const schemaType of ['WebSite','WebPage','Organization','Person','Breadcrum
 
 const blog = readFileSync(join(outputDirectory, 'blog', 'index.html'), 'utf8');
 if ((blog.match(/class="article-card"/g)?.length ?? 0) !== 7) errors.push('Blog arşivinde yedi yazının tamamı bulunmalı.');
+if (/class="card-link"/i.test(blog)) errors.push('Blog arşivindeki yinelenen kart CTA metinleri kaldırılmadı.');
 for (const slug of ['ankara-taksi-ucreti','antalya-taksi-ucreti','istanbul-taksi-ucreti','izmir-taksi-ucreti','istanbul-havalimani-taksi-ucreti','taksi-ucreti-nasil-hesaplanir','indi-bindi-ucreti-nedir']) {
   const html = readFileSync(join(outputDirectory, slug, 'index.html'), 'utf8');
   if ((html.match(/class="author-box/g)?.length ?? 0) !== 1) errors.push(`${slug}: tek yazar kutusu bulunmalı.`);
