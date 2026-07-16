@@ -1,5 +1,5 @@
 import { taxiFareBySlug, type TaxiFare } from './taxi-fares';
-import { calculateFare } from '@/lib/taxi-calculator';
+import { calculateCategoryFares, calculateFare, categoryTariff, taxiCategories } from '@/lib/taxi-calculator';
 
 type ArticleDetails = {
   path: string;
@@ -103,4 +103,19 @@ export const formatDate = (value: string) => {
 export function fare(city: Pick<TaxiFare, 'openingFare' | 'perKmFare' | 'minimumFare'>, km: number, extra = 0) {
   const result = calculateFare(city, km, 0, extra);
   return { opening: result.opening, distance: result.distance, adjustment: result.adjustment, extra: result.additional, total: result.total };
+}
+
+export function fareCategories(city: Pick<TaxiFare, 'openingFare' | 'perKmFare' | 'minimumFare' | 'waitingFarePerMinute'>) {
+  return taxiCategories.map((category) => ({
+    ...category,
+    tariff: categoryTariff(city, category.id),
+  }));
+}
+
+export function faresByCategory(
+  city: Pick<TaxiFare, 'openingFare' | 'perKmFare' | 'minimumFare' | 'waitingFarePerMinute'>,
+  km: number,
+  extra = 0,
+) {
+  return calculateCategoryFares(city, km, 0, extra);
 }

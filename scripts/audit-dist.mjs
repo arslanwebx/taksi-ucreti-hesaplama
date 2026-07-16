@@ -73,6 +73,9 @@ if ((cityGuideBlock.match(/class="article-card"/g)?.length ?? 0) !== 4) errors.p
 if ((cityGuideBlock.match(/<h3>/g)?.length ?? 0) !== 4 || /<article class="article-card"[\s\S]*?<h2>/i.test(cityGuideBlock)) errors.push('Ana sayfa popüler şehir kartları H3 kullanmalı.');
 if (cityGuideBlock.includes('<time')) errors.push('Ana sayfa şehir kartlarında tekrarlanan güncelleme tarihleri gösterilmemeli.');
 if (/Yoğun trafik<\/strong>|traffic=high/i.test(home)) errors.push('Belgesiz yoğun trafik katsayısı ana sayfadan kaldırılmadı.');
+for (const categoryLabel of ['Sarı Taksi Ücreti', 'Turkuaz Taksi Ücreti', 'Siyah VIP Taksi Ücreti']) {
+  if (!home.includes(categoryLabel)) errors.push(`Ana hesaplayıcıda ${categoryLabel} bulunmalı.`);
+}
 if ((home.match(/class="author-box/g)?.length ?? 0) !== 1) errors.push('Ana sayfa makalesinin sonunda tek yazar kutusu bulunmalı.');
 if (!home.includes('G-9DE2SY0711') || !home.includes('googletagmanager.com/gtag/js')) errors.push('Google Analytics etiketi üretim HTML dosyasına eklenmedi.');
 for (const schemaType of ['WebSite','WebPage','Organization','Person','BreadcrumbList','WebApplication','FAQPage']) {
@@ -102,6 +105,9 @@ for (const [slug, expectedTitle] of Object.entries(expectedCityTitles)) {
   const h2Texts = [...html.matchAll(/<h2[^>]*>([^<]+)<\/h2>/gi)].map((match) => match[1].trim().toLocaleLowerCase('tr-TR'));
   if (h2Texts.some((heading, index) => h2Texts.indexOf(heading) !== index)) errors.push(`${slug}: yinelenen H2 başlığı bulundu.`);
   if (!/<h3[^>]*>Yolculuk bilgileri<\/h3>/i.test(html)) errors.push(`${slug}: hesaplayıcı H3 başlığı bulunamadı.`);
+  for (const categoryLabel of ['Sarı Taksi Ücreti', 'Turkuaz Taksi Ücreti', 'Siyah VIP Taksi Ücreti']) {
+    if (!html.includes(categoryLabel)) errors.push(`${slug}: hesaplayıcıda ${categoryLabel} bulunmalı.`);
+  }
   if (/Şehir rehberini aç/i.test(html)) errors.push(`${slug}: aynı şehir sayfasına dönen rehber bağlantısı kaldırılmadı.`);
   if (slug === 'antalya-taksi-ucreti') {
     if (!html.includes('Hesaplanan tutar minimum ücrete eşittir.')) errors.push('Antalya: 3 km minimum ücret eşitliği açıklaması bulunamadı.');

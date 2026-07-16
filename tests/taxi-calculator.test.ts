@@ -2,6 +2,8 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
   calculateFare,
+  calculateCategoryFares,
+  categoryTariff,
   fareQualityLabel,
   formatCurrency,
   normalizeCitySearch,
@@ -23,6 +25,25 @@ test('minimum fare is a threshold rather than an added fee', () => {
   assert.equal(result.subtotal, 105);
   assert.equal(result.adjustment, 95);
   assert.equal(result.total, 200);
+});
+
+test('all three Turkish taxi categories are calculated from the shared tariff', () => {
+  const categories = calculateCategoryFares({ openingFare: 65.4, perKmFare: 43.56, minimumFare: 210 }, 10);
+  assert.deepEqual(categories.map(({ id, label, total }) => ({ id, label, total })), [
+    { id: 'yellow', label: 'Sarı Taksi Ücreti', total: 501 },
+    { id: 'turquoise', label: 'Turkuaz Taksi Ücreti', total: 576.11 },
+    { id: 'black', label: 'Siyah VIP Taksi Ücreti', total: 851.68 },
+  ]);
+});
+
+test('category multipliers reproduce the published Istanbul 2026 tariff components', () => {
+  const istanbul = { openingFare: 65.4, perKmFare: 43.56, minimumFare: 210 };
+  assert.deepEqual(categoryTariff(istanbul, 'turquoise'), {
+    openingFare: 75.21, perKmFare: 50.09, minimumFare: 240, waitingFarePerMinute: undefined,
+  });
+  assert.deepEqual(categoryTariff(istanbul, 'black'), {
+    openingFare: 111.18, perKmFare: 74.05, minimumFare: 360, waitingFarePerMinute: undefined,
+  });
 });
 
 test('documented waiting charge and additional toll are calculated', () => {

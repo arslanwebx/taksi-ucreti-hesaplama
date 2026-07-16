@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { ArticlePage } from '@/components/ArticlePage';
 import { Calculator } from '@/components/Calculator';
 import { TableOfContents } from '@/components/TableOfContents';
-import { fare, formatDate, money, publishedCities } from '@/src/data/cities';
+import { fareCategories, faresByCategory, formatDate, money, publishedCities } from '@/src/data/cities';
 import { pageMetadata } from '@/lib/seo';
 
 const city = publishedCities.find((item) => item.slug === 'istanbul')!;
@@ -21,6 +21,7 @@ const faqs = [
 export const metadata: Metadata = pageMetadata(title, description, path, 'article');
 
 export default function IstanbulAirport() {
+  const categories = fareCategories(city);
   return (
     <ArticlePage title={title} description={description} path={path} modified={city.lastVerified} category="Havalimanı Taksi Ücretleri" readingMinutes={9} faqs={faqs}>
       <p className="notice"><strong>Kısa cevap:</strong> İstanbul Havalimanı için şehir merkezine sabit taksi fiyatı yoktur. Temel tahmin açılış ücreti, araç rotası kilometresi ve minimum ücret kuralıyla hesaplanır; ücretli geçişler ayrıca eklenir.</p>
@@ -45,13 +46,13 @@ export default function IstanbulAirport() {
 
       <section id="tarife">
         <h2>Kullanılan İstanbul tarifesi</h2>
-        <div className="table-wrap"><table><thead><tr><th>Tarife</th><th>Açılış</th><th>Kilometre</th><th>Minimum</th></tr></thead><tbody><tr><th scope="row">İstanbul</th><td>{money(city.openingFare)}</td><td>{money(city.perKmFare)}</td><td>{money(city.minimumFare)}</td></tr></tbody></table></div>
-        <p>Hesaplayıcı bu merkezî tarife kaydını kullanır. Otomatik trafik, bekleme veya araç kategorisi ücreti eklemez. Yolculuğunuz için farklı bir yerel uygulama söz konusuysa araca binmeden önce doğrulayın.</p>
+        <div className="table-wrap"><table><thead><tr><th>Tarife</th><th>Açılış</th><th>Kilometre</th><th>Minimum</th></tr></thead><tbody>{categories.map((category) => <tr key={category.id}><th scope="row">{category.label}</th><td>{money(category.tariff.openingFare)}</td><td>{money(category.tariff.perKmFare)}</td><td>{money(category.tariff.minimumFare)}</td></tr>)}</tbody></table></div>
+        <p>Hesaplayıcı Sarı, Turkuaz ve Siyah VIP taksi tutarlarını birlikte gösterir. İstanbul kategori değerleri güncel İBB taksi taşımacılığı ücret tarifesindeki oranlara dayanır. Otomatik trafik ücreti eklenmez.</p>
       </section>
 
       <section id="rotalar">
         <h2>Popüler varış noktaları için örnekler</h2>
-        <div className="table-wrap"><table><thead><tr><th>Varış</th><th>Örnek mesafe</th><th>Ek ücret hariç tahmin</th></tr></thead><tbody>{routes.map(([name, km]) => <tr key={name}><th scope="row">{name}</th><td>{km} km</td><td>{money(fare(city, km).total)}</td></tr>)}</tbody></table></div>
+        <div className="table-wrap"><table><thead><tr><th>Varış</th><th>Örnek mesafe</th>{categories.map((category) => <th key={category.id}>{category.shortLabel}</th>)}</tr></thead><tbody>{routes.map(([name, km]) => <tr key={name}><th scope="row">{name}</th><td>{km} km</td>{faresByCategory(city, km).map((category) => <td key={category.id}>{money(category.total)}</td>)}</tr>)}</tbody></table></div>
         <p>Mesafeler yalnızca planlama örneğidir. Terminal çıkış noktası, otelin bulunduğu sokak, yol çalışması, karşı yaka geçişi ve güncel navigasyon rotası gerçek kilometreyi değiştirebilir.</p>
         <p>Kadıköy veya Sabiha Gökçen Havalimanı gibi karşı yaka varışlarında köprü veya tünel seçimi ayrıca önem kazanır. Geçiş bedeli tabloda yer alan temel tahmine dahil değildir.</p>
       </section>

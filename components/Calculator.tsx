@@ -4,11 +4,14 @@ import Link from 'next/link';
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import {
   calculateFare,
+  calculateCategoryFares,
+  categoryTariff,
   fareQualityLabel,
   formatCurrency,
   normalizeCitySearch,
   parseDecimal,
   readCalculatorQuery,
+  taxiCategories,
   tariffSourceNeedsCaution,
 } from '@/lib/taxi-calculator';
 import { cityGuidePaths, formatDate } from '@/src/data/cities';
@@ -71,6 +74,19 @@ export function Calculator({ fixedCity }: { fixedCity?: string }) {
     [selected],
   );
   const selectedGuidePath = selected ? cityGuidePaths[selected.slug] : undefined;
+  const selectedCategoryTariffs = useMemo(
+    () => selected ? taxiCategories.map((category) => ({
+      ...category,
+      tariff: categoryTariff(selected, category.id),
+    })) : [],
+    [selected],
+  );
+  const resultCategories = useMemo(
+    () => result
+      ? calculateCategoryFares(result.city, result.km, result.waitingMinutes, result.additional)
+      : [],
+    [result],
+  );
 
   useEffect(() => {
     if (fixedCity) return;
@@ -216,9 +232,10 @@ export function Calculator({ fixedCity }: { fixedCity?: string }) {
   function resultText() {
     if (!result) return '';
     const parts = [
-      `${result.city.city} için ${decimal.format(result.km)} km taksi tahmini: ${formatCurrency(result.total)}`,
-      `Açılış: ${formatCurrency(result.opening)}`,
-      `Mesafe: ${decimal.format(result.km)} km × ${formatCurrency(result.city.perKmFare)} = ${formatCurrency(result.distance)}`,
+      `${result.city.city} için ${decimal.format(result.km)} km taksi tahminleri:`,
+      ...resultCategories.map((category) => `${category.label}: ${formatCurrency(category.total)}`),
+      `Sarı taksi açılış: ${formatCurrency(result.opening)}`,
+      `Sarı taksi mesafe bedeli: ${decimal.format(result.km)} km × ${formatCurrency(result.city.perKmFare)} = ${formatCurrency(result.distance)}`,
     ];
     if (result.waiting > 0) parts.push(`Bekleme: ${formatCurrency(result.waiting)}`);
     if (result.additional > 0) parts.push(`Ek ücret: ${formatCurrency(result.additional)}`);
@@ -365,16 +382,28 @@ export function Calculator({ fixedCity }: { fixedCity?: string }) {
           <div className="result-empty"><span aria-hidden="true">₺</span><div><h3>Tahmini toplam burada görünür</h3><p>Şehir ve mesafe seçerek şeffaf ücret dökümünü alın.</p></div></div>
         ) : (
           <div className="fare-result">
-            <header><div><span>{result.city.city} · {fareQualityLabel(result.city.isEstimated, result.city.dataStatus)}</span><h3>{formatCurrency(result.total)}</h3></div><strong>{decimal.format(result.km)} km</strong></header>
+            <header><div><span>{result.city.city} · {fareQualityLabel(result.city.isEstimated, result.city.dataStatus)}</span><h3>Üç taksi türü için tahmin</h3></div><strong>{decimal.format(result.km)} km</strong></header>
+            <div className="category-fare-results">
+              {resultCategories.map((category) => (
+                <div className={`category-fare category-${category.id}`} key={category.id}>
+                  <span className="category-dot" aria-hidden="true"/>
+                  <strong>{category.label}</strong>
+                  <b>{formatCurrency(category.total)}</b>
+                </div>
+              ))}
+            </div>
             <dl>
-              <div><dt>Açılış ücreti</dt><dd>{formatCurrency(result.opening)}</dd></div>
-              <div><dt>Mesafe bedeli <small>{decimal.format(result.km)} km × {formatCurrency(result.city.perKmFare)}</small></dt><dd>{formatCurrency(result.distance)}</dd></div>
+              <div><dt>Sarı taksi açılış ücreti</dt><dd>{formatCurrency(result.opening)}</dd></div>
+              <div><dt>Sarı taksi mesafe bedeli <small>{decimal.format(result.km)} km × {formatCurrency(result.city.perKmFare)}</small></dt><dd>{formatCurrency(result.distance)}</dd></div>
               {result.waiting > 0 && <div><dt>Bekleme bedeli <small>{decimal.format(result.waitingMinutes)} dk</small></dt><dd>{formatCurrency(result.waiting)}</dd></div>}
               {result.additional > 0 && <div><dt>Ek geçiş ücreti</dt><dd>{formatCurrency(result.additional)}</dd></div>}
               {result.adjustment > 0 && <div><dt>Minimum ücret farkı</dt><dd>{formatCurrency(result.adjustment)}</dd></div>}
-              <div className="total-row"><dt>Tahmini toplam</dt><dd>{formatCurrency(result.total)}</dd></div>
+              <div className="total-row"><dt>Sarı taksi tahmini toplam</dt><dd>{formatCurrency(result.total)}</dd></div>
             </dl>
             {result.adjustment > 0 && <p className="minimum-note">Hesaplanan tutar şehrin minimum yolculuk ücretinin altında kaldığı için minimum ücret uygulanmıştır.</p>}
+            <p className="category-fare-note">{result.city.slug === 'istanbul'
+              ? 'İstanbul kategori tutarları 16 Şubat 2026 tarihli İBB tarifesindeki Sarı, Turkuaz ve Siyah taksi oranlarıyla hesaplanır.'
+              : 'Turkuaz ve Siyah VIP tutarları, bu şehirdeki Sarı taksi tarifesine İstanbul kategori oranları uygulanarak oluşturulan planlama tahminleridir. Bu araç türleri her şehirde bulunmayabilir.'}</p>
             <div className="fare-source">
               <span><strong>Kaynak niteliği:</strong> {fareQualityLabel(result.city.isEstimated, result.city.dataStatus)}</span>
               <span><strong>Tarife referansı:</strong> {result.city.referenceDate}</span>
@@ -397,12 +426,21 @@ export function Calculator({ fixedCity }: { fixedCity?: string }) {
         <div className="calculator-insights">
           <section className="tariff-summary" aria-labelledby={`${id}-tariff-title`}>
             <div className="insight-heading"><div><h3 id={`${id}-tariff-title`}>{selected.city} Taksi Tarifesi</h3><p>{fareQualityLabel(selected.isEstimated, selected.dataStatus)} · Son kontrol {formatDate(selected.lastVerified)}</p></div>{!fixedCity && selectedGuidePath && <Link href={selectedGuidePath}>Şehir rehberini aç →</Link>}</div>
-            <dl>
-              <div><dt>Açılış ücreti</dt><dd>{formatCurrency(selected.openingFare)}</dd></div>
-              <div><dt>Kilometre ücreti</dt><dd>{formatCurrency(selected.perKmFare)}</dd></div>
-              <div><dt>Minimum / indi bindi</dt><dd>{formatCurrency(selected.minimumFare)}</dd></div>
-              <div><dt>Bekleme ücreti</dt><dd>{selected.waitingFarePerMinute === undefined ? 'Belgelenmiş veri yok' : `${formatCurrency(selected.waitingFarePerMinute)} / dk`}</dd></div>
-            </dl>
+            <div className="category-tariff-grid">
+              {selectedCategoryTariffs.map((category) => (
+                <article className={`category-tariff category-${category.id}`} key={category.id}>
+                  <h4><span className="category-dot" aria-hidden="true"/>{category.label}</h4>
+                  <dl>
+                    <div><dt>Açılış</dt><dd>{formatCurrency(category.tariff.openingFare)}</dd></div>
+                    <div><dt>Kilometre</dt><dd>{formatCurrency(category.tariff.perKmFare)}</dd></div>
+                    <div><dt>Minimum</dt><dd>{formatCurrency(category.tariff.minimumFare)}</dd></div>
+                  </dl>
+                </article>
+              ))}
+            </div>
+            <p className="category-fare-note">{selected.slug === 'istanbul'
+              ? 'İstanbul için kategori oranları güncel İBB taksi taşımacılığı ücret tarifesine dayanır.'
+              : 'Turkuaz ve Siyah VIP değerleri Sarı taksi tarifesinden türetilen kategori tahminleridir; yerel bulunabilirlik ve tarife farklı olabilir.'}</p>
             <p><strong>Referans:</strong> {selected.referenceDate} · <a href={selected.sourceUrl} target="_blank" rel="noopener noreferrer">Kaynağı inceleyin</a></p>
           </section>
           <section className="popular-calculations" aria-labelledby={`${id}-popular-title`}>

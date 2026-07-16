@@ -5,6 +5,7 @@ const root = new URL('..', import.meta.url);
 const fareSource = readFileSync(new URL('../src/data/taxi-fares.ts', import.meta.url), 'utf8');
 const pageSource = readFileSync(new URL('../src/data/pages.ts', import.meta.url), 'utf8');
 const calculatorSource = readFileSync(new URL('../components/Calculator.tsx', import.meta.url), 'utf8');
+const calculatorLogicSource = readFileSync(new URL('../lib/taxi-calculator.ts', import.meta.url), 'utf8');
 const errors = [];
 
 const arrayBody = fareSource.match(/export const taxiFares:[\s\S]*?=\s*\[([\s\S]*?)\n\];/)?.[1] ?? '';
@@ -80,6 +81,9 @@ const warning = 'Bu şehir için kullanılan tarife mevcut kaynaklara dayalı ta
 if (!calculatorSource.includes(warning)) errors.push('Tahmini tarife uyarısı hesaplayıcıda eksik.');
 if (!calculatorSource.includes('kaynağını açın') || !calculatorSource.includes('Tarife referansı:') || !calculatorSource.includes('Son kontrol:')) {
   errors.push('Hesap sonucunda kaynak, referans veya son kontrol bilgisi eksik.');
+}
+for (const categoryLabel of ['Sarı Taksi Ücreti', 'Turkuaz Taksi Ücreti', 'Siyah VIP Taksi Ücreti']) {
+  if (!calculatorLogicSource.includes(categoryLabel)) errors.push(`Hesaplayıcıda ${categoryLabel} eksik.`);
 }
 
 const fareSlugs = new Set(fares.map((fare) => fare.slug));

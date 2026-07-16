@@ -15,6 +15,21 @@ export type FareCalculation = {
   total: number;
 };
 
+export const taxiCategories = [
+  { id: 'yellow', label: 'Sarı Taksi Ücreti', shortLabel: 'Sarı Taksi', meterMultiplier: 1, minimumMultiplier: 1 },
+  { id: 'turquoise', label: 'Turkuaz Taksi Ücreti', shortLabel: 'Turkuaz Taksi', meterMultiplier: 1.15, minimumMultiplier: 8 / 7 },
+  { id: 'black', label: 'Siyah VIP Taksi Ücreti', shortLabel: 'Siyah VIP Taksi', meterMultiplier: 1.7, minimumMultiplier: 12 / 7 },
+] as const;
+
+export type TaxiCategory = typeof taxiCategories[number]['id'];
+
+export type CategoryFareCalculation = FareCalculation & {
+  id: TaxiCategory;
+  label: string;
+  shortLabel: string;
+  tariff: FareInput;
+};
+
 export type CalculatorQuery = {
   city?: string;
   distance?: number;
@@ -23,6 +38,36 @@ export type CalculatorQuery = {
 };
 
 const roundMoney = (value: number) => Math.round((value + Number.EPSILON) * 100) / 100;
+
+export function categoryTariff(tariff: FareInput, category: TaxiCategory): FareInput {
+  const definition = taxiCategories.find((item) => item.id === category) ?? taxiCategories[0];
+  return {
+    openingFare: roundMoney(tariff.openingFare * definition.meterMultiplier),
+    perKmFare: roundMoney(tariff.perKmFare * definition.meterMultiplier),
+    minimumFare: roundMoney(tariff.minimumFare * definition.minimumMultiplier),
+    waitingFarePerMinute: tariff.waitingFarePerMinute === undefined
+      ? undefined
+      : roundMoney(tariff.waitingFarePerMinute * definition.meterMultiplier),
+  };
+}
+
+export function calculateCategoryFares(
+  tariff: FareInput,
+  distanceKm: number,
+  waitingMinutes = 0,
+  additionalCharges = 0,
+): CategoryFareCalculation[] {
+  return taxiCategories.map((category) => {
+    const adjustedTariff = categoryTariff(tariff, category.id);
+    return {
+      id: category.id,
+      label: category.label,
+      shortLabel: category.shortLabel,
+      tariff: adjustedTariff,
+      ...calculateFare(adjustedTariff, distanceKm, waitingMinutes, additionalCharges),
+    };
+  });
+}
 
 export function parseDecimal(value: string): number {
   const normalized = value.trim().replace(',', '.');

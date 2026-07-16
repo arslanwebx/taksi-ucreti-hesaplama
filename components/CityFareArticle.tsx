@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import { ArticlePage } from './ArticlePage';
 import { Calculator } from './Calculator';
 import { TableOfContents } from './TableOfContents';
-import { fare, formatDate, money, type PublishedCity } from '@/src/data/cities';
+import { fareCategories, faresByCategory, formatDate, money, type PublishedCity } from '@/src/data/cities';
 import { pageMetadata } from '@/lib/seo';
 import { tariffSourceNeedsCaution } from '@/lib/taxi-calculator';
 
@@ -77,7 +77,8 @@ export function CityFareArticle({ city }: { city: PublishedCity }) {
   };
   const municipal = municipalLinks[city.slug] ?? { label: `${city.city} belediyesi`, url: city.sourceUrl };
   const breakEven = Math.max(0, (city.minimumFare - city.openingFare) / city.perKmFare);
-  const examples = [3, 10, 20].map((km) => ({ km, total: fare(city, km).total }));
+  const categories = fareCategories(city);
+  const examples = [3, 10, 20].map((km) => ({ km, fares: faresByCategory(city, km) }));
   const faqs = [
     { question: `${city.city} taksi ücreti nasıl hesaplanır?`, answer: `Açılış ücretine kilometre başına tarife eklenir. Hesap ${money(city.minimumFare)} tutarının altında kalırsa minimum ücret uygulanır; kullanıcının girdiği köprü, tünel veya otoyol bedeli ayrıca eklenir.` },
     { question: `${city.city} taksisinde minimum ücret ne zaman uygulanır?`, answer: `Açılış ve mesafe toplamı ${money(city.minimumFare)} tutarına ulaşana kadar minimum ücret geçerlidir. Bu tutar normal hesabın üzerine ikinci kez eklenmez.` },
@@ -110,7 +111,8 @@ export function CityFareArticle({ city }: { city: PublishedCity }) {
 
       <section id="tarife">
         <h2>Tarife kalemleri nasıl okunur?</h2>
-        <div className="table-wrap"><table><thead><tr><th>Tarife</th><th>Açılış</th><th>Kilometre</th><th>Minimum</th></tr></thead><tbody><tr><th scope="row">{city.city}</th><td>{money(city.openingFare)}</td><td>{money(city.perKmFare)}</td><td>{money(city.minimumFare)}</td></tr></tbody></table></div>
+        <div className="table-wrap"><table><thead><tr><th>Tarife</th><th>Açılış</th><th>Kilometre</th><th>Minimum</th></tr></thead><tbody>{categories.map((category) => <tr key={category.id}><th scope="row">{category.label}</th><td>{money(category.tariff.openingFare)}</td><td>{money(category.tariff.perKmFare)}</td><td>{money(category.tariff.minimumFare)}</td></tr>)}</tbody></table></div>
+        <p>{city.slug === 'istanbul' ? 'İstanbul kategori değerleri güncel İBB taksi taşımacılığı ücret tarifesindeki oranlara dayanır.' : 'Turkuaz ve Siyah VIP değerleri, Sarı taksi tarifesine İstanbul kategori oranları uygulanarak oluşturulan planlama tahminleridir. Bu kategoriler her şehirde bulunmayabilir.'}</p>
         <p><strong>Açılış ücreti</strong> yolculuğun başlangıç tutarıdır. <strong>Kilometre bedeli</strong> gidilen mesafeyle çarpılır. <strong>Minimum ücret</strong> ise kısa yolculuklarda ödenecek alt sınırdır; normal tutarın üzerine ikinci kez eklenmez.</p>
         <p>Yalnızca açılış ve mesafe hesabı dikkate alındığında minimum ücret eşiği yaklaşık <strong>{breakEven.toLocaleString('tr-TR', { maximumFractionDigits: 2 })} km</strong> civarındadır. Bu değer sabit rota garantisi değildir.</p>
       </section>
@@ -118,7 +120,7 @@ export function CityFareArticle({ city }: { city: PublishedCity }) {
       <section id="ornekler">
         <h2>Mesafeye göre örnek ücretler</h2>
         <p>Aşağıdaki sonuçlar ek ücret girilmeden hesaplanır. Amaç, tarifenin farklı mesafelerde nasıl davrandığını anlaşılır biçimde göstermektir.</p>
-        <div className="table-wrap"><table><thead><tr><th>Örnek mesafe</th><th>Temel tahmin</th><th>Yorum</th></tr></thead><tbody>{examples.map((example) => <tr key={example.km}><th scope="row">{example.km} km</th><td>{money(example.total)}</td><td>{minimumFareExplanation(city, example.km)}</td></tr>)}</tbody></table></div>
+        <div className="table-wrap"><table><thead><tr><th>Örnek mesafe</th>{categories.map((category) => <th key={category.id}>{category.shortLabel}</th>)}<th>Sarı tarife yorumu</th></tr></thead><tbody>{examples.map((example) => <tr key={example.km}><th scope="row">{example.km} km</th>{example.fares.map((category) => <td key={category.id}>{money(category.total)}</td>)}<td>{minimumFareExplanation(city, example.km)}</td></tr>)}</tbody></table></div>
         <p>{copy.planning}</p>
         <p><Link href="/indi-bindi-ucreti-nedir/">Minimum ücretin nasıl çalıştığını</Link> veya <Link href="/taksi-ucreti-nasil-hesaplanir/">taksi hesabının bütün kalemlerini</Link> ayrıntılı okuyabilirsiniz.</p>
       </section>
@@ -126,7 +128,7 @@ export function CityFareArticle({ city }: { city: PublishedCity }) {
       <section id="rotalar">
         <h2>Rota ve yerel yolculuk notları</h2>
         <p>{copy.routeAdvice}</p>
-        <div className="table-wrap"><table><thead><tr><th>Rota</th><th>Örnek mesafe</th><th>Ek ücretsiz tahmin</th></tr></thead><tbody>{city.routes.map((route) => <tr key={route.name}><th scope="row">{route.name}</th><td>{route.km} km</td><td>{money(fare(city, route.km).total)}</td></tr>)}</tbody></table></div>
+        <div className="table-wrap"><table><thead><tr><th>Rota</th><th>Örnek mesafe</th>{categories.map((category) => <th key={category.id}>{category.shortLabel}</th>)}</tr></thead><tbody>{city.routes.map((route) => <tr key={route.name}><th scope="row">{route.name}</th><td>{route.km} km</td>{faresByCategory(city, route.km).map((category) => <td key={category.id}>{money(category.total)}</td>)}</tr>)}</tbody></table></div>
         <p>Tablodaki mesafeler planlama örnekleridir. Başlangıç adresi, seçilen cadde ve bırakma noktası gerçek uzunluğu değiştirebilir.</p>
         <ul>{city.local.map((note) => <li key={note}>{note}</li>)}{city.extras.map((note) => <li key={note}>{note}</li>)}</ul>
         {city.airport && <p><Link href={city.airport.path}>{city.airport.name} yolculuk seçeneklerini inceleyin</Link>.</p>}
