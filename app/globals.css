@@ -114,6 +114,14 @@
 .review-copy h2{font-size:clamp(1.8rem,3vw,2.5rem);line-height:1.05;margin:0 0 14px}
 .review-copy p{color:var(--muted)}
 .review-section .author-box{margin-top:0}
+.policy-updated{margin:10px 0 0;color:var(--muted);font-size:.82rem;font-weight:750}
+.policy-toc{margin:28px 0 46px;padding:22px 24px;border:1px solid var(--line);border-radius:14px;background:var(--cream)}
+.policy-toc>strong{display:block;margin-bottom:10px}
+.policy-toc ul{columns:2;column-gap:36px;margin:0;padding-left:20px}
+.policy-toc li{break-inside:avoid;margin:6px 0;font-size:.9rem}
+.policy-toc a{text-decoration-thickness:1px}
+.article-content>section[id]{scroll-margin-top:100px}
+.policy-links{margin-top:18px!important;padding-top:14px;border-top:1px solid var(--line);font-weight:800}
 
 @media(max-width:1000px){
   .calculator-insights{grid-template-columns:1fr}
@@ -142,6 +150,8 @@
   .popular-cities li,.all-cities li{align-items:flex-start;flex-direction:column}
   .result-actions{display:grid;grid-template-columns:1fr}
   .result-actions button{width:100%}
+  .policy-toc{padding:18px}
+  .policy-toc ul{columns:1}
   .calculator,.calculator form,.result,.calculator-insights,.result-empty,.result-empty>div{width:100%;min-width:0;max-width:100%}
   .calc-heading h2,.calc-heading p,.result-empty h3,.result-empty p,.calculate-button{overflow-wrap:anywhere}
   .quick-distance div{grid-template-columns:repeat(2,minmax(0,1fr))}
