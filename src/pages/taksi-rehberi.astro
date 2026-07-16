@@ -1,4 +1,35 @@
 ---
 import ContentLayout from '../layouts/ContentLayout.astro';
+import { cities, formatDate } from '../data/cities';
+import { canonical } from '../data/site';
+const reviewed = cities.map((city) => city.verifiedDate).sort().at(-1)!;
+const guides = [
+  {id:'hesaplama',title:'Taksi ücreti nasıl hesaplanır?',summary:'Açılış, kilometre, minimum ücret ve doğrulanmış bekleme kalemlerinin hangi sırayla uygulandığını öğrenin.'},
+  {id:'indi-bindi',title:'İndi bindi ücreti nedir?',summary:'Kısa yolculuklarda minimum ücretin neden devreye girdiğini ve neyin üzerine eklenmediğini görün.'},
+  {id:'bekleme',title:'Taksi bekleme ücreti',summary:'Yavaş trafik ile bekleme tarifesi arasındaki ilişkiyi ve doğrulanmamış oranların neden kullanılmadığını inceleyin.'},
+  {id:'gece',title:'Gece taksi tarifesi var mı?',summary:'Gece trafiği ile ayrı gece zammını birbirinden ayırın; şehir bazında kaynak kuralını öğrenin.'},
+  {id:'gecisler',title:'Köprü ve otoyol ücretini kim öder?',summary:'Ücretli geçişlerin taksimetre hesabından ne zaman ayrı değerlendirildiğini öğrenin.'},
+  {id:'yolcu',title:'Yolculuk sırasında dikkat edilecekler',summary:'Taksimetrenin açılması, ödeme yöntemi ve fazla ücret şüphesinde izlenebilecek temel adımları görün.'}
+];
+const schema = [
+  {'@context':'https://schema.org','@type':'CollectionPage',name:'Taksi Rehberi',url:canonical('/taksi-rehberi/'),inLanguage:'tr-TR'},
+  {'@context':'https://schema.org','@type':'ItemList',itemListElement:guides.map((guide,index)=>({'@type':'ListItem',position:index+1,name:guide.title,url:`${canonical('/taksi-rehberi/')}#${guide.id}`}))}
+];
 ---
-<ContentLayout title="Taksi Rehberi" description="Taksi ücretinin nasıl hesaplandığını; indi bindi, bekleme, gece tarifesi ve ücretli geçiş kurallarını sade biçimde öğrenin." path="/taksi-rehberi/" eyebrow="Pratik bilgi"><section id="hesaplama"><h2>Taksi ücreti nasıl hesaplanır?</h2><p>Temel formül açılış + mesafe bedelidir. Tarifede zaman ücreti varsa trafikteki bekleme ayrıca eklenir. Sonuç minimum yolculuk ücretinin altındaysa minimum tutar ödenir.</p></section><section id="indi-bindi"><h2>İndi bindi ücreti nedir?</h2><p>İndi bindi, kısa yolculuklarda uygulanan minimum ücrettir. Ayrı bir ek bedel gibi toplamın üzerine konmaz; taksimetre daha düşükse alt sınır olarak uygulanır.</p></section><section id="bekleme"><h2>Bekleme ücreti nasıl hesaplanır?</h2><p>Yalnızca doğrulanmış zaman tarifesi bulunan şehirlerde dakika karşılığı hesaplanabilir. Düşük hızda taksimetrenin mesafe ve zaman ölçümü arasındaki geçişi cihaz tarifesi belirler; basit tahmin ikisini aynı anda fazla hesaplayabilir. Bu sitede girilen bekleme, yayımlanan saatlik bedelin dakika karşılığıdır ve tahmin olarak gösterilir.</p></section><section><h2>Gece taksi tarifesi var mı?</h2><p>Ayrı gece tarifesi her şehir için varsayılmaz. Yayımlanan dört şehirde doğrulanmış gece katsayısı olmadığı için hesaplayıcı gece zammı eklemez.</p></section><section><h2>Köprü ve otoyol ücretini kim öder?</h2><p>Ücretli geçiş bedelleri taksimetre tahmininden ayrıdır. Rota seçimini yolculuk başlamadan konuşun ve güncel işletmeci tarifesini kontrol edin.</p></section></ContentLayout>
+<ContentLayout title="Taksi Rehberi" description="Taksi ücretinin hesaplanması, minimum ücret, bekleme, gece tarifesi, ücretli geçişler ve yolcu hakları hakkında pratik rehber." path="/taksi-rehberi/" eyebrow="Pratik bilgi merkezi" {schema}>
+  <p class="notice">Bu merkezdeki açıklamalar, yayımlanmış şehir tarifelerinin ortak kurallarını sadeleştirir. Şehre özel tutar için <a href="/">taksi hesaplayıcıyı</a> veya <a href="/sehirler/">şehir tarifelerini</a> kullanın.</p>
+  <div class="guide-directory">{guides.map((guide)=><a class="guide-card" href={`#${guide.id}`}><strong>{guide.title}</strong><span>{guide.summary}</span></a>)}</div>
+  <p class="review-date">Son içerik gözden geçirmesi: <time datetime={reviewed}>{formatDate(reviewed)}</time></p>
+
+  <section id="hesaplama"><h2>Taksi ücreti nasıl hesaplanır?</h2><p>Temel hesap açılış ücreti ile gidilen kilometrenin bedelini toplar. Sonuç şehirdeki minimum yolculuk ücretinden düşükse alt sınıra tamamlanır; doğrulanmış bekleme ve gerçekten kullanılan ücretli geçişler daha sonra eklenir.</p><p><a href="/veri-kaynaklari-ve-hesaplama-yontemi/">Formül, yuvarlama ve kaynak hiyerarşisini inceleyin</a>.</p></section>
+
+  <section id="indi-bindi"><h2>İndi bindi ücreti nedir?</h2><p>İndi bindi olarak anılan tutar, kısa yolculuğun minimum ücretidir. Ayrı bir ceza veya her hesaba eklenen sabit bedel değildir; taksimetre hesabı daha düşük kaldığında alt sınır olarak uygulanır.</p><p>Güncel sınırı görmek için <a href="/istanbul-taksi-ucreti/">İstanbul</a>, <a href="/ankara-taksi-ucreti/">Ankara</a>, <a href="/izmir-taksi-ucreti/">İzmir</a> veya <a href="/antalya-taksi-ucreti/">Antalya taksi tarifesini</a> açın.</p></section>
+
+  <section id="bekleme"><h2>Taksi bekleme ücreti nasıl hesaplanır?</h2><p>Bazı tarifelerde araç dönüşüm hızının altına indiğinde zaman bedeli devreye girer. Hesaplayıcı yalnızca resmî veya açık kaynakta saatlik değer bulunan şehirlerde dakika karşılığı tahmin üretir; oran yayımlanmamışsa alan gösterilmez.</p></section>
+
+  <section id="gece"><h2>Gece taksi tarifesi var mı?</h2><p>Türkiye geneli için kullanılabilecek ortak bir gece katsayısı yoktur. Bir şehirde ayrı gece tarifesi ancak etkin olduğu açıkça belirtilmiş ve kaynak bağlantısı verilmişse hesaplayıcıda görünür; gece trafiği tek başına gece zammı anlamına gelmez.</p></section>
+
+  <section id="gecisler"><h2>Köprü ve otoyol ücretini kim öder?</h2><p>Köprü, tünel veya otoyol bedeli şehir taksi tarifesinden ayrı tahsil edilebilir. Kullanılacak güzergâhı sürücüyle yolculuk öncesinde netleştirin ve hesaplayıcıya yalnızca o yolculuğa ait geçiş tutarını ekleyin.</p><p>İstanbul’daki olası geçişler için <a href="/istanbul-taksi-ucreti/">İstanbul taksi ücreti rehberine</a> bakın.</p></section>
+
+  <section id="yolcu"><h2>Taksimetre, kartla ödeme ve fazla ücret şüphesi</h2><h3>Taksimetre ne zaman açılır?</h3><p>Taksimetrenin yolculuk başladığında açılması gerekir. Açılış tutarını ve araç kategorisini başlamadan kontrol etmek sonradan oluşabilecek karışıklığı azaltır.</p><h3>Takside kart geçer mi?</h3><p>Ödeme imkânı araca göre değişebilir. Kart kullanmanız gerekiyorsa araca binmeden önce sorun; kart komisyonu veya farklı tarife varsaymayın.</p><h3>Fazla ücret alındığını düşünüyorsanız</h3><p>Plaka, tarih, saat, rota ve mümkünse fiş bilgisini saklayın. Şehrin belediye veya ulaşım iletişim kanalına somut bilgilerle başvurun; sitedeki tarife hatalarını ise <a href="/iletisim/">düzeltme formuyla bildirin</a>.</p></section>
+</ContentLayout>

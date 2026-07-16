@@ -1,4 +1,38 @@
 ---
-import ContentLayout from '../layouts/ContentLayout.astro'; import { cities, money } from '../data/cities';
+import ContentLayout from '../layouts/ContentLayout.astro';
+import { cities, formatDate, money, sourceTierLabel } from '../data/cities';
+import { canonical } from '../data/site';
+const publishedCities = cities.filter((city) => city.status === 'published');
+const highestMinimum = publishedCities.reduce((highest, city) => city.minimum > highest.minimum ? city : highest, publishedCities[0]!);
+const schema = [
+  {'@context':'https://schema.org','@type':'CollectionPage',name:'Şehirlere Göre Taksi Ücretleri 2026',url:canonical('/sehirler/'),inLanguage:'tr-TR'},
+  {'@context':'https://schema.org','@type':'ItemList',itemListElement:publishedCities.map((city,index)=>({'@type':'ListItem',position:index+1,name:`${city.name} Taksi Ücreti`,url:canonical(city.path)}))}
+];
 ---
-<ContentLayout title="Şehirlere Göre Taksi Ücretleri 2026" description="Yayımlanmış şehir taksi tarifelerini karşılaştırın, son kontrol tarihlerini görün ve şehre özel hesaplayıcıya ulaşın." path="/sehirler/" eyebrow="Şehir merkezi"><label>Şehir ara<input id="city-search" type="search" placeholder="Örnek: Ankara" /></label><div class="cards" id="city-list">{cities.map(city=><a class="card" href={city.path} data-name={city.name.toLocaleLowerCase('tr')}><strong>{city.name}</strong><p>Açılış {money(city.opening)} · KM {money(city.perKm)} · minimum {money(city.minimum)}</p><span>Son kontrol {city.verifiedDate.split('-').reverse().join('.')} →</span></a>)}</div><section><h2>Tarife karşılaştırması</h2><div class="table-wrap"><table><thead><tr><th>Şehir</th><th>Açılış</th><th>KM</th><th>Minimum</th><th>Kaynak düzeyi</th></tr></thead><tbody>{cities.map(city=><tr><th scope="row"><a href={city.path}>{city.name}</a></th><td>{money(city.opening)}</td><td>{money(city.perKm)}</td><td>{money(city.minimum)}</td><td>{city.sourceTier}</td></tr>)}</tbody></table></div></section><script is:inline>document.querySelector('#city-search')?.addEventListener('input',(e)=>{const q=e.target.value.toLocaleLowerCase('tr');document.querySelectorAll('#city-list [data-name]').forEach(x=>x.hidden=!x.dataset.name.includes(q));});</script></ContentLayout>
+<ContentLayout title="Şehirlere Göre Taksi Ücretleri 2026" description="Yayımlanmış şehir taksi tarifelerini karşılaştırın, kaynak seviyelerini ve son kontrol tarihlerini görün, şehre özel hesaplayıcıya ulaşın." path="/sehirler/" eyebrow="Şehir tarifeleri" {schema}>
+  <section class="hub-search" aria-labelledby="city-filter-title"><h2 id="city-filter-title">Şehir filtresi nasıl kullanılır?</h2><p>Arama yalnızca tarifesi yayımlanmış şehir kartlarını süzer. Yeni bir sayfa veya sorgu adresi üretmez; sayfanın canonical adresi değişmez.</p><label for="city-search">Şehir ara</label><input id="city-search" type="search" placeholder="Örnek: Ankara" autocomplete="off" aria-controls="city-list" /><p id="city-filter-status" class="filter-status" role="status" aria-live="polite">{publishedCities.length} şehir gösteriliyor.</p></section>
+
+  <div class="cards" id="city-list">{publishedCities.map(city=><a class="card" href={city.path} data-name={city.name.toLocaleLowerCase('tr')}><strong>{city.name}</strong><p>Açılış {money(city.opening)} · KM {money(city.perKm)} · minimum {money(city.minimum)}</p><span>Son kontrol {formatDate(city.verifiedDate)} →</span></a>)}</div>
+
+  <section><h2>Tarife karşılaştırması</h2><div class="table-wrap"><table><thead><tr><th>Şehir</th><th>Açılış</th><th>KM</th><th>Minimum</th><th>Kaynak düzeyi</th><th>Yürürlük</th></tr></thead><tbody>{publishedCities.map(city=><tr><th scope="row"><a href={city.path}>{city.name}</a></th><td>{money(city.opening)}</td><td>{money(city.perKm)}</td><td>{money(city.minimum)}</td><td>{sourceTierLabel[city.sourceTier]}</td><td><time datetime={city.effectiveDate}>{formatDate(city.effectiveDate)}</time></td></tr>)}</tbody></table></div></section>
+
+  <section><h2>Şehir tarifeleri neden farklıdır?</h2><p>Açılış, kilometre, minimum yolculuk ve bekleme bedelleri yerel belediye veya UKOME kararlarına göre belirlenebilir. Taksi türleri, havalimanı bağlantıları ve ücretli geçişler de şehirde yapılacak hesabın kapsamını değiştirir.</p><p>Bu nedenle aynı mesafe her şehirde aynı tutmaz. Hesaplayıcı, seçilen şehrin kendi merkezî kaydını kullanır.</p></section>
+
+  <section><h2>Kaynak seviyesi ne anlama gelir?</h2><dl><dt><strong>Resmî kaynak</strong></dt><dd>Belediye, UKOME, meslek odası veya kamu kurumu tarafından yayımlanan belge ya da duyurudur.</dd><dt><strong>İkincil kaynak</strong></dt><dd>Birincil belge erişilebilir değilse kullanılan güvenilir haber veya yerel yayın aktarımıdır.</dd><dt><strong>Doğrulama bekliyor</strong></dt><dd>Kaynağı tamamlanmamış kayıt yayıma hazır değildir ve şehir listesine alınmaz.</dd></dl></section>
+
+  <section><h2>Güncelleme politikası</h2><p>Her şehir kaydında tarifenin yürürlük tarihi ve son kontrol tarihi tutulur. Bir tarife değiştiğinde merkezî veri güncellenir; şehir sayfası, hesaplayıcı, karşılaştırma tablosu ve örnek tutarlar aynı build içinde yenilenir.</p><p>Bir tutarın güncel olmadığını düşünüyorsanız <a href="/iletisim/">tarife hatası bildirim formunu</a> kullanabilirsiniz.</p></section>
+
+  <section class="faq"><h2>Şehir tarifelerini karşılaştırırken merak edilenler</h2><details><summary>Yayımlanan şehirler arasında en yüksek minimum ücret hangisinde?</summary><p>Mevcut merkezî kayıtlarda en yüksek standart kategori minimum ücreti {highestMinimum.name} için {money(highestMinimum.minimum)} tutarındadır. Bu karşılaştırma yalnızca yayımlanmış şehirleri kapsar ve veri güncellendiğinde otomatik değişir.</p></details><details><summary>Kilometre ücreti neden şehirden şehre değişiyor?</summary><p>Yerel kararlar, işletme maliyetleri ve tarife kapsamları aynı değildir. Bu yüzden hesap yapılırken Türkiye geneli tek bir kilometre bedeli kullanılmaz.</p></details><details><summary>Aynı mesafe her şehirde aynı tutar mı?</summary><p>Hayır. Açılış, kilometre ve minimum ücretler farklı olduğu için aynı kilometre farklı toplamlar üretir; doğrulanmış bekleme bedeli de sonucu etkileyebilir.</p></details><details><summary>Havalimanı yolculuklarında ek ücret olabilir mi?</summary><p>Güzergâhta köprü, tünel veya otoyol varsa geçiş bedeli taksimetre tahmininden ayrı olabilir. Yalnızca kullanılacak geçişi eklemek gerekir.</p></details></section>
+
+  <script is:inline>
+    const search = document.querySelector('#city-search');
+    const cards = [...document.querySelectorAll('#city-list [data-name]')];
+    const status = document.querySelector('#city-filter-status');
+    search?.addEventListener('input', (event) => {
+      const query = event.target.value.trim().toLocaleLowerCase('tr');
+      let visible = 0;
+      cards.forEach((card) => { const show = card.dataset.name.includes(query); card.hidden = !show; if (show) visible += 1; });
+      status.textContent = visible ? `${visible} şehir gösteriliyor.` : 'Bu adla yayımlanmış bir şehir bulunamadı.';
+    });
+  </script>
+</ContentLayout>

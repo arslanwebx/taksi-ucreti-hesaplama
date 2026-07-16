@@ -1,4 +1,14 @@
 ---
-import ContentLayout from '../layouts/ContentLayout.astro'; import { cities } from '../data/cities';
+import ContentLayout from '../layouts/ContentLayout.astro';
+import { cities } from '../data/cities';
+import { canonical } from '../data/site';
+const airportCities = cities.filter((city) => city.status === 'published' && city.airport);
+const schema = [
+  {'@context':'https://schema.org','@type':'CollectionPage',name:'Havalimanı Taksi Ücretleri 2026',url:canonical('/havalimani-taksi-ucretleri/'),inLanguage:'tr-TR'},
+  {'@context':'https://schema.org','@type':'ItemList',itemListElement:airportCities.map((city,index)=>({'@type':'ListItem',position:index+1,name:city.airport?.name,url:canonical(city.slug==='istanbul'?'/istanbul-havalimani-taksi-ucreti/':city.path)}))}
+];
 ---
-<ContentLayout title="Havalimanı Taksi Ücretleri 2026" description="Havalimanı taksi yolculuklarında mesafe, trafik, taksi kategorisi ve ücretli geçişlerin tahmini ücrete etkisini inceleyin." path="/havalimani-taksi-ucretleri/" eyebrow="Havalimanı merkezi"><div class="cards"><a class="card" href="/istanbul-havalimani-taksi-ucreti/"><strong>İstanbul Havalimanı</strong><p>Kategorilere göre hesaplayıcı ve rota örnekleri.</p><span>İstanbul Havalimanı rehberi →</span></a>{cities.slice(1).map(city=><a class="card" href={city.path}><strong>{city.airport?.name}</strong><p>{city.name} şehir tarifesiyle mesafenizi hesaplayın.</p><span>{city.name} tarifesine git →</span></a>)}</div><section><h2>Havalimanı tahmini nasıl yapılır?</h2><ol><li>Haritada terminal ile tam varış adresi arasındaki mesafeyi bulun.</li><li>Şehir sayfasında doğru taksi kategorisini seçin.</li><li>Trafikte bekleme süresini ihtiyatlı girin.</li><li>Otoyol, köprü veya tünel bedelini ek ücret alanına yazın.</li></ol><p>Havalimanı tabloları sabit fiyat garantisi değildir; ödenecek tutarı taksimetre ve geçiş bedelleri belirler.</p></section></ContentLayout>
+<ContentLayout title="Havalimanı Taksi Ücretleri 2026" description="Havalimanı taksi yolculuklarında mesafe, trafik, taksi kategorisi ve ücretli geçişlerin tahmini ücrete etkisini inceleyin." path="/havalimani-taksi-ucretleri/" eyebrow="Havalimanı merkezi" {schema}>
+  <div class="cards"><a class="card" href="/istanbul-havalimani-taksi-ucreti/"><strong>İstanbul Havalimanı</strong><p>Kategorilere göre hesaplayıcı ve rota örnekleri.</p><span>İstanbul Havalimanı taksi rehberi →</span></a>{airportCities.slice(1).map(city=><a class="card" href={city.path}><strong>{city.airport?.name}</strong><p>{city.name} şehir tarifesiyle mesafenizi hesaplayın.</p><span>{city.name} taksi tarifesine git →</span></a>)}</div>
+  <section><h2>Havalimanı tahmini nasıl yapılır?</h2><ol><li>Haritada terminal ile tam varış adresi arasındaki yol mesafesini bulun.</li><li>Şehir sayfasında geçerli taksi kategorisini seçin.</li><li>Yalnızca doğrulanmış bekleme tarifesi varsa tahmini süre ekleyin.</li><li>Gerçekten kullanılacak otoyol, köprü veya tünel bedelini ayrıca yazın.</li></ol><p>Havalimanı örnekleri sabit fiyat garantisi değildir; ödenecek tutarı taksimetre ve geçiş bedelleri belirler.</p></section>
+</ContentLayout>

@@ -5,6 +5,8 @@ const { fixedCity } = Astro.props;
 const available = fixedCity ? cities.filter((city) => city.slug === fixedCity) : cities;
 const data = Object.fromEntries(available.map((city) => [city.slug, city]));
 const calculatorId = `calc-${fixedCity ?? 'all'}`;
+const hasNightTariff = available.some((city) => city.nightTariff.enabled && city.nightTariff.sourceUrl);
+const hasWaitingTariff = available.some((city) => city.categories.some((category) => category.waitingPerHour));
 ---
 <section class="calculator" data-calculator data-cities={JSON.stringify(data)} aria-labelledby={calculatorId}>
   <header class="calc-heading">
@@ -34,11 +36,11 @@ const calculatorId = `calc-${fixedCity ?? 'all'}`;
       </fieldset>
 
       <div class="calc-options">
-        <label class="switch-row">
+        {hasNightTariff && <label class="switch-row" data-night-row>
           <input name="night" type="checkbox" />
           <span class="switch" aria-hidden="true"></span>
-          <span><strong>Gece yolculuğu</strong><small>Ayrı gece zammı doğrulanmadığı için tutara eklenmez.</small></span>
-        </label>
+          <span><strong>Gece tarifesi</strong><small>Seçilen şehrin doğrulanmış gece tarifesini uygular.</small></span>
+        </label>}
         <label class="switch-row">
           <input name="traffic" type="checkbox" aria-controls={`${calculatorId}-waiting`} aria-expanded="false" />
           <span class="switch" aria-hidden="true"></span>
@@ -47,10 +49,10 @@ const calculatorId = `calc-${fixedCity ?? 'all'}`;
       </div>
 
       <div class="optional-fields" id={`${calculatorId}-waiting`} hidden>
-        <label class="field">
+        {hasWaitingTariff && <label class="field" data-waiting-field>
           <span>Bekleme süresi (dakika)</span>
           <input name="minutes" type="number" min="0" max="600" step="1" inputmode="numeric" value="0" />
-        </label>
+        </label>}
         <label class="field">
           <span>Köprü, tünel veya ek ücret (TL)</span>
           <input name="extra" type="number" min="0" max="100000" step="0.01" inputmode="decimal" value="0" />
@@ -80,6 +82,8 @@ const calculatorId = `calc-${fixedCity ?? 'all'}`;
     const kmInput = form.elements.km;
     const trafficInput = form.elements.traffic;
     const optionalFields = root.querySelector('.optional-fields');
+    const waitingField = root.querySelector('[data-waiting-field]');
+    const nightRow = root.querySelector('[data-night-row]');
     const result = root.querySelector('.result');
     const error = root.querySelector('.form-error');
     const currency = new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' });
@@ -87,6 +91,16 @@ const calculatorId = `calc-${fixedCity ?? 'all'}`;
     const selectedCity = () => cityData[citySelect.value || Object.keys(cityData)[0]];
     const safeNumber = (value) => Number(String(value).replace(',', '.'));
     const escapeHtml = (value) => String(value).replace(/[&<>'"]/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[char]);
+    const updateCityOptions = () => {
+      const city = selectedCity();
+      const hasWaiting = Boolean(city?.categories?.some((category) => category.waitingPerHour));
+      if (waitingField) waitingField.hidden = !hasWaiting;
+      const nightAvailable = Boolean(city?.nightTariff?.enabled && city?.nightTariff?.sourceUrl);
+      if (nightRow) nightRow.hidden = !nightAvailable;
+      if (!nightAvailable && form.elements.night) form.elements.night.checked = false;
+    };
+    citySelect.addEventListener('change', updateCityOptions);
+    updateCityOptions();
 
     root.querySelectorAll('[data-km]').forEach((button) => {
       button.addEventListener('click', () => {
@@ -103,15 +117,15 @@ const calculatorId = `calc-${fixedCity ?? 'all'}`;
     trafficInput.addEventListener('change', () => {
       optionalFields.hidden = !trafficInput.checked;
       trafficInput.setAttribute('aria-expanded', String(trafficInput.checked));
-      if (trafficInput.checked) form.elements.minutes.focus();
-      else { form.elements.minutes.value = '0'; form.elements.extra.value = '0'; }
+      if (trafficInput.checked) (waitingField && !waitingField.hidden ? form.elements.minutes : form.elements.extra).focus();
+      else { if (form.elements.minutes) form.elements.minutes.value = '0'; form.elements.extra.value = '0'; }
     });
 
     form.addEventListener('submit', (event) => {
       event.preventDefault();
       const city = selectedCity();
       const km = safeNumber(kmInput.value);
-      const minutes = trafficInput.checked ? safeNumber(form.elements.minutes.value || 0) : 0;
+      const minutes = trafficInput.checked && form.elements.minutes ? safeNumber(form.elements.minutes.value || 0) : 0;
       const extra = trafficInput.checked ? safeNumber(form.elements.extra.value || 0) : 0;
 
       if (!city) { error.textContent = 'Lütfen bir şehir seçin.'; citySelect.focus(); return; }
@@ -121,16 +135,19 @@ const calculatorId = `calc-${fixedCity ?? 'all'}`;
       }
       error.textContent = '';
 
+      const nightEnabled = Boolean(form.elements.night?.checked && city.nightTariff.enabled && city.nightTariff.sourceUrl);
       const calculations = city.categories.map((category) => {
         const distanceCharge = km * category.perKm;
         const waitingCharge = (category.waitingPerHour || 0) * minutes / 60;
-        const base = category.opening + distanceCharge + waitingCharge;
+        const standardBase = category.opening + distanceCharge + waitingCharge;
+        const nightCharge = nightEnabled ? standardBase * (city.nightTariff.multiplier - 1) : 0;
+        const base = standardBase + nightCharge;
         const minimumAdjustment = Math.max(0, category.minimum - base);
         const subtotal = base + minimumAdjustment;
-        return { category, distanceCharge, waitingCharge, minimumAdjustment, subtotal, total: subtotal + extra };
+        return { category, distanceCharge, waitingCharge, nightCharge, minimumAdjustment, subtotal, total: subtotal + extra };
       });
       const lowest = Math.min(...calculations.map((item) => item.total));
-      const nightNote = form.elements.night.checked ? '<p class="result-note">Gece seçildi; doğrulanmış ayrı gece zammı olmadığı için ek ücret uygulanmadı.</p>' : '';
+      const nightNote = nightEnabled ? `<p class="result-note">Doğrulanmış gece tarifesi (${decimal.format(city.nightTariff.multiplier)}×) uygulandı.</p>` : '';
 
       result.innerHTML = `
         <header class="result-summary">
@@ -140,7 +157,7 @@ const calculatorId = `calc-${fixedCity ?? 'all'}`;
           ${nightNote}
         </header>
         <div class="fare-results">
-          ${calculations.map(({ category, distanceCharge, waitingCharge, minimumAdjustment, subtotal, total }, index) => `
+          ${calculations.map(({ category, distanceCharge, waitingCharge, nightCharge, minimumAdjustment, subtotal, total }, index) => `
             <article class="fare-result fare-result-${index}">
               <header><div><h3>${escapeHtml(category.name)}</h3><small>${index === 0 ? 'Standart tarife' : 'Kategori tarifesi'}</small></div><strong>${currency.format(total)}</strong></header>
               <dl>
@@ -150,6 +167,7 @@ const calculatorId = `calc-${fixedCity ?? 'all'}`;
                 <div><dt>Minimum ücret sınırı</dt><dd>${currency.format(category.minimum)}</dd></div>
                 ${minimumAdjustment > 0 ? `<div><dt>Minimum ücret düzeltmesi</dt><dd>+${currency.format(minimumAdjustment)}</dd></div>` : ''}
                 ${minutes > 0 ? `<div><dt>Bekleme ücreti</dt><dd>${category.waitingPerHour ? currency.format(waitingCharge) : 'Tarife yayımlanmadı'}</dd></div>` : ''}
+                ${nightCharge > 0 ? `<div><dt>Gece tarifesi farkı</dt><dd>${currency.format(nightCharge)}</dd></div>` : ''}
                 <div><dt>Ara toplam</dt><dd>${currency.format(subtotal)}</dd></div>
                 ${extra > 0 ? `<div><dt>Ek geçiş ücretleri</dt><dd>${currency.format(extra)}</dd></div>` : ''}
                 <div class="total-row"><dt>Tahmini toplam</dt><dd>${currency.format(total)}</dd></div>
