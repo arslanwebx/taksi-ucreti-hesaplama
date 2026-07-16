@@ -1,4 +1,5 @@
 import { taxiFareBySlug, type TaxiFare } from './taxi-fares';
+import { calculateFare } from '@/lib/taxi-calculator';
 
 type ArticleDetails = {
   path: string;
@@ -74,6 +75,10 @@ const articleDetails: Record<string, ArticleDetails> = {
   },
 };
 
+export const cityGuidePaths = Object.fromEntries(
+  Object.entries(articleDetails).map(([slug, details]) => [slug, details.path]),
+) as Record<string, string>;
+
 export const publishedCities = Object.entries(articleDetails).map(([slug, details]) => {
   const tariff = taxiFareBySlug[slug];
   if (!tariff) throw new Error(`${slug} için merkezî taksi tarifesi bulunamadı.`);
@@ -96,9 +101,6 @@ export const formatDate = (value: string) => {
 };
 
 export function fare(city: Pick<TaxiFare, 'openingFare' | 'perKmFare' | 'minimumFare'>, km: number, extra = 0) {
-  const opening = city.openingFare;
-  const distance = km * city.perKmFare;
-  const beforeMinimum = opening + distance;
-  const adjustment = Math.max(0, city.minimumFare - beforeMinimum);
-  return { opening, distance, adjustment, extra, total: beforeMinimum + adjustment + extra };
+  const result = calculateFare(city, km, 0, extra);
+  return { opening: result.opening, distance: result.distance, adjustment: result.adjustment, extra: result.additional, total: result.total };
 }

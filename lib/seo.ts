@@ -4,9 +4,10 @@ import { canonical, site } from '@/src/data/site';
 export function pageMetadata(title: string, description: string, path: string, type: 'website' | 'article' = 'website'): Metadata {
   const fullTitle = title.includes(site.name) ? title : `${title} | ${site.name}`;
   return {
-    title: fullTitle,
+    title: { absolute: fullTitle },
     description,
     alternates: { canonical: canonical(path) },
+    robots: { index: true, follow: true },
     openGraph: {
       type,
       locale: 'tr_TR',

@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "next dev",
     "import:fares": "node scripts/import-taxi-fares.mjs",
+    "test": "node --test --test-isolation=none tests/*.test.ts",
+    "typecheck": "tsc --noEmit",
     "build": "node scripts/validate-content.mjs && next build && node scripts/audit-dist.mjs",
     "audit:dist": "node scripts/audit-dist.mjs",
     "preview": "wrangler dev",

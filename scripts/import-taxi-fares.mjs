@@ -163,6 +163,7 @@ export type TaxiFare = {
   openingFare: number;
   perKmFare: number;
   minimumFare: number;
+  waitingFarePerMinute?: number;
   dataStatus: string;
   referenceDate: string;
   lastVerified: string;

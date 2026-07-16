@@ -78,7 +78,7 @@ const estimatedCount = fares.filter((fare) => fare.isEstimated).length;
 if (estimatedCount !== 6) errors.push(`Tahmini tarife sayısı 6 olmalı; ${estimatedCount} bulundu.`);
 const warning = 'Bu şehir için kullanılan tarife mevcut kaynaklara dayalı tahmini bir değerdir. Güncel taksimetre tutarı farklı olabilir.';
 if (!calculatorSource.includes(warning)) errors.push('Tahmini tarife uyarısı hesaplayıcıda eksik.');
-if (!calculatorSource.includes('Tarife kaynağını inceleyin') || !calculatorSource.includes('Tarife referansı:') || !calculatorSource.includes('Son kontrol:')) {
+if (!calculatorSource.includes('kaynağını açın') || !calculatorSource.includes('Tarife referansı:') || !calculatorSource.includes('Son kontrol:')) {
   errors.push('Hesap sonucunda kaynak, referans veya son kontrol bilgisi eksik.');
 }
 

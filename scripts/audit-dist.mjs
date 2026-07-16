@@ -53,15 +53,21 @@ for (const { file, html } of pages) {
 
 const home = readFileSync(join(outputDirectory, 'index.html'), 'utf8');
 if (/2026 taksi tarifesi karşılaştırması/i.test(home) || /id="tarife-karsilastirma"/i.test(home)) errors.push('Ana sayfadaki 81 şehir karşılaştırma tablosu kaldırılmadı.');
+if (!home.includes('<title>Taksi Ücreti Hesaplama 2026 | 81 İl Güncel Tarifeler</title>')) errors.push('Ana sayfa title değeri hedef metinle eşleşmiyor.');
+if (!home.includes('Şehrinizi seçin, mesafeyi girin ve açılış, kilometre ve minimum ücret tarifesine göre tahmini taksi ücretinizi hesaplayın. 81 il ve kaynak bilgileri.')) errors.push('Ana sayfa meta açıklaması hedef metinle eşleşmiyor.');
 const cityOptions = home.match(/role="option"/g)?.length ?? 0;
 if (cityOptions !== 81) errors.push(`Şehir seçicisinde 81 yerine ${cityOptions} seçenek var.`);
+if ((home.match(/\?city=[a-z-]+#hesaplayici/g)?.length ?? 0) < 81) errors.push('Ana sayfa şehir dizininde 81 hesaplayıcı bağlantısı bulunamadı.');
 const faqBlock = home.match(/class="faq"[\s\S]*?class="author-box/i)?.[0] ?? '';
 const faqCount = faqBlock.match(/<details/g)?.length ?? 0;
 if (faqCount !== 10) errors.push(`Ana sayfada 10 yerine ${faqCount} SSS var.`);
-const latestBlock = home.match(/id="son-rehberler"[\s\S]*?<\/section>/i)?.[0] ?? '';
-if ((latestBlock.match(/class="article-card"/g)?.length ?? 0) !== 3) errors.push('Ana sayfa son rehberler bölümünde tam üç yazı kartı bulunmalı.');
+const cityGuideBlock = home.match(/id="sehir-hesaplayicilari"[\s\S]*?<\/section>/i)?.[0] ?? '';
+if ((cityGuideBlock.match(/class="article-card"/g)?.length ?? 0) !== 4) errors.push('Ana sayfa popüler şehir rehberlerinde dört mevcut şehir kartı bulunmalı.');
 if ((home.match(/class="author-box/g)?.length ?? 0) !== 1) errors.push('Ana sayfa makalesinin sonunda tek yazar kutusu bulunmalı.');
 if (!home.includes('G-9DE2SY0711') || !home.includes('googletagmanager.com/gtag/js')) errors.push('Google Analytics etiketi üretim HTML dosyasına eklenmedi.');
+for (const schemaType of ['WebSite','WebPage','Organization','Person','BreadcrumbList','WebApplication','FAQPage']) {
+  if (!home.includes(`"@type":"${schemaType}"`)) errors.push(`Ana sayfa JSON-LD grafiğinde ${schemaType} eksik.`);
+}
 
 const blog = readFileSync(join(outputDirectory, 'blog', 'index.html'), 'utf8');
 if ((blog.match(/class="article-card"/g)?.length ?? 0) !== 7) errors.push('Blog arşivinde yedi yazının tamamı bulunmalı.');
