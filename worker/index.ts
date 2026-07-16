@@ -14,7 +14,7 @@ export default {
   const obsoleteWordPressPath = /^\/(?:wp-admin|wp-content|wp-includes|wp-json)(?:\/|$)|^\/(?:wp-login\.php|xmlrpc\.php|feed\/?)$/i.test(url.pathname);
   if(obsoleteWordPressPath) return new Response('Bu WordPress uç noktası kalıcı olarak kaldırıldı.',{status:410,headers:{'content-type':'text/plain; charset=utf-8','cache-control':'public, max-age=86400','x-site-version':SITE_VERSION}});
   if((request.method==='GET'||request.method==='HEAD')&&url.search&&url.pathname!=='/api/contact'){
-   const calculatorKeys=new Set(['city','distance','waiting','extra','traffic']);
+   const calculatorKeys=new Set(['city','distance','waiting','extra']);
    const isShareableCalculatorUrl=url.pathname==='/'&&[...url.searchParams.keys()].every((key)=>calculatorKeys.has(key));
    if(!isShareableCalculatorUrl){url.search=''; return Response.redirect(url.href,301);}
   }

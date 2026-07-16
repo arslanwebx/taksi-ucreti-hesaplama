@@ -12,7 +12,6 @@ export type FareCalculation = {
   additional: number;
   subtotal: number;
   adjustment: number;
-  trafficAdjustment: number;
   total: number;
 };
 
@@ -21,7 +20,6 @@ export type CalculatorQuery = {
   distance?: number;
   waiting?: number;
   extra?: number;
-  highTraffic?: boolean;
 };
 
 const roundMoney = (value: number) => Math.round((value + Number.EPSILON) * 100) / 100;
@@ -37,7 +35,6 @@ export function calculateFare(
   distanceKm: number,
   waitingMinutes = 0,
   additionalCharges = 0,
-  highTraffic = false,
 ): FareCalculation {
   const opening = roundMoney(tariff.openingFare);
   const distance = roundMoney(distanceKm * tariff.perKmFare);
@@ -45,9 +42,7 @@ export function calculateFare(
   const additional = roundMoney(additionalCharges);
   const subtotal = roundMoney(opening + distance + waiting + additional);
   const adjustment = roundMoney(Math.max(0, tariff.minimumFare - subtotal));
-  const fareAfterMinimum = roundMoney(subtotal + adjustment);
-  const trafficAdjustment = highTraffic ? roundMoney(fareAfterMinimum * 0.15) : 0;
-  return { opening, distance, waiting, additional, subtotal, adjustment, trafficAdjustment, total: roundMoney(fareAfterMinimum + trafficAdjustment) };
+  return { opening, distance, waiting, additional, subtotal, adjustment, total: roundMoney(subtotal + adjustment) };
 }
 
 export function normalizeCitySearch(value: string): string {
@@ -79,7 +74,6 @@ export function readCalculatorQuery(search: string, validCitySlugs: ReadonlySet<
     distance: boundedNumber(params, 'distance', 0.1, 500),
     waiting: boundedNumber(params, 'waiting', 0, 600),
     extra: boundedNumber(params, 'extra', 0, 100000),
-    highTraffic: params.get('traffic') === 'high',
   };
 }
 
@@ -89,6 +83,8 @@ export function formatCurrency(value: number): string {
 
 export function fareQualityLabel(isEstimated: boolean, dataStatus: string): string {
   if (isEstimated) return 'Tahmini tarife';
+  if (/kontrolü önerilir/i.test(dataStatus)) return 'Tarife kartı kontrolü önerilir';
+  if (/resmî|yetkili/i.test(dataStatus)) return 'Resmî / yetkili kaynak kaydı';
   if (/güçlü kaynak/i.test(dataStatus)) return 'Güçlü kaynak kaydı';
   return 'İkincil kaynak kaydı';
 }

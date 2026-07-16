@@ -64,6 +64,23 @@ const asDateText = (value) => {
   return asText(value);
 };
 const quote = (value) => JSON.stringify(value);
+const officialSourceOverrides = {
+  ankara: {
+    sourceUrl: 'https://www.ankesob.org.tr/birlik-ucret-tarifeleri-degerlendirme-komisyonu/',
+    dataStatus: 'Yetkili meslek kuruluşu kaynak kaydı',
+    note: 'Tarife rakamları 1 Mart 2026 Ankara kaydıdır; bağlantı yetkili fiyat tarifesi komisyonu kaynağıdır.',
+  },
+  antalya: {
+    sourceUrl: 'https://www.antalya.bel.tr/tr/ukome-kararlari',
+    dataStatus: 'Resmî UKOME arşivi - tarife kartı kontrolü önerilir',
+    note: 'Antalya UKOME karar arşivi kullanılır; araçtaki onaylı fiyat tarife kartı yolculuk öncesi kontrol edilmelidir.',
+  },
+  izmir: {
+    sourceUrl: 'https://www.izmir.bel.tr/YuklenenDosyalar/MeclisToplantiTutanak/03062026165449.pdf',
+    dataStatus: 'Resmî belediye meclis kararı',
+    note: '17 Nisan 2026 tarihli resmî toplantı tutanağında ticari taksi tarifesi değişikliği oybirliğiyle kabul edilmiştir.',
+  },
+};
 
 let workbook;
 try {
@@ -95,13 +112,15 @@ const records = dataRows.map((row, rowIndex) => {
   const minimumFare = asPositiveNumber(row[index['Minimum / İndi-Bindi (TL)']], 'Minimum ücret', city);
   const fiveKm = asPositiveNumber(row[index['5 km Tahmini (TL)']], '5 km tahmini', city);
   const tenKm = asPositiveNumber(row[index['10 km Tahmini (TL)']], '10 km tahmini', city);
-  const dataStatus = asText(row[index['Veri Durumu']]);
+  let dataStatus = asText(row[index['Veri Durumu']]);
   const referenceDate = asDateText(row[index['Referans / Yürürlük']]);
   const lastVerified = asDateText(row[index['Son Kontrol']]);
-  const sourceUrl = asText(row[index['Kaynak URL']]);
+  let sourceUrl = asText(row[index['Kaynak URL']]);
   const implementationStatus = asText(row[index['Codex Kullanımı']]);
-  const note = asText(row[index.Not]);
+  let note = asText(row[index.Not]);
   const slug = slugify(city);
+  const sourceOverride = officialSourceOverrides[slug];
+  if (sourceOverride) ({ sourceUrl, dataStatus, note } = sourceOverride);
   const isEstimated = /tahmini|teyit gerekli|ilçe bazlı|genelleme riski/i.test(`${dataStatus} ${note}`);
 
   for (const [label, value] of [['İl', city], ['Bölge', region], ['Veri Durumu', dataStatus], ['Referans / Yürürlük', referenceDate], ['Codex Kullanımı', implementationStatus], ['Not', note]]) {

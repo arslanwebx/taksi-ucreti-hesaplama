@@ -160,3 +160,13 @@
 @media(max-width:350px){
   .popular-calculations>div:last-child,.popular-cities ul,.all-cities ul{grid-template-columns:1fr}
 }
+
+/* Heading hierarchy and button-based city selection. */
+.calc-heading h3{font-size:clamp(1.7rem,3vw,2.5rem);line-height:1;margin:0 0 9px;letter-spacing:-.04em}
+.article-card h3{font-size:clamp(1.12rem,1.45vw,1.32rem);line-height:1.22;letter-spacing:-.025em;margin:16px 0 10px;overflow-wrap:anywhere}
+.article-card h3 a{text-decoration:none}
+#son-rehberler .article-card h3{font-size:clamp(1.08rem,1.35vw,1.24rem)}
+.popular-cities li,.all-cities li{padding:0;border:0;background:transparent;display:flex}
+.popular-cities button,.all-cities button{width:100%;min-height:44px;display:flex;align-items:center;gap:7px;min-width:0;border:1px solid var(--line);border-radius:9px;background:white;padding:9px 10px;font-size:.84rem;font-weight:800;text-align:left;overflow-wrap:anywhere}
+.popular-cities button:hover,.all-cities button:hover{background:var(--yellow-soft);border-color:#b79b34}
+.all-cities button span{display:inline-grid;place-items:center;flex:0 0 auto;min-width:25px;height:23px;border-radius:6px;background:var(--yellow-soft);font-size:.66rem}

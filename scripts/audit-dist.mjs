@@ -60,12 +60,19 @@ if (cityOptions !== 81) errors.push(`Şehir seçicisinde 81 yerine ${cityOptions
 const optionSlugs = [...home.matchAll(/id="[^"]*-option-([a-z-]+)"/g)].map((match) => match[1]);
 const expectedPopularCities = ['istanbul','ankara','izmir','antalya','bursa','adana','konya','gaziantep','kocaeli','mersin'];
 if (expectedPopularCities.some((slug, index) => optionSlugs[index] !== slug)) errors.push('Şehir seçicisinin ilk 10 seçeneği beklenen popüler şehir sırasıyla eşleşmiyor.');
-if ((home.match(/\?city=[a-z-]+#hesaplayici/g)?.length ?? 0) < 81) errors.push('Ana sayfa şehir dizininde 81 hesaplayıcı bağlantısı bulunamadı.');
+if (/href="\/\?city=/i.test(home)) errors.push('Ana sayfada parametreli şehir bağlantısı kaldı.');
+const cityDirectoryBlock = home.match(/class="city-directory"[\s\S]*?<\/section>/i)?.[0] ?? '';
+if ((cityDirectoryBlock.match(/class="popular-cities"/g)?.length ?? 0) !== 1) errors.push('Ana sayfada tek popüler şehir seçim grubu bulunmalı.');
+if ((cityDirectoryBlock.match(/<button/g)?.length ?? 0) !== 10) errors.push('Popüler şehir seçiminde bağlantı yerine 10 düğme bulunmalı.');
+if (cityDirectoryBlock.includes('class="all-cities"')) errors.push('Ana sayfa ilk HTML çıktısında 81 şehir adı ikinci kez listelenmemeli.');
 const faqBlock = home.match(/class="faq"[\s\S]*?class="author-box/i)?.[0] ?? '';
 const faqCount = faqBlock.match(/<details/g)?.length ?? 0;
 if (faqCount !== 10) errors.push(`Ana sayfada 10 yerine ${faqCount} SSS var.`);
 const cityGuideBlock = home.match(/id="sehir-hesaplayicilari"[\s\S]*?<\/section>/i)?.[0] ?? '';
 if ((cityGuideBlock.match(/class="article-card"/g)?.length ?? 0) !== 4) errors.push('Ana sayfa popüler şehir rehberlerinde dört mevcut şehir kartı bulunmalı.');
+if ((cityGuideBlock.match(/<h3>/g)?.length ?? 0) !== 4 || /<article class="article-card"[\s\S]*?<h2>/i.test(cityGuideBlock)) errors.push('Ana sayfa popüler şehir kartları H3 kullanmalı.');
+if (cityGuideBlock.includes('<time')) errors.push('Ana sayfa şehir kartlarında tekrarlanan güncelleme tarihleri gösterilmemeli.');
+if (/Yoğun trafik<\/strong>|traffic=high/i.test(home)) errors.push('Belgesiz yoğun trafik katsayısı ana sayfadan kaldırılmadı.');
 if ((home.match(/class="author-box/g)?.length ?? 0) !== 1) errors.push('Ana sayfa makalesinin sonunda tek yazar kutusu bulunmalı.');
 if (!home.includes('G-9DE2SY0711') || !home.includes('googletagmanager.com/gtag/js')) errors.push('Google Analytics etiketi üretim HTML dosyasına eklenmedi.');
 for (const schemaType of ['WebSite','WebPage','Organization','Person','BreadcrumbList','WebApplication','FAQPage']) {
@@ -89,6 +96,8 @@ const expectedCityTitles = {
 for (const [slug, expectedTitle] of Object.entries(expectedCityTitles)) {
   const html = readFileSync(join(outputDirectory, slug, 'index.html'), 'utf8');
   if (!html.includes(`<title>${expectedTitle}</title>`)) errors.push(`${slug}: SEO title hedef metinle eşleşmiyor.`);
+  const h2Texts = [...html.matchAll(/<h2[^>]*>([^<]+)<\/h2>/gi)].map((match) => match[1].trim().toLocaleLowerCase('tr-TR'));
+  if (h2Texts.some((heading, index) => h2Texts.indexOf(heading) !== index)) errors.push(`${slug}: yinelenen H2 başlığı bulundu.`);
 }
 for (const asset of ['logo.svg','logo-mark.svg','favicon.svg','og-brand.svg','_redirects']) if (!existsSync(join(outputDirectory, asset))) errors.push(`Varlık eksik: ${asset}`);
 const redirects = readFileSync(join(outputDirectory, '_redirects'), 'utf8');
@@ -102,6 +111,12 @@ else {
   const urls = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
   if (urls.length < 20) errors.push(`sitemap.xml yalnızca ${urls.length} adres içeriyor.`);
   for (const url of urls) if (!url.startsWith(`${productionOrigin}/`) || url.includes('?')) errors.push(`Sitemap içinde geçersiz adres: ${url}`);
+}
+const robotsPath = join(outputDirectory, 'robots.txt');
+if (!existsSync(robotsPath)) errors.push('robots.txt üretilmedi.');
+else {
+  const robots = readFileSync(robotsPath, 'utf8');
+  if (!/^User-agent:\s*\*/mi.test(robots) || !/^Allow:\s*\/$/mi.test(robots) || !robots.includes(`${productionOrigin}/sitemap.xml`)) errors.push('robots.txt beklenen tarama ve sitemap kurallarını içermiyor.');
 }
 if (errors.length) { console.error(errors.join('\n')); process.exit(1); }
 console.log(`${htmlFiles.length} HTML sayfası; 81 şehir seçeneği, 10 SSS, yazar kutuları, Google etiketi, sitemap.xml, canonical, H1, meta, JSON-LD ve iç bağlantılar doğrulandı.`);

@@ -81,7 +81,7 @@ export default function HomePage() {
         <section className="section soft" id="sehir-hesaplayicilari">
           <div className="container">
             <div className="section-heading"><h2>Popüler Şehir Rehberleri</h2><p>Ayrıntılı yerel rota notları ve kaynak açıklamaları bulunan mevcut şehir sayfaları.</p></div>
-            <div className="article-grid">{guidePosts.map((post) => <BlogCard key={post.path} {...post}/>)}</div>
+            <div className="article-grid">{guidePosts.map((post) => <BlogCard key={post.path} {...post} headingLevel="h3" showDate={false}/>)}</div>
             <p className="section-links"><Link href="/havalimani-taksi-ucretleri/">Havalimanı taksi ücretleri</Link><Link href="/blog/">Tüm taksi rehberleri</Link></p>
           </div>
         </section>

@@ -19,7 +19,7 @@ const quickDistances = [3, 5, 10, 15, 20, 30] as const;
 const popularCitySlugs = ['istanbul', 'ankara', 'izmir', 'antalya', 'bursa', 'adana', 'konya', 'gaziantep', 'kocaeli', 'mersin'];
 const popularCityOrder = new Map(popularCitySlugs.map((slug, index) => [slug, index]));
 
-type Result = ReturnType<typeof calculateFare> & { city: TaxiFare; km: number; waitingMinutes: number; highTraffic: boolean };
+type Result = ReturnType<typeof calculateFare> & { city: TaxiFare; km: number; waitingMinutes: number };
 
 function sourceName(sourceUrl: string) {
   try {
@@ -49,7 +49,6 @@ export function Calculator({ fixedCity }: { fixedCity?: string }) {
   const [active, setActive] = useState(0);
   const [km, setKm] = useState('');
   const [showExtras, setShowExtras] = useState(false);
-  const [highTraffic, setHighTraffic] = useState(false);
   const [waiting, setWaiting] = useState('0');
   const [extra, setExtra] = useState('0');
   const [error, setError] = useState('');
@@ -92,15 +91,32 @@ export function Calculator({ fixedCity }: { fixedCity?: string }) {
       setWaiting(String(waitingMinutes).replace('.', ','));
       setExtra(String(additional).replace('.', ','));
       setShowExtras(waitingMinutes > 0 || additional > 0);
-      setHighTraffic(restored.highTraffic ?? false);
       setResult({
         city: initialCity,
         km: restored.distance,
         waitingMinutes,
-        highTraffic: restored.highTraffic ?? false,
-        ...calculateFare(initialCity, restored.distance, waitingMinutes, additional, restored.highTraffic ?? false),
+        ...calculateFare(initialCity, restored.distance, waitingMinutes, additional),
       });
     }
+  }, [fixedCity]);
+
+  useEffect(() => {
+    if (fixedCity) return;
+    const selectCity = (event: Event) => {
+      const slug = (event as CustomEvent<{ slug?: string }>).detail?.slug;
+      const city = slug ? taxiFareBySlug[slug] : undefined;
+      if (!city) return;
+      setSelected(city);
+      setQuery(city.city);
+      setOpen(false);
+      setActive(0);
+      setResult(null);
+      setError('');
+      setFeedback(`${city.city} tarifesi hesaplayıcıya yüklendi.`);
+      try { localStorage.setItem('taksi-son-sehir', city.slug); } catch {}
+    };
+    window.addEventListener('taxi-city-select', selectCity);
+    return () => window.removeEventListener('taxi-city-select', selectCity);
   }, [fixedCity]);
 
   useEffect(() => {
@@ -170,8 +186,7 @@ export function Calculator({ fixedCity }: { fixedCity?: string }) {
       city: selected,
       km: distanceKm,
       waitingMinutes,
-      highTraffic,
-      ...calculateFare(selected, distanceKm, waitingMinutes, additional, highTraffic),
+      ...calculateFare(selected, distanceKm, waitingMinutes, additional),
     };
     setError('');
     setResult(nextResult);
@@ -179,7 +194,6 @@ export function Calculator({ fixedCity }: { fixedCity?: string }) {
       const params = new URLSearchParams({ city: selected.slug, distance: String(distanceKm) });
       if (waitingMinutes > 0) params.set('waiting', String(waitingMinutes));
       if (additional > 0) params.set('extra', String(additional));
-      if (highTraffic) params.set('traffic', 'high');
       window.history.replaceState(null, '', `/?${params.toString()}#hesaplayici`);
     }
   }
@@ -192,7 +206,6 @@ export function Calculator({ fixedCity }: { fixedCity?: string }) {
     setWaiting('0');
     setExtra('0');
     setShowExtras(false);
-    setHighTraffic(false);
     setResult(null);
     setError('');
     setFeedback('Hesaplama sıfırlandı.');
@@ -209,7 +222,6 @@ export function Calculator({ fixedCity }: { fixedCity?: string }) {
     if (result.waiting > 0) parts.push(`Bekleme: ${formatCurrency(result.waiting)}`);
     if (result.additional > 0) parts.push(`Ek ücret: ${formatCurrency(result.additional)}`);
     if (result.adjustment > 0) parts.push(`Minimum ücret farkı: ${formatCurrency(result.adjustment)}`);
-    if (result.highTraffic) parts.push('Yoğun trafik seçeneği: Açık');
     parts.push(`Kaynak: ${result.city.sourceUrl}`);
     return parts.join('\n');
   }
@@ -244,7 +256,9 @@ export function Calculator({ fixedCity }: { fixedCity?: string }) {
     <section className="calculator" aria-labelledby={`${id}-title`} id={fixedCity ? undefined : 'hesaplayici'}>
       <div className="calc-heading">
         <div>
-          <h2 id={`${id}-title`}>{fixedCity ? `${preset?.city} taksi ücreti hesaplama` : 'Taksi ücretini hesaplayın'}</h2>
+          {fixedCity
+            ? <h3 id={`${id}-title`}>Yolculuk bilgileri</h3>
+            : <h2 id={`${id}-title`}>Taksi ücretini hesaplayın</h2>}
           <p>Şehri seçin, araçla gidilecek mesafeyi yazın ve tarife dökümünü görün.</p>
         </div>
         <span className="calc-badge">81 il</span>
@@ -322,14 +336,6 @@ export function Calculator({ fixedCity }: { fixedCity?: string }) {
             <span><strong>Ek yol ücreti ekle</strong><small>Köprü, tünel, otoyol veya bildiğiniz diğer tutar</small></span>
           </label>
 
-          {!fixedCity && (
-            <label className="extras-toggle traffic-toggle">
-              <input type="checkbox" checked={highTraffic} onChange={(event) => { setHighTraffic(event.target.checked); setResult(null); }}/>
-              <span className="switch" aria-hidden="true"/>
-              <span><strong>Yoğun trafik</strong><small>Yoğun saatler için tahmini toplamı ayarlar</small></span>
-            </label>
-          )}
-
           {showExtras && (
             <div className="optional-fields">
               {selected?.waitingFarePerMinute !== undefined && (
@@ -365,7 +371,6 @@ export function Calculator({ fixedCity }: { fixedCity?: string }) {
               {result.waiting > 0 && <div><dt>Bekleme bedeli <small>{decimal.format(result.waitingMinutes)} dk</small></dt><dd>{formatCurrency(result.waiting)}</dd></div>}
               {result.additional > 0 && <div><dt>Ek geçiş ücreti</dt><dd>{formatCurrency(result.additional)}</dd></div>}
               {result.adjustment > 0 && <div><dt>Minimum ücret farkı</dt><dd>{formatCurrency(result.adjustment)}</dd></div>}
-              {result.highTraffic && <div><dt>Yoğun trafik koşulu</dt><dd>Dahil</dd></div>}
               <div className="total-row"><dt>Tahmini toplam</dt><dd>{formatCurrency(result.total)}</dd></div>
             </dl>
             {result.adjustment > 0 && <p className="minimum-note">Hesaplanan tutar şehrin minimum yolculuk ücretinin altında kaldığı için minimum ücret uygulanmıştır.</p>}

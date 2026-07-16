@@ -28,7 +28,7 @@ export const pages: readonly PolicyPage[] = [
     'Her şehir kaydında açılış ücreti, kilometre ücreti, minimum ücret, referans bilgisi, kaynak adresi ve son kontrol tarihi tutulur. Tahmini veya ilçe bazlı genelleme riski taşıyan kayıtlar doğrulanmış gibi sunulmaz; kullanıcıya görünür uyarı gösterilir.'
   ],links:[{label:'Veri kaynakları ve hesaplama yöntemi',href:'/veri-kaynaklari-ve-hesaplama-yontemi/'},{label:'Editoryal politika',href:'/editoryal-politika/'}]},
   {heading:'Hesaplayıcı ne yapar, ne yapmaz?',paragraphs:[
-    'Temel hesap açılış ücreti ile kilometre bedelini toplar ve sonuç minimum ücretin altında kalıyorsa minimum tutarı uygular. Kullanıcı bilinen köprü, tünel veya otoyol bedelini ayrıca girebilir. Yoğun trafik seçeneği, yolculuk planlamasına yardımcı olmak amacıyla tahmini toplamı ayarlar.',
+    'Temel hesap açılış ücreti ile kilometre bedelini toplar ve sonuç minimum ücretin altında kalıyorsa minimum tutarı uygular. Kullanıcı bilinen köprü, tünel veya otoyol bedelini ayrıca girebilir. Site, belgesiz ve şehirden şehre değişebilecek sabit bir trafik yüzdesi uygulamaz.',
     'Belgelenmiş bir bekleme tarifesi bulunmayan şehirler için site otomatik bekleme bedeli uydurmaz. Başlangıç ve varış adresinden rota üretmek için ücretli veya anahtar gerektiren bir harita hizmeti kullanılmaz; kullanıcıdan harita uygulamasındaki araç mesafesini girmesi istenir.'
   ]},
   {heading:'Güncelleme ve düzeltme yaklaşımı',paragraphs:[
@@ -50,7 +50,7 @@ export const pages: readonly PolicyPage[] = [
     'Hesaplayıcıya girilen şehir, mesafe ve ek ücret bilgileri temel hesaplama için tarayıcınızda işlenir. Hesaplama sonucu sunucuya bir sipariş ya da rezervasyon olarak gönderilmez.'
   ]},
   {heading:'Hesaplayıcı ve tarayıcıda saklanan bilgiler',paragraphs:[
-    'Son seçilen şehir, sonraki ziyarette kolaylık sağlamak amacıyla tarayıcının yerel depolama alanında saklanabilir. Paylaşılabilir hesaplama bağlantılarında şehir, mesafe, bekleme, ek ücret ve trafik seçimi URL parametresi olarak yer alabilir.',
+    'Son seçilen şehir, sonraki ziyarette kolaylık sağlamak amacıyla tarayıcının yerel depolama alanında saklanabilir. Paylaşılabilir hesaplama bağlantılarında şehir, mesafe, belgelenmiş bekleme ve kullanıcının girdiği ek ücret URL parametresi olarak yer alabilir.',
     'Bu parametreler bağlantıyı paylaştığınız kişiler tarafından görülebilir. Bu nedenle hesaplayıcı alanlarına kişisel bilgi, açık adres, plaka, telefon numarası veya başka hassas veri yazmamalısınız. Tarayıcı verilerini site ayarlarından veya tarayıcı geçmişinden silebilirsiniz.'
   ]},
   {heading:'Google Analytics',paragraphs:[
@@ -137,14 +137,14 @@ export const pages: readonly PolicyPage[] = [
   ],links:[{label:'Sorumluluk reddi',href:'/sorumluluk-reddi/'},{label:'Gizlilik politikası',href:'/gizlilik-politikasi/'},{label:'İletişim',href:'/iletisim/'}]}
  ]},
 
- {slug:'sorumluluk-reddi',title:'Sorumluluk Reddi',description:'Taksi ücreti sonuçlarının tahmin niteliğini, taksimetrenin esas olduğunu, trafik seçeneğini, yerel tarife farklarını ve kaynak güncelliği sınırlarını ayrıntılı inceleyin.',updated:'2026-07-16',sections:[
+ {slug:'sorumluluk-reddi',title:'Sorumluluk Reddi',description:'Taksi ücreti sonuçlarının tahmin niteliğini, taksimetrenin esas olduğunu, trafik ve rota koşullarını, yerel tarife farklarını ve kaynak güncelliği sınırlarını ayrıntılı inceleyin.',updated:'2026-07-16',sections:[
   {heading:'Sonuç fiyat garantisi değildir',paragraphs:[
     'Sitede gösterilen taksi ücreti, yolculuk planlamasına yardımcı olan matematiksel bir tahmindir. Bağlayıcı fiyat teklifi, rezervasyon bedeli, fatura veya resmî taksimetre sonucu değildir.',
     'Yolculuk sonunda ödenecek tutarı araçtaki geçerli taksimetre ve yolculuk sırasında uygulanan yerel kurallar belirler.'
   ]},
   {heading:'Hesaplamada kullanılan bilgiler',paragraphs:[
     'Temel sonuç seçilen şehir kaydındaki açılış, kilometre ve minimum ücret ile kullanıcının girdiği yol mesafesine dayanır. Bilinen köprü, tünel, otoyol veya başka geçiş tutarları kullanıcı tarafından ayrıca eklenebilir.',
-    'Yoğun trafik seçeneği yalnızca planlama payı oluşturur; resmî veya şehir bazında belgelenmiş bir bekleme tarifesinin yerine geçmez. Belgelenmiş bekleme oranı bulunmayan şehirlerde otomatik dakika ücreti uygulanmaz.'
+    'Trafik gerçek yolculuğun süresini ve bazı taksimetrelerde zaman tarifesini etkileyebilir. Ancak site, resmî olarak belgelenmemiş sabit bir trafik yüzdesi veya dakika ücreti uygulamaz.'
   ]},
   {heading:'Gerçek tutarı değiştirebilecek koşullar',paragraphs:[
     'Harita uygulamasında görülen rota ile sürücünün izlediği rota farklı olabilir. Tek yönler, yol çalışması, kapanan yollar, trafik yoğunluğu, yolcu alma ve bırakma noktaları gerçek kilometreyi etkiler.'
@@ -169,7 +169,7 @@ export const pages: readonly PolicyPage[] = [
   ],links:[{label:'Tarife hatası bildirin',href:'/iletisim/'},{label:'Düzeltme politikası',href:'/duzeltme-politikasi/'}]}
  ]},
 
- {slug:'veri-kaynaklari-ve-hesaplama-yontemi',title:'Veri Kaynakları ve Hesaplama Yöntemi',description:'81 il tarife verisinin kaynak hiyerarşisini, Excel doğrulamasını, minimum ücret formülünü, trafik seçeneğini, tahmini kayıtları ve güncelleme sürecini inceleyin.',updated:'2026-07-16',sections:[
+ {slug:'veri-kaynaklari-ve-hesaplama-yontemi',title:'Veri Kaynakları ve Hesaplama Yöntemi',description:'81 il tarife verisinin kaynak hiyerarşisini, Excel doğrulamasını, minimum ücret formülünü, trafik ve bekleme yaklaşımını, tahmini kayıtları ve güncelleme sürecini inceleyin.',updated:'2026-07-16',sections:[
   {heading:'Tek merkezî tarife kaynağı',paragraphs:[
     'Hesaplayıcı ve şehir sayfaları aynı tipli merkezî veri setini kullanır. Böylece bir tarife güncellendiğinde hesap sonucu, tarife özeti ve örnek mesafeler aynı değerlerden üretilir; sayfalarda ayrı rakam kopyaları tutulmaz.',
     '81 il kaydı çalışma kitabından içe aktarılır. İçe aktarma işlemi satır sayısını, zorunlu sütunları, plaka kodlarını, tekrar eden şehir ve slug kayıtlarını, pozitif ücretleri, HTTPS kaynaklarını ve örnek 5 km ile 10 km toplamlarını kontrol eder.'
@@ -190,9 +190,9 @@ export const pages: readonly PolicyPage[] = [
     'Ara toplam = açılış + mesafe + belgelenmiş bekleme + ek geçiş',
     'Tarife toplamı = ara toplam ile minimum ücretin büyük olanı'
   ]},
-  {heading:'Yoğun trafik seçeneği',paragraphs:[
-    'Ana sayfadaki yoğun trafik seçeneği, kullanıcının yoğun saatler için daha temkinli bir bütçe tahmini almasını sağlar. Bu ayar resmî taksimetre kalemi, belediye kararı veya bütün şehirlerde geçerli bir bekleme tarifesi olarak sunulmaz.',
-    'Gerçek trafikte oluşabilecek fark şehir, taksimetre sistemi, süre ve rota koşullarına bağlıdır. Bu nedenle trafik ayarlı sonuç da kesin fiyat değil, planlama tahminidir.'
+  {heading:'Trafik ve bekleme yaklaşımı',paragraphs:[
+    'Trafik yoğunluğu gerçek rotayı, yolculuk süresini ve belgelenmiş zaman tarifesi bulunan taksimetrelerde toplam tutarı etkileyebilir. Buna rağmen bütün şehirlerde geçerli tek bir trafik yüzdesi yoktur.',
+    'Bu nedenle hesaplayıcı yoğun trafik için varsayımsal bir katsayı eklemez. Bekleme bedeli yalnızca şehir kaydında yetkili kaynakla belgelenmiş dakika tarifesi bulunduğunda hesaplamaya alınır.'
   ]},
   {heading:'Bekleme, araç türü ve ilçe farkları',paragraphs:[
     'Bekleme alanı yalnızca veri kaydında belgelenmiş dakika başına ücret varsa gösterilecek biçimde tasarlanmıştır. Mevcut veri setinde bu alanı destekleyen kayıt bulunmadığından otomatik bekleme ücreti eklenmez.',

@@ -9,9 +9,9 @@ import { pageMetadata } from '@/lib/seo';
 const trafficLawUrl = 'https://www.mevzuat.gov.tr/mevzuatmetin/1.5.2918.pdf';
 const municipalLinks: Record<string, { label: string; url: string }> = {
   istanbul: { label: 'İBB TUHİM ücret tarifeleri arşivi', url: 'https://tuhim.ibb.gov.tr/ucret-tarifeler/' },
-  ankara: { label: 'Ankara Büyükşehir Belediyesi UKOME kararları', url: 'https://www.ankara.bel.tr/ukome' },
-  izmir: { label: 'İzmir Büyükşehir Belediyesi ulaşım duyuruları', url: 'https://www.izmir.bel.tr/tr/Ulasim/23/81' },
-  antalya: { label: 'Antalya Büyükşehir Belediyesi ulaşım sayfası', url: 'https://www.antalya.bel.tr/kurumsal/birimler/ulasim-planlama-ve-rayli-sistem-dairesi-baskanligi' },
+  ankara: { label: 'Ankara Esnaf ve Sanatkârlar Odaları Birliği tarife komisyonu', url: 'https://www.ankesob.org.tr/birlik-ucret-tarifeleri-degerlendirme-komisyonu/' },
+  izmir: { label: '17 Nisan 2026 tarihli İzmir Büyükşehir Belediyesi toplantı tutanağı', url: 'https://www.izmir.bel.tr/YuklenenDosyalar/MeclisToplantiTutanak/03062026165449.pdf' },
+  antalya: { label: 'Antalya Büyükşehir Belediyesi UKOME karar arşivi', url: 'https://www.antalya.bel.tr/tr/ukome-kararlari' },
 };
 
 const editorial: Record<string, { intro: string; routeAdvice: string; planning: string; mistake: string }> = {
