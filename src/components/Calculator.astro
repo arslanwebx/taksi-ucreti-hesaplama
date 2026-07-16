@@ -4,37 +4,164 @@ interface Props { fixedCity?: string }
 const { fixedCity } = Astro.props;
 const available = fixedCity ? cities.filter((city) => city.slug === fixedCity) : cities;
 const data = Object.fromEntries(available.map((city) => [city.slug, city]));
+const calculatorId = `calc-${fixedCity ?? 'all'}`;
 ---
-<section class="calculator" data-calculator data-cities={JSON.stringify(data)} aria-labelledby={`calc-${fixedCity ?? 'all'}`}>
-  <div class="section-heading"><p class="eyebrow">Tarife tabanlı tahmin</p><h2 id={`calc-${fixedCity ?? 'all'}`}>{fixedCity ? `${available[0]?.name} taksi hesaplama` : 'Taksi fiyat hesaplama'}</h2></div>
+<section class="calculator" data-calculator data-cities={JSON.stringify(data)} aria-labelledby={calculatorId}>
+  <header class="calc-heading">
+    <p class="eyebrow">2026 güncel tarifeleri</p>
+    <h2 id={calculatorId}>{fixedCity ? `${available[0]?.name} taksi ücreti hesaplama` : 'Taksi ücreti hesaplama'}</h2>
+    <p>Şehri ve mesafeyi girin; tüm geçerli taksi türlerini ayrıntılı karşılaştırın.</p>
+  </header>
+
   <form novalidate>
-    <div class="form-grid">
-      <label>Şehir<select name="city" required disabled={Boolean(fixedCity)}>{!fixedCity && <option value="">Şehir seçin</option>}{available.map((city) => <option value={city.slug}>{city.name}</option>)}</select></label>
-      <label>Mesafe (km)<input name="km" type="number" min="0.1" max="500" step="0.1" inputmode="decimal" value="5" required /></label>
-      <label>Bekleme (dakika)<input name="minutes" type="number" min="0" max="600" step="1" inputmode="numeric" value="0" /></label>
-      <label>Taksi kategorisi<select name="category"></select></label>
-      <label>Ek geçiş / yol ücreti (TL)<input name="extra" type="number" min="0" max="100000" step="0.01" inputmode="decimal" value="0" /></label>
+    <div class="calc-fields">
+      <label class="field city-field">
+        <span>Şehir seçin</span>
+        <select name="city" required disabled={Boolean(fixedCity)}>
+          {!fixedCity && <option value="">Şehrinizi seçin</option>}
+          {available.map((city) => <option value={city.slug}>{city.name}</option>)}
+        </select>
+      </label>
+
+      <label class="field distance-field">
+        <span>Mesafe (km)</span>
+        <input name="km" type="number" min="0.1" max="500" step="0.1" inputmode="decimal" placeholder="Örn. 20" required />
+      </label>
+
+      <fieldset class="quick-distance">
+        <legend>Hızlı mesafe seçimi</legend>
+        <div>{[3, 5, 10, 15, 20, 30].map((km) => <button type="button" data-km={km} aria-pressed="false">{km} km</button>)}</div>
+      </fieldset>
+
+      <div class="calc-options">
+        <label class="switch-row">
+          <input name="night" type="checkbox" />
+          <span class="switch" aria-hidden="true"></span>
+          <span><strong>Gece yolculuğu</strong><small>Ayrı gece zammı doğrulanmadığı için tutara eklenmez.</small></span>
+        </label>
+        <label class="switch-row">
+          <input name="traffic" type="checkbox" aria-controls={`${calculatorId}-waiting`} aria-expanded="false" />
+          <span class="switch" aria-hidden="true"></span>
+          <span><strong>Bekleme ve ek ücretler</strong><small>Trafik süresini veya ücretli geçişleri ekleyin.</small></span>
+        </label>
+      </div>
+
+      <div class="optional-fields" id={`${calculatorId}-waiting`} hidden>
+        <label class="field">
+          <span>Bekleme süresi (dakika)</span>
+          <input name="minutes" type="number" min="0" max="600" step="1" inputmode="numeric" value="0" />
+        </label>
+        <label class="field">
+          <span>Köprü, tünel veya ek ücret (TL)</span>
+          <input name="extra" type="number" min="0" max="100000" step="0.01" inputmode="decimal" value="0" />
+        </label>
+      </div>
     </div>
-    <p class="form-error" role="alert"></p><button type="submit">Ücreti hesapla</button>
+
+    <p class="form-error" role="alert"></p>
+    <button class="calculate-button" type="submit">Ücreti hesapla</button>
+    <p class="calc-disclaimer">Tahmini sonuçtur. Gerçek tutar taksimetre, güzergâh, trafik ve ücretli geçişlere göre değişebilir.</p>
   </form>
-  <div class="result" aria-live="polite" aria-atomic="true">
-    <p class="result-label">Tahmini toplam</p><strong>—</strong><dl><div><dt>Açılış + mesafe</dt><dd>—</dd></div><div><dt>Bekleme</dt><dd>—</dd></div><div><dt>Minimum ücret farkı</dt><dd>—</dd></div><div><dt>Ek ücretler</dt><dd>—</dd></div></dl><p class="result-meta">Değerleri girip hesaplayın.</p>
-  </div>
+
+  <section class="result" aria-live="polite" aria-atomic="true" aria-label="Hesaplama sonucu">
+    <div class="result-empty">
+      <p class="result-kicker">Tahmini ücretiniz</p>
+      <strong>₺0</strong>
+      <p>Hesaplama yapmak için şehir seçin ve mesafeyi girin.</p>
+    </div>
+  </section>
 </section>
+
 <script is:inline>
   document.querySelectorAll('[data-calculator]').forEach((root) => {
-    const cities = JSON.parse(root.dataset.cities); const form = root.querySelector('form');
-    const citySelect = form.elements.city; const categorySelect = form.elements.category; const result = root.querySelector('.result'); const error = root.querySelector('.form-error');
-    const currency = new Intl.NumberFormat('tr-TR', { style:'currency', currency:'TRY' });
-    const city = () => cities[citySelect.value || Object.keys(cities)[0]];
-    const categories = () => { const c=city(); categorySelect.innerHTML = c ? c.categories.map(x => `<option value="${x.id}">${x.name}</option>`).join('') : ''; categorySelect.closest('label').hidden = !c || c.categories.length < 2; };
-    citySelect.addEventListener('change', categories); categories();
+    const cityData = JSON.parse(root.dataset.cities);
+    const form = root.querySelector('form');
+    const citySelect = form.elements.city;
+    const kmInput = form.elements.km;
+    const trafficInput = form.elements.traffic;
+    const optionalFields = root.querySelector('.optional-fields');
+    const result = root.querySelector('.result');
+    const error = root.querySelector('.form-error');
+    const currency = new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' });
+    const decimal = new Intl.NumberFormat('tr-TR', { maximumFractionDigits: 2 });
+    const selectedCity = () => cityData[citySelect.value || Object.keys(cityData)[0]];
+    const safeNumber = (value) => Number(String(value).replace(',', '.'));
+    const escapeHtml = (value) => String(value).replace(/[&<>'"]/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[char]);
+
+    root.querySelectorAll('[data-km]').forEach((button) => {
+      button.addEventListener('click', () => {
+        kmInput.value = button.dataset.km;
+        root.querySelectorAll('[data-km]').forEach((item) => item.setAttribute('aria-pressed', String(item === button)));
+        kmInput.focus();
+      });
+    });
+
+    kmInput.addEventListener('input', () => {
+      root.querySelectorAll('[data-km]').forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.km === kmInput.value)));
+    });
+
+    trafficInput.addEventListener('change', () => {
+      optionalFields.hidden = !trafficInput.checked;
+      trafficInput.setAttribute('aria-expanded', String(trafficInput.checked));
+      if (trafficInput.checked) form.elements.minutes.focus();
+      else { form.elements.minutes.value = '0'; form.elements.extra.value = '0'; }
+    });
+
     form.addEventListener('submit', (event) => {
-      event.preventDefault(); const c=city(); const km=Number(form.elements.km.value); const minutes=Number(form.elements.minutes.value || 0); const extra=Number(form.elements.extra.value || 0);
-      if (!c || !Number.isFinite(km) || km <= 0 || km > 500 || minutes < 0 || minutes > 600 || extra < 0 || extra > 100000) { error.textContent='Şehir seçin; mesafeyi 0–500 km, beklemeyi 0–600 dakika aralığında girin.'; return; }
-      error.textContent=''; const cat=c.categories.find(x=>x.id===categorySelect.value) || c.categories[0]; const distance=cat.opening + km*cat.perKm; const waiting=(cat.waitingPerHour || 0)*minutes/60; const adjustment=Math.max(0,cat.minimum-distance-waiting); const total=distance+waiting+adjustment+extra;
-      result.querySelector('strong').textContent=currency.format(total); const dd=result.querySelectorAll('dd'); [distance,waiting,adjustment,extra].forEach((x,i)=>dd[i].textContent=currency.format(x));
-      result.querySelector('.result-meta').innerHTML=`Tarife başlangıcı: <time datetime="${c.effectiveDate}">${c.effectiveDate.split('-').reverse().join('.')}</time> · Son kontrol: ${c.verifiedDate.split('-').reverse().join('.')} · <a href="${c.path}">${c.name} tarifesi</a>`;
+      event.preventDefault();
+      const city = selectedCity();
+      const km = safeNumber(kmInput.value);
+      const minutes = trafficInput.checked ? safeNumber(form.elements.minutes.value || 0) : 0;
+      const extra = trafficInput.checked ? safeNumber(form.elements.extra.value || 0) : 0;
+
+      if (!city) { error.textContent = 'Lütfen bir şehir seçin.'; citySelect.focus(); return; }
+      if (!Number.isFinite(km) || km <= 0 || km > 500) { error.textContent = 'Mesafeyi 0,1 ile 500 km arasında girin.'; kmInput.focus(); return; }
+      if (!Number.isFinite(minutes) || minutes < 0 || minutes > 600 || !Number.isFinite(extra) || extra < 0 || extra > 100000) {
+        error.textContent = 'Bekleme süresi veya ek ücret geçerli aralıkta değil.'; return;
+      }
+      error.textContent = '';
+
+      const calculations = city.categories.map((category) => {
+        const distanceCharge = km * category.perKm;
+        const waitingCharge = (category.waitingPerHour || 0) * minutes / 60;
+        const base = category.opening + distanceCharge + waitingCharge;
+        const minimumAdjustment = Math.max(0, category.minimum - base);
+        const subtotal = base + minimumAdjustment;
+        return { category, distanceCharge, waitingCharge, minimumAdjustment, subtotal, total: subtotal + extra };
+      });
+      const lowest = Math.min(...calculations.map((item) => item.total));
+      const nightNote = form.elements.night.checked ? '<p class="result-note">Gece seçildi; doğrulanmış ayrı gece zammı olmadığı için ek ücret uygulanmadı.</p>' : '';
+
+      result.innerHTML = `
+        <header class="result-summary">
+          <p class="result-kicker">${calculations.length > 1 ? 'En düşük kategori tahmini' : 'Tahmini ücretiniz'}</p>
+          <strong>${currency.format(lowest)}</strong>
+          <p>${escapeHtml(city.name)} için ${decimal.format(km)} km${minutes ? ` ve ${decimal.format(minutes)} dakika bekleme` : ''} hesabı</p>
+          ${nightNote}
+        </header>
+        <div class="fare-results">
+          ${calculations.map(({ category, distanceCharge, waitingCharge, minimumAdjustment, subtotal, total }, index) => `
+            <article class="fare-result fare-result-${index}">
+              <header><div><h3>${escapeHtml(category.name)}</h3><small>${index === 0 ? 'Standart tarife' : 'Kategori tarifesi'}</small></div><strong>${currency.format(total)}</strong></header>
+              <dl>
+                <div><dt>Açılış ücreti</dt><dd>${currency.format(category.opening)}</dd></div>
+                <div><dt>Kilometre tarifesi</dt><dd>${currency.format(category.perKm)} / km</dd></div>
+                <div><dt>${decimal.format(km)} km mesafe ücreti</dt><dd>${currency.format(distanceCharge)}</dd></div>
+                <div><dt>Minimum ücret sınırı</dt><dd>${currency.format(category.minimum)}</dd></div>
+                ${minimumAdjustment > 0 ? `<div><dt>Minimum ücret düzeltmesi</dt><dd>+${currency.format(minimumAdjustment)}</dd></div>` : ''}
+                ${minutes > 0 ? `<div><dt>Bekleme ücreti</dt><dd>${category.waitingPerHour ? currency.format(waitingCharge) : 'Tarife yayımlanmadı'}</dd></div>` : ''}
+                <div><dt>Ara toplam</dt><dd>${currency.format(subtotal)}</dd></div>
+                ${extra > 0 ? `<div><dt>Ek geçiş ücretleri</dt><dd>${currency.format(extra)}</dd></div>` : ''}
+                <div class="total-row"><dt>Tahmini toplam</dt><dd>${currency.format(total)}</dd></div>
+              </dl>
+            </article>
+          `).join('')}
+        </div>
+        <footer class="result-footer">
+          <p>Tarife başlangıcı: <time datetime="${city.effectiveDate}">${city.effectiveDate.split('-').reverse().join('.')}</time> · Son kontrol: ${city.verifiedDate.split('-').reverse().join('.')}</p>
+          <a href="${city.path}">${escapeHtml(city.name)} taksi tarifesinin ayrıntıları</a>
+        </footer>`;
+      result.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'nearest' });
     });
   });
 </script>
