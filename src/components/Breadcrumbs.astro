@@ -1,8 +1,0 @@
----
-import { canonical } from '../data/site';
-interface Props { items: { name: string; href: string }[] }
-const { items } = Astro.props;
-const schema = { '@context':'https://schema.org', '@type':'BreadcrumbList', itemListElement: items.map((item, i) => ({ '@type':'ListItem', position:i+1, name:item.name, item:canonical(item.href) })) };
----
-<nav class="breadcrumbs" aria-label="İçerik yolu"><ol>{items.map((item, i) => <li>{i < items.length - 1 ? <a href={item.href}>{item.name}</a> : <span aria-current="page">{item.name}</span>}</li>)}</ol></nav>
-<script is:inline type="application/ld+json" set:html={JSON.stringify(schema)} />

@@ -1,5 +1,0 @@
----
-import ContentLayout from '../layouts/ContentLayout.astro'; import { pages } from '../data/pages';
-export function getStaticPaths(){return pages.map(page=>({params:{slug:page.slug},props:{page}}));} const { page }=Astro.props;
----
-<ContentLayout title={page.title} description={page.description} path={`/${page.slug}/`}>{page.sections.map(([heading,content])=><section><h2>{heading}</h2><p>{content}</p></section>)}</ContentLayout>

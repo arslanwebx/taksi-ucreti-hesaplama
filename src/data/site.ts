@@ -6,7 +6,7 @@ export const site = {
   contactEmail: 'iletisim@taksiucreti-hesaplama.blog',
   author: { name: 'Oğuzhan Arslan', url: '/taksi-rehberi/' },
   publisher: 'Taksi Ücreti Hesaplama',
-  analyticsId: null as string | null,
+  analyticsId: 'G-9DE2SY0711',
   socialLinks: [] as string[],
   navigation: [
     ['Ana Sayfa', '/'], ['Şehir Hesaplayıcıları', '/#sehir-hesaplayicilari'], ['Blog', '/blog/'], ['Hakkımızda', '/hakkimizda/']

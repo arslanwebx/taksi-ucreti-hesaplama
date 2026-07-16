@@ -1,0 +1,1 @@
+import { CityFareArticle, cityFareMetadata } from '@/components/CityFareArticle';import { publishedCities } from '@/src/data/cities';const city=publishedCities.find((item)=>item.slug==='istanbul')!;export const metadata=cityFareMetadata(city);export default function Page(){return <CityFareArticle city={city}/>}

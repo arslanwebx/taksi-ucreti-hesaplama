@@ -1,9 +1,0 @@
----
-interface Item { id: string; label: string; children?: { id: string; label: string }[] }
-interface Props { items: Item[] }
-const { items } = Astro.props;
----
-{items.length >= 3 && <details class="toc">
-  <summary>İçindekiler</summary>
-  <ol>{items.map((item) => <li><a href={`#${item.id}`}>{item.label}</a>{item.children?.length && <ol>{item.children.map((child) => <li><a href={`#${child.id}`}>{child.label}</a></li>)}</ol>}</li>)}</ol>
-</details>}

@@ -51,11 +51,12 @@ for (const page of pages) {
 const walk = (directory) => readdirSync(directory).flatMap((name) => {
   const path = join(directory, name); return statSync(path).isDirectory() ? walk(path) : [path];
 });
-if (/\beyebrow\b/i.test(walk(new URL('../src', import.meta.url).pathname.replace(/^\/(.:)/, '$1')).filter((file)=>['.ts','.astro','.css'].includes(extname(file))).map((file)=>readFileSync(file,'utf8')).join('\n'))) {
+const sourceRoots = ['app','components','src'].map((directory) => new URL(`../${directory}`, import.meta.url).pathname.replace(/^\/(.:)/, '$1'));
+if (/\beyebrow\b/i.test(sourceRoots.flatMap(walk).filter((file)=>['.ts','.tsx','.astro','.css'].includes(extname(file))).map((file)=>readFileSync(file,'utf8')).join('\n'))) {
   errors.push('Site kaynaklarında eyebrow etiketi veya stili kaldı.');
 }
-for (const file of walk(new URL('../src', import.meta.url).pathname.replace(/^\/(.:)/, '$1'))) {
-  if (!['.ts','.astro'].includes(extname(file)) || file.replaceAll('\\','/').endsWith('/data/cities.ts')) continue;
+for (const file of sourceRoots.flatMap(walk)) {
+  if (!['.ts','.tsx','.astro'].includes(extname(file)) || file.replaceAll('\\','/').endsWith('/data/cities.ts')) continue;
   const source = readFileSync(file, 'utf8');
   if (/(?:opening|perKm|minimum|waitingPerHour)\s*:\s*\d/.test(source)) errors.push(`${relative(new URL('..', root).pathname, file)}: tarife değeri merkezî şehir dosyası dışında tekrarlandı.`);
 }
