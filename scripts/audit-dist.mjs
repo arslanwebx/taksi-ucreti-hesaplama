@@ -25,8 +25,8 @@ function outputPathForUrl(pathname) {
 }
 
 for (const { file, html } of pages) {
-  const name = relative(outputDirectory, file);
-  const isError = name === '404.html' || name.startsWith(`404${join('', '\\')}`) || name.startsWith(`_not-found${join('', '\\')}`);
+  const name = relative(outputDirectory, file).replaceAll('\\', '/');
+  const isError = name === '404.html' || name.startsWith('404/') || name.startsWith('_not-found/');
   const title = html.match(/<title>([^<]+)<\/title>/i)?.[1];
   const description = html.match(/<meta name="description" content="([^"]+)"/i)?.[1];
   if (!isError) {
