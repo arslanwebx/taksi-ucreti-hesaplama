@@ -13,7 +13,7 @@ const standard = { openingFare: 65, perKmFare: 40, minimumFare: 200 };
 
 test('ordinary fare calculation', () => {
   assert.deepEqual(calculateFare(standard, 10), {
-    opening: 65, distance: 400, waiting: 0, additional: 0, subtotal: 465, adjustment: 0, total: 465,
+    opening: 65, distance: 400, waiting: 0, additional: 0, subtotal: 465, adjustment: 0, trafficAdjustment: 0, total: 465,
   });
 });
 
@@ -29,6 +29,12 @@ test('documented waiting charge and additional toll are calculated', () => {
   assert.equal(result.waiting, 50);
   assert.equal(result.additional, 50);
   assert.equal(result.total, 245);
+});
+
+test('high traffic option adjusts the final shown fare', () => {
+  const result = calculateFare(standard, 10, 0, 0, true);
+  assert.equal(result.trafficAdjustment, 69.75);
+  assert.equal(result.total, 534.75);
 });
 
 test('missing waiting tariff does not invent a waiting charge', () => {
@@ -54,16 +60,16 @@ test('Turkish city matching ignores Turkish diacritics', () => {
 });
 
 test('valid calculator query is restored and malformed values are ignored', () => {
-  const result = readCalculatorQuery('?city=istanbul&distance=10,5&extra=25&waiting=4', new Set(['istanbul']));
-  assert.deepEqual(result, { city: 'istanbul', distance: 10.5, waiting: 4, extra: 25 });
+  const result = readCalculatorQuery('?city=istanbul&distance=10,5&extra=25&waiting=4&traffic=high', new Set(['istanbul']));
+  assert.deepEqual(result, { city: 'istanbul', distance: 10.5, waiting: 4, extra: 25, highTraffic: true });
   assert.deepEqual(readCalculatorQuery('?city=unknown&distance=-1&extra=Infinity', new Set(['istanbul'])), {
-    city: undefined, distance: undefined, waiting: undefined, extra: undefined,
+    city: undefined, distance: undefined, waiting: undefined, extra: undefined, highTraffic: false,
   });
 });
 
 test('unreasonably large query values are ignored', () => {
   assert.deepEqual(readCalculatorQuery('?city=istanbul&distance=501&waiting=601&extra=100001', new Set(['istanbul'])), {
-    city: 'istanbul', distance: undefined, waiting: undefined, extra: undefined,
+    city: 'istanbul', distance: undefined, waiting: undefined, extra: undefined, highTraffic: false,
   });
 });
 

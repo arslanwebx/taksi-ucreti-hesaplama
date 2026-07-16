@@ -1,9 +1,7 @@
 'use client';
 
-import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import { normalizeCitySearch } from '@/lib/taxi-calculator';
-import { cityGuidePaths } from '@/src/data/cities';
 import { taxiFares } from '@/src/data/taxi-fares';
 
 const popularSlugs = ['istanbul', 'ankara', 'izmir', 'antalya', 'bursa', 'adana', 'konya', 'gaziantep'];
@@ -31,18 +29,12 @@ export function CityDirectory() {
       {!query && (
         <div className="popular-cities">
           <h3>Popüler şehirler</h3>
-          <ul>{popular.map((city) => {
-            const guidePath = cityGuidePaths[city.slug];
-            return <li key={city.slug}><a href={`/?city=${city.slug}#hesaplayici`}>{city.city}</a>{guidePath && <Link className="guide-link" href={guidePath}>Rehber</Link>}</li>;
-          })}</ul>
+          <ul>{popular.map((city) => <li key={city.slug}><a href={`/?city=${city.slug}#hesaplayici`}>{city.city}</a></li>)}</ul>
         </div>
       )}
       <div className="all-cities">
         <h3>{query ? 'Arama sonuçları' : 'Tüm şehirler'}</h3>
-        {filtered.length ? <ul>{filtered.map((city) => {
-          const guidePath = cityGuidePaths[city.slug];
-          return <li key={city.slug}><a href={`/?city=${city.slug}#hesaplayici`}><span>{String(city.plateCode).padStart(2, '0')}</span>{city.city}</a>{guidePath && <Link className="guide-link" href={guidePath}>Şehir rehberi</Link>}</li>;
-        })}</ul> : <p>Aramanızla eşleşen şehir bulunamadı.</p>}
+        {filtered.length ? <ul>{filtered.map((city) => <li key={city.slug}><a href={`/?city=${city.slug}#hesaplayici`}><span>{String(city.plateCode).padStart(2, '0')}</span>{city.city}</a></li>)}</ul> : <p>Aramanızla eşleşen şehir bulunamadı.</p>}
       </div>
     </div>
   );

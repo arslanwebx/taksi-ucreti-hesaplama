@@ -57,6 +57,9 @@ if (!home.includes('<title>Taksi Ücreti Hesaplama 2026 | 81 İl Güncel Tarifel
 if (!home.includes('Şehrinizi seçin, mesafeyi girin ve açılış, kilometre ve minimum ücret tarifesine göre tahmini taksi ücretinizi hesaplayın. 81 il ve kaynak bilgileri.')) errors.push('Ana sayfa meta açıklaması hedef metinle eşleşmiyor.');
 const cityOptions = home.match(/role="option"/g)?.length ?? 0;
 if (cityOptions !== 81) errors.push(`Şehir seçicisinde 81 yerine ${cityOptions} seçenek var.`);
+const optionSlugs = [...home.matchAll(/id="[^"]*-option-([a-z-]+)"/g)].map((match) => match[1]);
+const expectedPopularCities = ['istanbul','ankara','izmir','antalya','bursa','adana','konya','gaziantep','kocaeli','mersin'];
+if (expectedPopularCities.some((slug, index) => optionSlugs[index] !== slug)) errors.push('Şehir seçicisinin ilk 10 seçeneği beklenen popüler şehir sırasıyla eşleşmiyor.');
 if ((home.match(/\?city=[a-z-]+#hesaplayici/g)?.length ?? 0) < 81) errors.push('Ana sayfa şehir dizininde 81 hesaplayıcı bağlantısı bulunamadı.');
 const faqBlock = home.match(/class="faq"[\s\S]*?class="author-box/i)?.[0] ?? '';
 const faqCount = faqBlock.match(/<details/g)?.length ?? 0;

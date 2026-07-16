@@ -16,8 +16,10 @@ import { taxiFareBySlug, taxiFares, type TaxiFare } from '@/src/data/taxi-fares'
 const decimal = new Intl.NumberFormat('tr-TR', { maximumFractionDigits: 2 });
 const citySlugs = new Set(taxiFares.map((city) => city.slug));
 const quickDistances = [3, 5, 10, 15, 20, 30] as const;
+const popularCitySlugs = ['istanbul', 'ankara', 'izmir', 'antalya', 'bursa', 'adana', 'konya', 'gaziantep', 'kocaeli', 'mersin'];
+const popularCityOrder = new Map(popularCitySlugs.map((slug, index) => [slug, index]));
 
-type Result = ReturnType<typeof calculateFare> & { city: TaxiFare; km: number; waitingMinutes: number };
+type Result = ReturnType<typeof calculateFare> & { city: TaxiFare; km: number; waitingMinutes: number; highTraffic: boolean };
 
 function sourceName(sourceUrl: string) {
   try {
@@ -31,7 +33,13 @@ export function Calculator({ fixedCity }: { fixedCity?: string }) {
   const id = useId().replace(/:/g, '');
   const listRef = useRef<HTMLDivElement>(null);
   const available = useMemo(
-    () => fixedCity ? taxiFares.filter((city) => city.slug === fixedCity) : taxiFares,
+    () => fixedCity
+      ? taxiFares.filter((city) => city.slug === fixedCity)
+      : [...taxiFares].sort((first, second) => {
+        const firstOrder = popularCityOrder.get(first.slug) ?? Number.MAX_SAFE_INTEGER;
+        const secondOrder = popularCityOrder.get(second.slug) ?? Number.MAX_SAFE_INTEGER;
+        return firstOrder - secondOrder || first.city.localeCompare(second.city, 'tr');
+      }),
     [fixedCity],
   );
   const preset = fixedCity ? available[0] : taxiFareBySlug.istanbul;
@@ -41,6 +49,7 @@ export function Calculator({ fixedCity }: { fixedCity?: string }) {
   const [active, setActive] = useState(0);
   const [km, setKm] = useState('');
   const [showExtras, setShowExtras] = useState(false);
+  const [highTraffic, setHighTraffic] = useState(false);
   const [waiting, setWaiting] = useState('0');
   const [extra, setExtra] = useState('0');
   const [error, setError] = useState('');
@@ -83,11 +92,13 @@ export function Calculator({ fixedCity }: { fixedCity?: string }) {
       setWaiting(String(waitingMinutes).replace('.', ','));
       setExtra(String(additional).replace('.', ','));
       setShowExtras(waitingMinutes > 0 || additional > 0);
+      setHighTraffic(restored.highTraffic ?? false);
       setResult({
         city: initialCity,
         km: restored.distance,
         waitingMinutes,
-        ...calculateFare(initialCity, restored.distance, waitingMinutes, additional),
+        highTraffic: restored.highTraffic ?? false,
+        ...calculateFare(initialCity, restored.distance, waitingMinutes, additional, restored.highTraffic ?? false),
       });
     }
   }, [fixedCity]);
@@ -159,7 +170,8 @@ export function Calculator({ fixedCity }: { fixedCity?: string }) {
       city: selected,
       km: distanceKm,
       waitingMinutes,
-      ...calculateFare(selected, distanceKm, waitingMinutes, additional),
+      highTraffic,
+      ...calculateFare(selected, distanceKm, waitingMinutes, additional, highTraffic),
     };
     setError('');
     setResult(nextResult);
@@ -167,6 +179,7 @@ export function Calculator({ fixedCity }: { fixedCity?: string }) {
       const params = new URLSearchParams({ city: selected.slug, distance: String(distanceKm) });
       if (waitingMinutes > 0) params.set('waiting', String(waitingMinutes));
       if (additional > 0) params.set('extra', String(additional));
+      if (highTraffic) params.set('traffic', 'high');
       window.history.replaceState(null, '', `/?${params.toString()}#hesaplayici`);
     }
   }
@@ -179,6 +192,7 @@ export function Calculator({ fixedCity }: { fixedCity?: string }) {
     setWaiting('0');
     setExtra('0');
     setShowExtras(false);
+    setHighTraffic(false);
     setResult(null);
     setError('');
     setFeedback('Hesaplama sıfırlandı.');
@@ -195,6 +209,7 @@ export function Calculator({ fixedCity }: { fixedCity?: string }) {
     if (result.waiting > 0) parts.push(`Bekleme: ${formatCurrency(result.waiting)}`);
     if (result.additional > 0) parts.push(`Ek ücret: ${formatCurrency(result.additional)}`);
     if (result.adjustment > 0) parts.push(`Minimum ücret farkı: ${formatCurrency(result.adjustment)}`);
+    if (result.highTraffic) parts.push('Yoğun trafik seçeneği: Açık');
     parts.push(`Kaynak: ${result.city.sourceUrl}`);
     return parts.join('\n');
   }
@@ -251,7 +266,7 @@ export function Calculator({ fixedCity }: { fixedCity?: string }) {
                 aria-expanded={open}
                 aria-controls={`${id}-listbox`}
                 aria-activedescendant={open && filtered[active] ? `${id}-option-${filtered[active].slug}` : undefined}
-                onFocus={() => !fixedCity && setOpen(true)}
+                onClick={() => !fixedCity && setOpen((value) => !value)}
                 onChange={(event) => {
                   setQuery(event.target.value);
                   setSelected(undefined);
@@ -307,6 +322,14 @@ export function Calculator({ fixedCity }: { fixedCity?: string }) {
             <span><strong>Ek yol ücreti ekle</strong><small>Köprü, tünel, otoyol veya bildiğiniz diğer tutar</small></span>
           </label>
 
+          {!fixedCity && (
+            <label className="extras-toggle traffic-toggle">
+              <input type="checkbox" checked={highTraffic} onChange={(event) => { setHighTraffic(event.target.checked); setResult(null); }}/>
+              <span className="switch" aria-hidden="true"/>
+              <span><strong>Yoğun trafik</strong><small>Yoğun saatler için tahmini toplamı ayarlar</small></span>
+            </label>
+          )}
+
           {showExtras && (
             <div className="optional-fields">
               {selected?.waitingFarePerMinute !== undefined && (
@@ -342,6 +365,7 @@ export function Calculator({ fixedCity }: { fixedCity?: string }) {
               {result.waiting > 0 && <div><dt>Bekleme bedeli <small>{decimal.format(result.waitingMinutes)} dk</small></dt><dd>{formatCurrency(result.waiting)}</dd></div>}
               {result.additional > 0 && <div><dt>Ek geçiş ücreti</dt><dd>{formatCurrency(result.additional)}</dd></div>}
               {result.adjustment > 0 && <div><dt>Minimum ücret farkı</dt><dd>{formatCurrency(result.adjustment)}</dd></div>}
+              {result.highTraffic && <div><dt>Yoğun trafik koşulu</dt><dd>Dahil</dd></div>}
               <div className="total-row"><dt>Tahmini toplam</dt><dd>{formatCurrency(result.total)}</dd></div>
             </dl>
             {result.adjustment > 0 && <p className="minimum-note">Hesaplanan tutar şehrin minimum yolculuk ücretinin altında kaldığı için minimum ücret uygulanmıştır.</p>}

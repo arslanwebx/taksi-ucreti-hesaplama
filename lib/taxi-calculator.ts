@@ -12,6 +12,7 @@ export type FareCalculation = {
   additional: number;
   subtotal: number;
   adjustment: number;
+  trafficAdjustment: number;
   total: number;
 };
 
@@ -20,6 +21,7 @@ export type CalculatorQuery = {
   distance?: number;
   waiting?: number;
   extra?: number;
+  highTraffic?: boolean;
 };
 
 const roundMoney = (value: number) => Math.round((value + Number.EPSILON) * 100) / 100;
@@ -35,6 +37,7 @@ export function calculateFare(
   distanceKm: number,
   waitingMinutes = 0,
   additionalCharges = 0,
+  highTraffic = false,
 ): FareCalculation {
   const opening = roundMoney(tariff.openingFare);
   const distance = roundMoney(distanceKm * tariff.perKmFare);
@@ -42,7 +45,9 @@ export function calculateFare(
   const additional = roundMoney(additionalCharges);
   const subtotal = roundMoney(opening + distance + waiting + additional);
   const adjustment = roundMoney(Math.max(0, tariff.minimumFare - subtotal));
-  return { opening, distance, waiting, additional, subtotal, adjustment, total: roundMoney(subtotal + adjustment) };
+  const fareAfterMinimum = roundMoney(subtotal + adjustment);
+  const trafficAdjustment = highTraffic ? roundMoney(fareAfterMinimum * 0.15) : 0;
+  return { opening, distance, waiting, additional, subtotal, adjustment, trafficAdjustment, total: roundMoney(fareAfterMinimum + trafficAdjustment) };
 }
 
 export function normalizeCitySearch(value: string): string {
@@ -74,6 +79,7 @@ export function readCalculatorQuery(search: string, validCitySlugs: ReadonlySet<
     distance: boundedNumber(params, 'distance', 0.1, 500),
     waiting: boundedNumber(params, 'waiting', 0, 600),
     extra: boundedNumber(params, 'extra', 0, 100000),
+    highTraffic: params.get('traffic') === 'high',
   };
 }
 
