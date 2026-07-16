@@ -1,0 +1,22 @@
+---
+import { site } from '../data/site';
+const current = Astro.url.pathname;
+---
+<a class="skip" href="#main">Ana içeriğe geç</a>
+<header class="header">
+  <div class="container nav-wrap">
+    <a class="brand" href="/" aria-label="Taksi Ücreti Hesaplama ana sayfa"><span aria-hidden="true">T</span> Taksi Ücreti</a>
+    <button class="menu-button" type="button" aria-expanded="false" aria-controls="main-nav">Menü</button>
+    <nav id="main-nav" aria-label="Ana menü">
+      {site.navigation.map(([label, href]) => <a href={href} aria-current={current === href ? 'page' : undefined}>{label}</a>)}
+    </nav>
+  </div>
+</header>
+<script is:inline>
+  const button = document.querySelector('.menu-button');
+  const nav = document.querySelector('#main-nav');
+  button?.addEventListener('click', () => {
+    const open = button.getAttribute('aria-expanded') === 'true';
+    button.setAttribute('aria-expanded', String(!open)); nav?.classList.toggle('open', !open);
+  });
+</script>

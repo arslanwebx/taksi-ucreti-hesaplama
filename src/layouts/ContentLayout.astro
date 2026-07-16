@@ -1,0 +1,5 @@
+---
+import BaseLayout from './BaseLayout.astro'; import Breadcrumbs from '../components/Breadcrumbs.astro';
+const { title, description, path, eyebrow='Güncel rehber', schema } = Astro.props;
+---
+<BaseLayout {title} {description} {path} {schema} type="article"><div class="container content-shell"><Breadcrumbs items={[{name:'Ana Sayfa',href:'/'},{name:title,href:path}]}/><article><header class="page-header"><p class="eyebrow">{eyebrow}</p><h1>{title}</h1><p class="lead">{description}</p></header><slot/></article></div></BaseLayout>

@@ -1,0 +1,13 @@
+---
+import { site } from '../data/site';
+const columns = [
+  ['Hesaplama ve şehirler', [['Taksi Ücreti Hesaplama','/'],['İstanbul Taksi Ücreti','/istanbul-taksi-ucreti/'],['Ankara Taksi Ücreti','/ankara-taksi-ucreti/'],['İzmir Taksi Ücreti','/izmir-taksi-ucreti/'],['Antalya Taksi Ücreti','/antalya-taksi-ucreti/'],['Tüm Şehirler','/sehirler/']]],
+  ['Rehberler', [['Taksi Rehberi','/taksi-rehberi/'],['Havalimanı Taksi Ücretleri','/havalimani-taksi-ucretleri/'],['Taksi Ücreti Nasıl Hesaplanır?','/taksi-rehberi/#hesaplama'],['İndi Bindi Ücreti','/taksi-rehberi/#indi-bindi'],['Taksi Bekleme Ücreti','/taksi-rehberi/#bekleme'],['Veri Kaynakları','/veri-kaynaklari-ve-hesaplama-yontemi/']]],
+  ['Güven', [['Hakkımızda','/hakkimizda/'],['İletişim','/iletisim/'],['Yazar','/yazar/oguzhan-arslan/'],['Editoryal Politika','/editoryal-politika/'],['Düzeltme Politikası','/duzeltme-politikasi/']]],
+  ['Yasal', [['Gizlilik Politikası','/gizlilik-politikasi/'],['Çerez Politikası','/cerez-politikasi/'],['Kullanım Koşulları','/kullanim-kosullari/'],['Sorumluluk Reddi','/sorumluluk-reddi/']]]
+] as const;
+---
+<footer>
+  <div class="container footer-grid">{columns.map(([title, links]) => <section><h2>{title}</h2>{links.map(([label, href]) => <a href={href}>{label}</a>)}</section>)}</div>
+  <div class="container footer-bottom"><p>{site.disclaimer}</p><p>© {new Date().getFullYear()} {site.name}. Tüm hakları saklıdır.</p></div>
+</footer>
