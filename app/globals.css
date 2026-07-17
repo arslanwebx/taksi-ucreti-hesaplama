@@ -134,6 +134,7 @@ h1,h2,h3,h4,strong,b,button,label,summary{letter-spacing:-.02em}
 .info-grid h2{font-size:clamp(1.45rem,2.5vw,2rem);line-height:1.08;margin:0 0 13px;letter-spacing:-.035em}
 .info-grid p,.info-grid li{font-size:.94rem;color:var(--muted)}
 .section-links{display:flex;flex-wrap:wrap;gap:12px 24px;margin-top:26px;font-weight:800}
+.author-posts-cta{display:flex;justify-content:center;margin:34px 0 0}
 .city-directory{display:grid;grid-template-columns:280px 1fr;gap:28px;align-items:start}
 .directory-search{position:sticky;top:100px;display:grid;gap:7px;padding:20px;border:1px solid var(--line);border-radius:13px;background:var(--cream)}
 .directory-search label{font-weight:850}
