@@ -6,7 +6,7 @@ import { GoogleAnalytics } from '@/components/GoogleAnalytics';
 import { site } from '@/src/data/site';
 import './globals.css';
 
-const poppins = Poppins({ subsets: ['latin', 'latin-ext'], weight: ['400', '500', '600', '700', '800', '900'], display: 'swap', variable: '--font-poppins' });
+const poppins = Poppins({ subsets: ['latin', 'latin-ext'], weight: ['400', '700', '800'], display: 'swap', variable: '--font-poppins' });
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
