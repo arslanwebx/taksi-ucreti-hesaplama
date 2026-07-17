@@ -18,6 +18,14 @@ export default function AirportIndex() {
         <h2>Esenboğa Havalimanı taksi yolculuğu</h2>
         <p>Ankara merkez ile Esenboğa arasındaki taksi fiyatı sabit değildir. Sarı taksi taksimetresi gerçek mesafe ve beklemeye göre çalışır. Güncel rota tahminleri için <Link href="/ankara-taksi-ucreti/">Ankara taksi ücreti sayfasını</Link> kullanın.</p>
       </section>
+      <section id="adnan-menderes">
+        <h2>Adnan Menderes Havalimanı taksi yolculuğu</h2>
+        <p>İzmir merkez ve havalimanı arasındaki tutar sabit değildir. Güncel merkez tarifesi ve rota tahminleri için <Link href="/izmir-taksi-ucreti/">İzmir taksi ücreti sayfasını</Link> kullanın.</p>
+      </section>
+      <section id="antalya-havalimani">
+        <h2>Antalya Havalimanı taksi yolculuğu</h2>
+        <p>Kaleiçi, Lara ve Konyaaltı yönünde gerçek rota ile yerel tarife sonucu değiştirebilir. Planlama için <Link href="/antalya-taksi-ucreti/">Antalya taksi ücreti sayfasını</Link> inceleyin.</p>
+      </section>
       <section>
         <h2>Doğru havalimanı tahmini</h2>
         <ol><li>Terminal ile tam varış adresi arasındaki araç yolunu bulun.</li><li>Şehir için kayıtlı sarı taksi tarifesini kullanın.</li><li>Yalnızca doğrulanmış bekleme tarifesi varsa süre ekleyin.</li><li>Köprü, tünel ve otoyol bedelini ayrıca yazın.</li></ol>

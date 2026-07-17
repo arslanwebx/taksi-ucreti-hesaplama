@@ -11,6 +11,7 @@ import { calculateFare } from '@/lib/taxi-calculator';
 
 const city = publishedCities.find((item) => item.slug === 'istanbul')!;
 const title = 'İstanbul Havalimanı Taksi Ücreti – Hesaplama Aracı (2026)';
+const h1 = 'İstanbul Havalimanı Taksi Ücreti (2026)';
 const description = 'İstanbul Havalimanı’ndan Taksim, Sultanahmet, Kadıköy ve diğer ilçelere 2026 taksi ücretlerini hesaplayın. Güncel İBB tarifesi ve rota tablosu.';
 const path = '/istanbul-havalimani-taksi-ucreti/';
 const quickRoutes = istanbulAirportRoutes.filter((route) =>
@@ -46,7 +47,7 @@ export default function IstanbulAirport() {
 
   return (
     <ArticlePage
-      title={title}
+      title={h1}
       description={description}
       path={path}
       modified={city.lastVerified}

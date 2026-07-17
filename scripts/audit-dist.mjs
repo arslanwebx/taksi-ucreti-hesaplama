@@ -93,10 +93,10 @@ for (const slug of ['ankara-taksi-ucreti','antalya-taksi-ucreti','istanbul-taksi
   if (!/class="toc"[\s\S]*?aria-expanded="false"/i.test(html)) errors.push(`${slug}: İçindekiler kapalı başlamıyor.`);
 }
 const expectedCityTitles = {
-  'ankara-taksi-ucreti': 'Ankara Taksi Ücreti Hesaplama (2026) – Güncel Tarife',
+  'ankara-taksi-ucreti': 'Ankara Taksi Ücretleri 2026: Güncel Tarife ve Hesaplama',
   'istanbul-taksi-ucreti': 'İstanbul Taksi Ücreti [2026] – Hesaplama Aracı',
-  'antalya-taksi-ucreti': 'Antalya Taksi Ücreti Hesaplama | Güncel Tarife 2026',
-  'izmir-taksi-ucreti': 'İzmir Taksi Ücreti Hesaplama | Güncel Fiyatlar 2026',
+  'antalya-taksi-ucreti': 'Antalya Taksi Ücretleri 2026: Güncel Fiyatlar ve Hesaplama',
+  'izmir-taksi-ucreti': 'İzmir Taksi Ücretleri 2026: Hemen Hesaplama',
 };
 for (const [slug, expectedTitle] of Object.entries(expectedCityTitles)) {
   const html = readFileSync(join(outputDirectory, slug, 'index.html'), 'utf8');
@@ -107,11 +107,7 @@ for (const [slug, expectedTitle] of Object.entries(expectedCityTitles)) {
   if (!html.includes('Sarı taksi')) errors.push(`${slug}: hesaplayıcıda Sarı taksi tarifesi bulunmalı.`);
   if (/Turkuaz|Siyah VIP/.test(html)) errors.push(`${slug}: sarı taksi dışı kategori bulundu.`);
   if (/Şehir rehberini aç/i.test(html)) errors.push(`${slug}: aynı şehir sayfasına dönen rehber bağlantısı kaldırılmadı.`);
-  if (slug === 'antalya-taksi-ucreti') {
-    if (!html.includes('Hesaplanan tutar minimum ücrete eşittir.')) errors.push('Antalya: 3 km minimum ücret eşitliği açıklaması bulunamadı.');
-    if (!html.includes('28.03.2025 tarihli 178 sayılı UKOME kararı')) errors.push('Antalya: kesin UKOME karar referansı bulunamadı.');
-    if (!html.includes('ukome-kararlari?ukome-yil=2025&amp;ukome-ay=3')) errors.push('Antalya: UKOME kaynağı Mart 2025 kararlarına doğrudan filtrelenmiyor.');
-  }
+  if (slug === 'antalya-taksi-ucreti' && !html.includes('ikincil 2026 kaydından derlenmiştir')) errors.push('Antalya: kaynak belirsizliği görünür biçimde açıklanmadı.');
 }
 for (const asset of ['logo.svg','logo-mark.svg','favicon.svg','og-brand.svg','_redirects']) if (!existsSync(join(outputDirectory, asset))) errors.push(`Varlık eksik: ${asset}`);
 const redirects = readFileSync(join(outputDirectory, '_redirects'), 'utf8');

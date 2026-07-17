@@ -9,7 +9,7 @@ import { canonical, site } from '@/src/data/site';
 
 const city = publishedCities.find((item) => item.slug === 'ankara')!;
 export const ankaraPageTitle = 'Ankara Taksi Ücreti Hesaplama 2026';
-export const ankaraPageDescription = 'Ankara taksi ücretini güncel 2026 tarifesiyle hesaplayın. Açılış, kilometre, indi-bindi ve bekleme ücretlerini öğrenin; popüler rota fiyatlarını görün.';
+export const ankaraPageDescription = 'Ankara taksi ücretini 2026 güncel tarifesiyle hesaplayın. Açılış, kilometre, indi-bindi, bekleme ücretleri ve popüler rota tahminlerini görün.';
 
 const faqs = [
   { question: 'Ankara taksi açılış ücreti ne kadar?', answer: '1 Mart 2026 tarihli Ankara tarifesinde sarı taksi açılış ücreti 65 TL’dir.' },
@@ -19,7 +19,7 @@ const faqs = [
   { question: 'Ankara taksilerinde gece tarifesi var mı?', answer: 'Kullanılan Ankara tarife kaydında ayrı bir gece tarifesi belirtilmez. Aynı sarı taksi tarifesi esas alınır; bekleme ve gerçek rota toplamı değiştirebilir.' },
   { question: 'Ankara taksilerinde kredi kartı geçer mi?', answer: 'Kart kabulü araca ve ödeme cihazının çalışmasına göre değişebilir. Kartla ödeyecekseniz yolculuk başlamadan önce sürücüye sormanız uygundur.' },
   { question: 'Kızılay ile Esenboğa Havalimanı taksi ücreti ne kadar?', answer: `Yaklaşık 30 km için bekleme ve ek yol bedeli olmadan sarı taksi tahmini ${money(calculateFare(city, 30).total)} tutar. Başlangıç adresi, rota ve trafik gerçek tutarı değiştirebilir.` },
-  { question: 'Esenboğa Havalimanı taksi fiyatı sabit mi?', answer: 'Hayır. Havalimanı yolculuğu sabit fiyat değildir; taksimetre açılış, gerçek mesafe, bekleme ve varsa ek yol bedellerine göre çalışır.' },
+  { question: 'AŞTİ ile Kızılay taksi ücreti ne kadar?', answer: `Yaklaşık 6 km için bekleme ve ek yol bedeli olmadan sarı taksi tahmini ${money(calculateFare(city, 6).total)} tutar. Gerçek rota ve trafik sonucu değiştirebilir.` },
 ];
 
 export function AnkaraFareArticle() {
@@ -38,6 +38,7 @@ export function AnkaraFareArticle() {
 
   return (
     <ArticlePage title={ankaraPageTitle} description={ankaraPageDescription} path="/ankara-taksi-ucreti/" modified={city.lastVerified} category="Şehirler" readingMinutes={8} faqs={faqs} additionalSchemas={[webApplicationSchema]}>
+      <p>Ankara taksi ücreti sabit değildir. Açılış ücretine gidilen yol, varsa bekleme süresi ve bilinen ek yol bedelleri eklenir; hesap 200 TL’nin altında kalırsa minimum ücret uygulanır.</p>
       <section className="fare-answer-box" aria-label="Ankara 2026 taksi tarifesi özeti">
         <strong>Ankara sarı taksi tarifesi</strong>
         <dl>
@@ -50,7 +51,7 @@ export function AnkaraFareArticle() {
         <p>Kaynak: <a href={city.sourceUrl} rel="external">Ankara Esnaf ve Sanatkârlar Odaları Birliği tarife komisyonu</a> · Son kontrol: <time dateTime={city.lastVerified}>{formatDate(city.lastVerified)}</time></p>
       </section>
 
-      <p>Ankara taksi ücreti sabit değildir. Açılış ücretine gidilen yol, varsa bekleme süresi ve bilinen ek yol bedelleri eklenir; hesap 200 TL’nin altında kalırsa minimum ücret uygulanır. Sayfadaki tüm rakamlar aynı merkezi Ankara sarı taksi kaydından hesaplanır.</p>
+      <p>Sayfadaki hesaplayıcı ve rota tahminleri aynı merkezi Ankara sarı taksi kaydından üretilir.</p>
       <TableOfContents items={[
         { id: 'hesaplama', label: 'Ankara taksi ücreti hesaplama' },
         { id: 'tarife', label: '2026 Ankara taksi tarifesi' },

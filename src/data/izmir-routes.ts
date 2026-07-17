@@ -1,0 +1,17 @@
+export const izmirRoutes = [
+  { name: 'Konak – Bornova', distanceKm: 12 },
+  { name: 'Konak – Karşıyaka', distanceKm: 14 },
+  { name: 'Konak – Buca', distanceKm: 10 },
+  { name: 'Konak – Gaziemir', distanceKm: 16 },
+  { name: 'Konak – Balçova', distanceKm: 11 },
+  { name: 'Konak – Adnan Menderes Havalimanı', distanceKm: 18 },
+  { name: 'Bornova – Karşıyaka', distanceKm: 15 },
+  { name: 'Bornova – Buca', distanceKm: 14 },
+  { name: 'Karşıyaka – Çiğli', distanceKm: 12 },
+  { name: 'Karşıyaka – Alsancak', distanceKm: 13 },
+  { name: 'Alsancak – Otogar', distanceKm: 10 },
+  { name: 'Basmane – Otogar', distanceKm: 9 },
+  { name: 'Gaziemir – Adnan Menderes Havalimanı', distanceKm: 6 },
+  { name: 'İzmir Otogar – Konak', distanceKm: 11 },
+  { name: 'İzmir Otogar – Bornova', distanceKm: 7 },
+] as const;

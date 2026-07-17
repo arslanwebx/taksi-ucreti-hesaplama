@@ -1,1 +1,8 @@
-import { CityFareArticle, cityFareMetadata } from '@/components/CityFareArticle';import { publishedCities } from '@/src/data/cities';const city=publishedCities.find((item)=>item.slug==='antalya')!;export const metadata=cityFareMetadata(city);export default function Page(){return <CityFareArticle city={city}/>}
+import type { Metadata } from 'next';
+import { RegionalCityFareArticle } from '@/components/RegionalCityFareArticle';
+import { pageMetadata } from '@/lib/seo';
+
+const title = 'Antalya Taksi Ücretleri 2026: Güncel Fiyatlar ve Hesaplama';
+const description = 'Antalya taksi ücretini 2026 güncel tarifesiyle hesaplayın. Açılış, kilometre, kısa mesafe ücretleri ve popüler Antalya rota tahminlerini görün.';
+export const metadata: Metadata = pageMetadata(title, description, '/antalya-taksi-ucreti/', 'article');
+export default function Page() { return <RegionalCityFareArticle slug="antalya"/>; }

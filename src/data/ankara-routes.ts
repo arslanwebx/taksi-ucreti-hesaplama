@@ -16,4 +16,9 @@ export const ankaraRoutes: readonly AnkaraRoute[] = [
   { name: 'Kızılay – Ankara Garı', distanceKm: 4 },
   { name: 'AŞTİ – Esenboğa Havalimanı', distanceKm: 37 },
   { name: 'Çankaya – Esenboğa Havalimanı', distanceKm: 33 },
+  { name: 'AŞTİ – Kızılay', distanceKm: 6 },
+  { name: 'Esenboğa Havalimanı – Kızılay', distanceKm: 30 },
+  { name: 'Etimesgut – Kızılay', distanceKm: 20 },
+  { name: 'Çankaya – AŞTİ', distanceKm: 8 },
+  { name: 'Keçiören – AŞTİ', distanceKm: 14 },
 ] as const;

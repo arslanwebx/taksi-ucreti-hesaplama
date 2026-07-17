@@ -1,0 +1,17 @@
+export const antalyaRoutes = [
+  { name: 'Antalya Havalimanı – Kaleiçi', distanceKm: 15 },
+  { name: 'Antalya Havalimanı – Lara', distanceKm: 13 },
+  { name: 'Antalya Havalimanı – Konyaaltı', distanceKm: 24 },
+  { name: 'Antalya Havalimanı – Otogar', distanceKm: 18 },
+  { name: 'Kaleiçi – Lara', distanceKm: 12 },
+  { name: 'Kaleiçi – Konyaaltı', distanceKm: 8 },
+  { name: 'Kaleiçi – Otogar', distanceKm: 8 },
+  { name: 'Lara – Konyaaltı', distanceKm: 20 },
+  { name: 'Lara – Kundu', distanceKm: 15 },
+  { name: 'Lara – Belek', distanceKm: 35 },
+  { name: 'Konyaaltı – Otogar', distanceKm: 10 },
+  { name: 'Otogar – Antalya Havalimanı', distanceKm: 18 },
+  { name: 'Kepez – Kaleiçi', distanceKm: 10 },
+  { name: 'Muratpaşa – Antalya Havalimanı', distanceKm: 14 },
+  { name: 'Antalya Merkez – Belek', distanceKm: 40 },
+] as const;
