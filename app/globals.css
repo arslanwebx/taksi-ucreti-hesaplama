@@ -73,11 +73,23 @@ table caption{text-align:left;padding:11px 15px;background:var(--cream);color:va
   .article-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 
+/* Poppins typography and featured editorial images */
+body{font-family:var(--font-poppins),Poppins,ui-sans-serif,system-ui,sans-serif;font-size:16px;line-height:1.7;font-weight:400}
+h1,h2,h3,h4,strong,b,button,label,summary{letter-spacing:-.02em}
+.article-card{padding:0;overflow:hidden}
+.article-card-body{display:flex;flex:1;flex-direction:column;padding:22px}
+.article-card-image{display:block;overflow:hidden;aspect-ratio:3/2;background:var(--cream);text-decoration:none}
+.article-card-image img{width:100%;height:100%;object-fit:cover;transition:transform .25s ease}
+.article-card-image:hover img{transform:scale(1.025)}
+.article-card-author{margin-bottom:0}
+.article-featured-image{width:100%;height:auto;aspect-ratio:3/2;object-fit:cover;margin-top:28px;border:1px solid var(--line);border-radius:16px;box-shadow:0 12px 36px rgba(50,42,13,.1)}
+
 /* Homepage calculator and content hierarchy */
 :focus-visible{outline:3px solid #8c6800;outline-offset:3px}
 .home-hero{padding:38px 0 28px;background:var(--paper);border-bottom:0}
 .home-hero:after{display:none}
 .home-hero .container{max-width:1120px;text-align:center}
+.home-hero .container,.home-article>.section>.container{max-width:var(--content)}
 .home-hero h1{font-size:clamp(2.55rem,6vw,4.65rem);line-height:.96;letter-spacing:-.06em;margin:0 auto;max-width:900px}
 .home-hero .lead{max-width:920px;margin:18px auto 0;font-size:clamp(1rem,1.7vw,1.22rem);line-height:1.55;color:var(--muted)}
 .hero-trust{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 24px;margin:18px 0 0;font-size:.88rem;font-weight:800}
@@ -212,7 +224,7 @@ table caption{text-align:left;padding:11px 15px;background:var(--cream);color:va
 }
 
 /* Three taxi category fares */
-.fare-result header h3{font-size:clamp(1.35rem,2.4vw,1.75rem);line-height:1.1;letter-spacing:-.03em;white-space:normal;margin-top:6px}
+.fare-result header h3{font-size:clamp(2rem,4vw,3rem);line-height:1;letter-spacing:-.045em;white-space:nowrap;margin-top:7px;font-variant-numeric:tabular-nums}
 .category-fare-results{display:grid;gap:9px;margin:18px 0 8px}
 .category-fare{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:10px;padding:12px 13px;border:1px solid var(--line);border-radius:11px;background:white}
 .category-fare strong{font-size:.86rem;line-height:1.25}

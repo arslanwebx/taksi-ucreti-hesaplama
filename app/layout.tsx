@@ -1,9 +1,12 @@
 import type { Metadata } from 'next';
+import { Poppins } from 'next/font/google';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { GoogleAnalytics } from '@/components/GoogleAnalytics';
 import { site } from '@/src/data/site';
 import './globals.css';
+
+const poppins = Poppins({ subsets: ['latin', 'latin-ext'], weight: ['400', '500', '600', '700', '800', '900'], display: 'swap', variable: '--font-poppins' });
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
@@ -17,5 +20,5 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="tr"><body><a className="skip-link" href="#main">İçeriğe geç</a><Header/><main id="main">{children}</main><Footer/><GoogleAnalytics/></body></html>;
+  return <html lang="tr" className={poppins.variable}><body><a className="skip-link" href="#main">İçeriğe geç</a><Header/><main id="main">{children}</main><Footer/><GoogleAnalytics/></body></html>;
 }

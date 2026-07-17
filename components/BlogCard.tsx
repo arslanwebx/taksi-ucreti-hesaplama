@@ -6,10 +6,9 @@ import { site } from '@/src/data/site';
 type BlogCardProps = PostSummary & {
   headingLevel?: 'h2' | 'h3';
   showDate?: boolean;
-  showCta?: boolean;
 };
 
-export function BlogCard({ title, summary, path, category, modified, cta, headingLevel = 'h2', showDate = true, showCta = true }: BlogCardProps) {
+export function BlogCard({ title, summary, path, category, modified, image, headingLevel = 'h2', showDate = true }: BlogCardProps) {
   const Heading = headingLevel;
-  return <article className="article-card"><div className="article-card-meta"><span>{category}</span>{showDate && <time dateTime={modified}>{formatDate(modified)}</time>}</div><Heading><Link href={path}>{title}</Link></Heading><p>{summary}</p><div className="article-card-author"><span className="mini-avatar" aria-hidden="true">OA</span><Link href={site.author.url}>{site.author.name}</Link></div>{showCta && <Link className="card-link" href={path}>{cta} →</Link>}</article>;
+  return <article className="article-card">{image && <Link className="article-card-image" href={path} aria-label={title}><img src={image} alt="" width="1536" height="1024" loading="lazy"/></Link>}<div className="article-card-body"><div className="article-card-meta"><span>{category}</span>{showDate && <time dateTime={modified}>{formatDate(modified)}</time>}</div><Heading><Link href={path}>{title}</Link></Heading><p>{summary}</p><div className="article-card-author"><span className="mini-avatar" aria-hidden="true">OA</span><Link href={site.author.url}>{site.author.name}</Link></div></div></article>;
 }

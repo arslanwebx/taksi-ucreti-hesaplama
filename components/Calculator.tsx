@@ -401,7 +401,7 @@ export function Calculator({ fixedCity, distancePresets = [], allowWaitingInput 
           <div className="result-empty"><span aria-hidden="true">₺</span><div><h3>Tahmini toplam burada görünür</h3><p>Şehir ve mesafe seçerek şeffaf ücret dökümünü alın.</p></div></div>
         ) : (
           <div className="fare-result">
-            <header><div><span>{result.city.city} · {fareQualityLabel(result.city.isEstimated, result.city.dataStatus)}</span><h3>Sarı taksi ücret tahmini</h3></div><strong>{decimal.format(result.km)} km</strong></header>
+            <header><div><span>{result.city.city} · {fareQualityLabel(result.city.isEstimated, result.city.dataStatus)} · Sarı taksi ücret tahmini</span><h3>{formatCurrency(result.total)}</h3></div><strong>{decimal.format(result.km)} km</strong></header>
             <dl>
               <div><dt>Sarı taksi açılış ücreti</dt><dd>{formatCurrency(result.opening)}</dd></div>
               <div><dt>Sarı taksi mesafe bedeli <small>{decimal.format(result.km)} km × {formatCurrency(result.city.perKmFare)}</small></dt><dd>{formatCurrency(result.distance)}</dd></div>
