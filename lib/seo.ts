@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { canonical, site } from '@/src/data/site';
 
 export function pageMetadata(title: string, description: string, path: string, type: 'website' | 'article' = 'website'): Metadata {
-  const fullTitle = title.includes(site.name) ? title : `${title} | ${site.name}`;
+  const fullTitle = type === 'article' || title.includes(site.name) ? title : `${title} | ${site.name}`;
   return {
     title: { absolute: fullTitle },
     description,

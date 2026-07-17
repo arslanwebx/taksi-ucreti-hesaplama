@@ -9,7 +9,7 @@ import { canonical, site } from '@/src/data/site';
 import { pageMetadata } from '@/lib/seo';
 
 const city = publishedCities.find((item) => item.slug === 'istanbul')!;
-const title = 'İstanbul Havalimanı Taksi Ücreti 2026: Taksim ve İlçe Fiyatları';
+const title = 'İstanbul Havalimanı Taksi Ücreti (2026) – Güncel Taksi Fiyatlar';
 const description = 'İstanbul Havalimanı’ndan Taksim, Sultanahmet, Kadıköy ve diğer ilçelere 2026 taksi ücretlerini hesaplayın. Güncel İBB tarifesi ve rota tablosu.';
 const path = '/istanbul-havalimani-taksi-ucreti/';
 const quickRoutes = istanbulAirportRoutes.filter((route) =>
