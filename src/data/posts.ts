@@ -14,7 +14,7 @@ export const posts: PostSummary[] = [
   { title: 'Ankara Taksi Ücreti Hesaplama 2026', summary: 'Ankara tarife kaydıyla Kızılay, AŞTİ ve çevre ilçeler için araç rotası mesafesine dayalı tahmin yapın.', path: '/ankara-taksi-ucreti/', category: 'Şehirler', modified: '2026-07-16', cta: 'Ankara taksi tarifesini incele' },
   { title: 'İzmir Taksi Ücreti Hesaplama 2026', summary: 'İzmir merkez tarifesini, minimum ücreti ve Konak, Bornova, Karşıyaka bağlantılarını kaynaklarıyla görün.', path: '/izmir-taksi-ucreti/', category: 'Şehirler', modified: '2026-07-16', cta: 'İzmir taksi ücretini hesapla' },
   { title: 'Antalya Taksi Ücreti Hesaplama 2026', summary: 'Antalya merkez tarifesiyle Lara, Konyaaltı ve turizm bölgelerine yönelik yolculuğunuzu planlayın.', path: '/antalya-taksi-ucreti/', category: 'Şehirler', modified: '2026-07-16', cta: 'Antalya taksi tarifesini incele' },
-  { title: 'İstanbul Havalimanı Taksi Ücreti (2026) – Güncel Taksi Fiyatlar', summary: 'İstanbul Havalimanı ile popüler varış noktaları arasındaki araç mesafesini merkezî tarife kaydıyla değerlendirin.', path: '/istanbul-havalimani-taksi-ucreti/', category: 'Havalimanı Taksi Ücretleri', modified: '2026-07-16', cta: 'İstanbul Havalimanı taksi rehberini aç' },
+  { title: 'İstanbul Havalimanı Taksi Ücreti – Hesaplama Aracı (2026)', summary: 'İstanbul Havalimanı ile popüler varış noktaları arasındaki araç mesafesini merkezî tarife kaydıyla değerlendirin.', path: '/istanbul-havalimani-taksi-ucreti/', category: 'Havalimanı Taksi Ücretleri', modified: '2026-07-16', cta: 'İstanbul Havalimanı taksi rehberini aç' },
 ];
 
 export const cityPosts = posts.filter((post) => post.category === 'Şehirler');
