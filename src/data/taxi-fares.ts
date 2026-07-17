@@ -650,6 +650,7 @@ export const taxiFares: TaxiFare[] = [
     openingFare: 65.4,
     perKmFare: 43.56,
     minimumFare: 210,
+    waitingFarePerMinute: 9.07,
     dataStatus: "Güncel güçlü kaynak",
     referenceDate: "16.02.2026",
     lastVerified: "2026-07-16",

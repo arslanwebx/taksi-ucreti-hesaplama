@@ -44,6 +44,19 @@
   .fare-result header>strong{justify-self:start}
   .fare-result header h3{font-size:clamp(1.72rem,9.5vw,2.3rem)}
 }
+
+/* Airport route planning */
+.quick-fare-summary{margin:30px 0 36px!important;padding:24px;background:linear-gradient(135deg,var(--yellow-soft),white);border:2px solid var(--dark);border-radius:16px;box-shadow:5px 5px 0 var(--yellow)}
+.quick-fare-summary h2{font-size:clamp(1.55rem,3vw,2rem);margin-bottom:16px}
+.quick-fare-summary p{margin:13px 0 0;font-size:.9rem}
+table caption{text-align:left;padding:11px 15px;background:var(--cream);color:var(--muted);font-weight:750}
+.optional-label{font-weight:500;color:var(--muted)}
+.destination-field{grid-column:1/-1}
+@media(max-width:580px){
+  .quick-fare-summary{padding:16px;margin-top:24px!important}
+  .quick-fare-summary .table-wrap{overflow-x:auto}
+  th,td{padding:10px 12px}
+}
 @media(min-width:581px) and (max-width:1000px){
   .article-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 }

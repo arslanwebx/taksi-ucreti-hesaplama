@@ -33,7 +33,9 @@ function sourceName(sourceUrl: string) {
   }
 }
 
-export function Calculator({ fixedCity }: { fixedCity?: string }) {
+type DistancePreset = { name: string; distanceKm: number };
+
+export function Calculator({ fixedCity, distancePresets = [] }: { fixedCity?: string; distancePresets?: readonly DistancePreset[] }) {
   const id = useId().replace(/:/g, '');
   const listRef = useRef<HTMLDivElement>(null);
   const available = useMemo(
@@ -158,6 +160,15 @@ export function Calculator({ fixedCity }: { fixedCity?: string }) {
     setResult(null);
     setError('');
     document.getElementById(`${id}-km`)?.focus();
+  }
+
+  function loadDestination(value: string) {
+    const destination = distancePresets.find((item) => item.name === value);
+    if (!destination) return;
+    setKm(String(destination.distanceKm));
+    setResult(null);
+    setError('');
+    setFeedback(`${destination.name} için yaklaşık ${destination.distanceKm} km yüklendi. Mesafeyi gerekirse düzenleyebilirsiniz.`);
   }
 
   function onKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
@@ -342,6 +353,19 @@ export function Calculator({ fixedCity }: { fixedCity?: string }) {
             </div>
             <small id={`${id}-distance-help`}>Haritadaki araçla gidilecek yol mesafesini kullanın.</small>
           </div>
+
+          {distancePresets.length > 0 && (
+            <div className="field destination-field">
+              <label htmlFor={`${id}-destination`}>Popüler varış noktası <span className="optional-label">(isteğe bağlı)</span></label>
+              <select id={`${id}-destination`} defaultValue="" onChange={(event) => loadDestination(event.target.value)}>
+                <option value="">Varış noktası seçin</option>
+                {distancePresets.map((destination) => (
+                  <option key={destination.name} value={destination.name}>{destination.name} — yaklaşık {destination.distanceKm} km</option>
+                ))}
+              </select>
+              <small>Seçim mesafeyi doldurur; kilometre alanını elle değiştirebilirsiniz.</small>
+            </div>
+          )}
 
           <fieldset className="quick-distance">
             <legend>Hızlı mesafe</legend>

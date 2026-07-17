@@ -4,87 +4,132 @@ import { ArticlePage } from '@/components/ArticlePage';
 import { Calculator } from '@/components/Calculator';
 import { TableOfContents } from '@/components/TableOfContents';
 import { fareCategories, faresByCategory, formatDate, money, publishedCities } from '@/src/data/cities';
+import { istanbulAirportQuickRouteNames, istanbulAirportRoutes } from '@/src/data/istanbul-airport-routes';
+import { canonical, site } from '@/src/data/site';
 import { pageMetadata } from '@/lib/seo';
 
 const city = publishedCities.find((item) => item.slug === 'istanbul')!;
-const routes = [['Taksim', 42], ['Sultanahmet', 47], ['Beşiktaş', 44], ['Kadıköy', 60], ['Sabiha Gökçen Havalimanı', 80]] as const;
-const title = 'İstanbul Havalimanı Taksi Ücreti 2026';
-const description = 'İstanbul Havalimanı taksi ücretini güncel İstanbul tarife kaydıyla hesaplayın; örnek rotaları, ücretli yol etkisini ve kaynak bilgisini inceleyin.';
+const title = 'İstanbul Havalimanı Taksi Ücreti 2026: Taksim ve İlçe Fiyatları';
+const description = 'İstanbul Havalimanı’ndan Taksim, Sultanahmet, Kadıköy ve diğer ilçelere 2026 taksi ücretlerini hesaplayın. Güncel İBB tarifesi ve rota tablosu.';
 const path = '/istanbul-havalimani-taksi-ucreti/';
+const quickRoutes = istanbulAirportRoutes.filter((route) =>
+  (istanbulAirportQuickRouteNames as readonly string[]).includes(route.name),
+);
+const yellowEstimate = (distanceKm: number) => faresByCategory(city, distanceKm)[0]!.total;
 const faqs = [
-  { question: 'İstanbul Havalimanı taksi ücreti sabit midir?', answer: 'Hayır. Yolculuk taksimetre üzerinden hesaplanır. Gerçek rota ve ücretli yol tercihi toplamı değiştirebilir.' },
-  { question: 'İstanbul Havalimanı ile Taksim arası taksi kaç TL tutar?', answer: 'Tutar seyahat anındaki rotaya bağlıdır. Sayfadaki örnek yaklaşık 42 km ve ek ücret hariç hesaplanır; güncel harita mesafesini hesaplayıcıya girmek daha doğru sonuç verir.' },
-  { question: 'Hesaplayıcı trafik veya bekleme ücreti ekliyor mu?', answer: 'Hayır. Hesaplayıcı yalnızca açılış, kilometre ve minimum ücret kuralını uygular. Köprü, tünel veya otoyol gibi bildiğiniz bedelleri ek ücret alanına kendiniz girebilirsiniz.' },
-  { question: 'Köprü veya otoyol ücreti temel tahmine dahil midir?', answer: 'Hayır. Kullanılacak rota ve geçiş bedelini sürücüyle önceden netleştirip hesaplayıcıdaki ek ücret alanına ayrıca yazmanız gerekir.' },
+  { question: 'İstanbul Havalimanı ile Taksim arası taksi kaç TL tutar?', answer: `Yaklaşık 42 km için sarı taksi tahmini ${money(yellowEstimate(42))} tutar. Bekleme ve ücretli yollar dahil değildir; gerçek taksimetre tutarı rotaya göre değişir.` },
+  { question: 'İstanbul Havalimanı ile Sultanahmet arası taksi kaç TL tutar?', answer: `Yaklaşık 47 km için sarı taksi tahmini ${money(yellowEstimate(47))} tutar. Bu bir planlama değeridir; bekleme ve varsa ücretli yol bedeli ayrıca eklenir.` },
+  { question: 'İstanbul Havalimanı taksi fiyatları sabit midir?', answer: 'Hayır. Resmî taksiler taksimetre kullanır. Toplam; açılış, gidilen mesafe, zaman tarifesi ve varsa ücretli geçişlerden oluşur.' },
+  { question: 'İstanbul taksilerinde gece tarifesi var mı?', answer: 'İBB tarifesinde ayrı bir gece tarifesi yer almaz; aynı taksimetre tarifesi günün her saatinde geçerlidir.' },
+  { question: 'Havalimanı taksilerinde kredi kartı geçer mi?', answer: 'Birçok araç kart kabul eder ancak cihaz veya bağlantı sorunu yaşanabilir. Binmeden önce kartla ödeme yapacağınızı doğrulamanız ve alternatif ödeme yöntemi bulundurmanız uygundur.' },
+  { question: 'Bagaj için ayrı ücret alınır mı?', answer: 'Standart yolcu bagajı için tarifede ayrı bir bagaj kalemi bulunmaz. Olağan dışı büyüklükte veya araç kapasitesini aşan eşya için binmeden önce uygun aracı teyit edin.' },
+  { question: 'Köprü, tünel ve otoyol ücretleri tahmine dahil mi?', answer: 'Hayır. Tablodaki tutarlar taksimetre tahminidir. Kullanılan köprü, tünel veya otoyol bedeli yolcu tarafından ayrıca ödenir.' },
+  { question: 'Resmî İstanbul Havalimanı taksi durağı nasıl bulunur?', answer: 'Terminaldeki taksi yönlendirmelerini izleyip resmî sıradan araca binin. Araç plakasını ve taksimetrenin yolculuk başında açıldığını kontrol edin; terminal içinde bireysel transfer tekliflerine temkinli yaklaşın.' },
 ];
 
 export const metadata: Metadata = pageMetadata(title, description, path, 'article');
 
 export default function IstanbulAirport() {
   const categories = fareCategories(city);
+  const webApplicationSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'İstanbul Havalimanı Taksi Ücreti Hesaplayıcı',
+    url: canonical(path),
+    applicationCategory: 'TravelApplication',
+    operatingSystem: 'Web',
+    inLanguage: 'tr-TR',
+    description: 'Mesafe, bekleme süresi ve ek geçiş bedeline göre İstanbul taksi ücreti tahmini hesaplar.',
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'TRY' },
+    publisher: { '@type': 'Organization', name: site.publisher, url: site.url },
+  };
+
   return (
-    <ArticlePage title={title} description={description} path={path} modified={city.lastVerified} category="Havalimanı Taksi Ücretleri" readingMinutes={9} faqs={faqs}>
-      <p className="notice"><strong>Kısa cevap:</strong> İstanbul Havalimanı için şehir merkezine sabit taksi fiyatı yoktur. Temel tahmin açılış ücreti, araç rotası kilometresi ve minimum ücret kuralıyla hesaplanır; ücretli geçişler ayrıca eklenir.</p>
-      <p>Havalimanının büyük bir alana yayılması, otel veya semtin farklı giriş noktaları ve rota seçenekleri nedeniyle internette görülen tek bir rakam her yolculuğa uymaz. En sağlıklı yöntem, güncel araç rotası mesafesini bulup hesaplayıcıya girmektir.</p>
+    <ArticlePage
+      title={title}
+      description={description}
+      path={path}
+      modified={city.lastVerified}
+      category="Havalimanı Taksi Ücretleri"
+      readingMinutes={10}
+      faqs={faqs}
+      additionalSchemas={[webApplicationSchema]}
+    >
+      <p className="notice"><strong>Kısa cevap:</strong> İstanbul Havalimanı’nda sabit taksi fiyatı yoktur. Son tutarı taksimetre; gerçek yol mesafesi, trafikte geçen süre ve varsa köprü, tünel veya otoyol bedellerine göre belirler. Bu sayfadaki hesaplamalar güncel resmî İBB/TUHİM tarifesini kullanır.</p>
+
+      <section className="quick-fare-summary" aria-labelledby="hizli-fiyat-ozeti">
+        <h2 id="hizli-fiyat-ozeti">Hızlı Fiyat Özeti</h2>
+        <div className="table-wrap">
+          <table>
+            <caption>İstanbul Havalimanı’ndan popüler noktalara sarı taksi tahminleri</caption>
+            <thead><tr><th scope="col">Varış</th><th scope="col">Yaklaşık mesafe</th><th scope="col">Sarı taksi tahmini</th></tr></thead>
+            <tbody>{quickRoutes.map((route) => <tr key={route.name}><th scope="row">{route.name}</th><td>{route.distanceKm} km</td><td>{money(yellowEstimate(route.distanceKm))}</td></tr>)}</tbody>
+          </table>
+        </div>
+        <p><strong>Ücretli geçişler hariçtir.</strong> Mesafeler planlama amaçlı yaklaşık yol mesafeleridir; gerçek rota ve taksimetre tutarı değişebilir.</p>
+      </section>
+
       <TableOfContents items={[
-        { id: 'hesaplama', label: 'İstanbul Havalimanı taksi hesaplama' },
-        { id: 'tarife', label: 'Kullanılan İstanbul tarifesi' },
-        { id: 'rotalar', label: 'Popüler varış noktaları' },
-        { id: 'rota-etkisi', label: 'Rota ve ücretli yol etkisi' },
-        { id: 'hazirlik', label: 'Terminalde taksiye binmeden önce' },
-        { id: 'alternatifler', label: 'Taksi dışındaki ulaşım seçenekleri' },
-        { id: 'kaynak', label: 'Tarife ve ulaşım kaynakları' },
+        { id: 'hesaplama', label: 'Taksi ücreti hesaplama' },
+        { id: 'rotalar', label: 'İlçe ve rota fiyatları' },
+        { id: 'tarife', label: 'Güncel İstanbul tarifesi' },
+        { id: 'taksi-turleri', label: 'Taksi türleri ve ek ücretler' },
+        { id: 'terminal', label: 'Terminalde taksi kullanımı' },
+        { id: 'alternatifler', label: 'Diğer ulaşım seçenekleri' },
         { id: 'sik-sorulan-sorular', label: 'Sık sorulan sorular' },
       ]}/>
 
       <section id="hesaplama">
         <h2>İstanbul Havalimanı taksi ücreti hesaplama</h2>
-        <p>Harita uygulamasında İstanbul Havalimanı’nı başlangıç, gerçek otel veya bırakma noktasını varış olarak seçin. Görünen araç mesafesini aşağıdaki hesaplayıcıya girin. Ücretli yol bedelini biliyorsanız ek ücret alanından ayrıca ekleyin.</p>
-        <Calculator fixedCity="istanbul"/>
-        <p>Harita birden fazla rota sunuyorsa kısa rota ile hızlı rotayı ayrı ayrı hesaplayın. Böylece tek bir kesin rakam yerine olası yol tercihlerini yansıtan daha gerçekçi bir aralık elde edersiniz.</p>
-      </section>
-
-      <section id="tarife">
-        <h2>Kullanılan İstanbul tarifesi</h2>
-        <div className="table-wrap"><table><thead><tr><th>Tarife</th><th>Açılış</th><th>Kilometre</th><th>Minimum</th></tr></thead><tbody>{categories.map((category) => <tr key={category.id}><th scope="row">{category.label}</th><td>{money(category.tariff.openingFare)}</td><td>{money(category.tariff.perKmFare)}</td><td>{money(category.tariff.minimumFare)}</td></tr>)}</tbody></table></div>
-        <p>Hesaplayıcı Sarı, Turkuaz ve Siyah VIP taksi tutarlarını birlikte gösterir. İstanbul kategori değerleri güncel İBB taksi taşımacılığı ücret tarifesindeki oranlara dayanır. Otomatik trafik ücreti eklenmez.</p>
+        <p>Varış noktasını seçerek yaklaşık mesafeyi yükleyin veya haritadaki güncel araç mesafesini elle yazın. Bekleme dakikası ve bildiğiniz geçiş bedelleri isteğe bağlıdır.</p>
+        <Calculator fixedCity="istanbul" distancePresets={istanbulAirportRoutes}/>
+        <p>Hesaplayıcı, İBB’nin yayımladığı zaman tarifesini yalnızca girdiğiniz bekleme dakikalarına uygular. Trafikte taksimetre mesafe ve zaman ölçümü arasında kendi dönüşüm kuralıyla çalıştığından sonuç kesin fiyat değil, karşılaştırılabilir bir planlama tahminidir.</p>
       </section>
 
       <section id="rotalar">
-        <h2>Popüler varış noktaları için örnekler</h2>
-        <div className="table-wrap"><table><thead><tr><th>Varış</th><th>Örnek mesafe</th>{categories.map((category) => <th key={category.id}>{category.shortLabel}</th>)}</tr></thead><tbody>{routes.map(([name, km]) => <tr key={name}><th scope="row">{name}</th><td>{km} km</td>{faresByCategory(city, km).map((category) => <td key={category.id}>{money(category.total)}</td>)}</tr>)}</tbody></table></div>
-        <p>Mesafeler yalnızca planlama örneğidir. Terminal çıkış noktası, otelin bulunduğu sokak, yol çalışması, karşı yaka geçişi ve güncel navigasyon rotası gerçek kilometreyi değiştirebilir.</p>
-        <p>Kadıköy veya Sabiha Gökçen Havalimanı gibi karşı yaka varışlarında köprü veya tünel seçimi ayrıca önem kazanır. Geçiş bedeli tabloda yer alan temel tahmine dahil değildir.</p>
+        <h2>İstanbul Havalimanı ilçe ve rota fiyatları</h2>
+        <div className="table-wrap">
+          <table>
+            <caption>Ücretli geçişler hariç yaklaşık taksimetre tutarları</caption>
+            <thead><tr><th scope="col">Varış noktası</th><th scope="col">Yaklaşık yol</th><th scope="col">Sarı taksi</th><th scope="col">Turkuaz taksi</th><th scope="col">Ücretli yol notu</th></tr></thead>
+            <tbody>{istanbulAirportRoutes.map((route) => {
+              const estimates = faresByCategory(city, route.distanceKm);
+              return <tr key={route.name}><th scope="row">{route.name}</th><td>{route.distanceKm} km</td><td>{money(estimates[0]!.total)}</td><td>{money(estimates[1]!.total)}</td><td>{route.paidRoadNote}</td></tr>;
+            })}</tbody>
+          </table>
+        </div>
+        <p>Bu değerler terminal ile bölge merkezi arasındaki yaklaşık araç mesafesinden programlı olarak hesaplanır. Otelin sokağı, yol çalışması, trafik yönlendirmesi ve sürücünün kullandığı rota kilometreyi değiştirebilir.</p>
       </section>
 
-      <section id="rota-etkisi">
-        <h2>Rota ve ücretli yol toplamı nasıl değiştirir?</h2>
-        <h3>Güncel araç rotası</h3>
-        <p>Trafik ve yol çalışmaları navigasyonun önerdiği güzergâhı değiştirebilir. Hesaplayıcı bekleme süresini fiyatlandırmaz; bu nedenle sonuç kilometreye dayalı bir planlama değeridir.</p>
-        <h3>Otoyol ve köprü tercihi</h3>
-        <p>Kuzey Marmara Otoyolu, köprüler veya Avrasya Tüneli daha hızlı bir rota sağlayabilir; ancak geçiş tutarı doğurur. Daha ucuz görünen ücretsiz rota ise daha uzun mesafe oluşturabilir.</p>
-        <h3>Bırakma noktasının kesinliği</h3>
-        <p>“Taksim” gibi geniş bir bölge yerine otelin veya adresin tam konumunu kullanın. Birkaç kilometrelik son bölüm dahi tahmini belirgin biçimde değiştirebilir.</p>
+      <section id="tarife">
+        <h2>2026 İstanbul taksi tarifesi</h2>
+        <div className="table-wrap"><table><caption>16 Şubat 2026’dan itibaren geçerli İBB tarifesi</caption><thead><tr><th scope="col">Taksi türü</th><th scope="col">Açılış</th><th scope="col">Kilometre</th><th scope="col">Dakika</th><th scope="col">Minimum</th></tr></thead><tbody>{categories.map((category) => <tr key={category.id}><th scope="row">{category.label}</th><td>{money(category.tariff.openingFare)}</td><td>{money(category.tariff.perKmFare)}</td><td>{money(category.tariff.waitingFarePerMinute ?? 0)}</td><td>{money(category.tariff.minimumFare)}</td></tr>)}</tbody></table></div>
+        <p>Değerler <a href={city.sourceUrl} rel="external">12 Şubat 2026 tarihli 263 sayılı İBB Meclis Kararına dayanan resmî taksi tarifesinden</a> alınmıştır. Belge 16 Şubat 2026’dan itibaren geçerlidir ve <time dateTime={city.lastVerified}>{formatDate(city.lastVerified)}</time> tarihinde kontrol edilmiştir. Güncel belgeler <a href="https://tuhim.ibb.gov.tr/ucret-tarifeler/" rel="external">TUHİM ücret tarifeleri arşivinde</a> yayımlanır.</p>
       </section>
 
-      <section id="hazirlik">
-        <h2>Terminalde taksiye binmeden önce</h2>
-        <ol><li>Terminalde yönlendirilmiş resmî taksi alanını kullanın.</li><li>Taksimetrenin yolculuk başında açıldığını kontrol edin.</li><li>Varış adresini haritada gösterip tercih edilen rotayı netleştirin.</li><li>Ücretli yol kullanılacaksa geçiş bedelinin nasıl ekleneceğini sorun.</li><li>Plaka ve ödeme kaydını yolculuk bitene kadar saklayın.</li></ol>
-        <p>DHMİ, İstanbul Havalimanı’na metro, otobüs, taksi ve özel araçla erişilebildiğini belirtir. Güncel terminal ulaşım bilgisini <a href="https://www.dhmi.gov.tr/Sayfalar/Havalimani/Istanbul/Ulasim.aspx" rel="external">DHMİ İstanbul Havalimanı ulaşım sayfasından</a> kontrol edebilirsiniz.</p>
+      <section id="taksi-turleri">
+        <h2>Sarı, turkuaz ve siyah taksi arasındaki farklar</h2>
+        <ul>
+          <li><strong>Sarı taksi:</strong> Standart ve en yaygın seçenektir; tablolardaki ana tahmin bu tarifeyi esas alır.</li>
+          <li><strong>Turkuaz taksi:</strong> Daha yüksek araç segmentidir ve resmî açılış, kilometre, zaman ve minimum ücretleri sarı taksiden yüksektir.</li>
+          <li><strong>Siyah/VIP taksi:</strong> En yüksek segmenttir; daha geniş araç sunabilir ve resmî tarifesi belirgin biçimde daha yüksektir.</li>
+        </ul>
+        <h3>Gece tarifesi ve trafik</h3>
+        <p>İstanbul’da ayrı gündüz ve gece taksi tarifesi yoktur. Ancak yoğun trafikte taksimetrenin zaman tarifesi devreye girebildiği için aynı güzergâhın son tutarı değişebilir.</p>
+        <h3>Köprü, tünel ve otoyol bedelleri</h3>
+        <p>Kuzey Marmara Otoyolu, köprüler ve Avrasya Tüneli gibi ücretler taksimetre tahminine dahil değildir; kullanılan güzergâha göre ayrıca eklenir. Yola çıkmadan önce sürücüyle rota tercihini netleştirin.</p>
+      </section>
+
+      <section id="terminal">
+        <h2>Terminalde resmî taksi nasıl kullanılır?</h2>
+        <ol><li>Terminaldeki taksi işaretlerini izleyip resmî sırayı kullanın.</li><li>Plakayı not edin ve taksimetrenin başlangıçta açıldığını kontrol edin.</li><li>Adresi haritada gösterip ücretli yol tercihini sorun.</li><li>Kartla ödeyecekseniz araca binmeden önce teyit edin.</li><li>Ödeme kaydını yolculuk bitene kadar saklayın.</li></ol>
+        <p>Havalimanının güncel ulaşım ve taksi bilgileri için <a href="https://www.istairport.com/havalimani/havalimani-ulasim/sehir-ici-ulasim/taksi/" rel="external">İstanbul Havalimanı ulaşım sayfasını</a>; metro, Havaist, İETT ve terminal bağlantıları için <a href="https://www.dhmi.gov.tr/Sayfalar/Havalimani/Istanbul/Ulasim.aspx" rel="external">DHMİ ulaşım bilgisini</a> kontrol edebilirsiniz.</p>
       </section>
 
       <section id="alternatifler">
         <h2>Taksi dışındaki ulaşım seçenekleri</h2>
-        <p>Tek kişi ve az bagajla seyahat ediyorsanız metro veya otobüs toplam maliyeti düşürebilir. Birden fazla yolcu, fazla bagaj veya kapıdan kapıya ulaşım ihtiyacında taksi daha pratik olabilir.</p>
-        <ul><li><strong>M11 metro:</strong> Raylı sistem bağlantısı uygun olan varışlar için trafikten daha az etkilenir.</li><li><strong>Havaist ve İETT:</strong> Güzergâh ve saat uygun olduğunda ekonomik alternatif sunar.</li><li><strong>Taksi:</strong> Doğrudan adrese ulaşım ve bagaj kolaylığı sağlar; rota ve ücretli geçiş maliyeti yükseltebilir.</li></ul>
-        <p><Link href="/istanbul-taksi-ucreti/">İstanbul şehir içi taksi tarifesini</Link> ve <Link href="/havalimani-taksi-ucretleri/">diğer havalimanı yolculuk rehberlerini</Link> de inceleyebilirsiniz.</p>
-      </section>
-
-      <section className="source-box" id="kaynak">
-        <h2>Tarife ve ulaşım kaynakları</h2>
-        <p><strong>Tarife referansı:</strong> {city.referenceDate}. Tarife kaydı <time dateTime={city.lastVerified}>{formatDate(city.lastVerified)}</time> tarihinde yeniden kontrol edilmiştir.</p>
-        <ul><li><a href={city.sourceUrl} rel="external">Kullanılan İstanbul tarife kaynağı</a></li><li><a href="https://tuhim.ibb.gov.tr/ucret-tarifeler/" rel="external">İBB TUHİM güncel ücret tarifeleri arşivi</a></li><li><a href="https://www.dhmi.gov.tr/Sayfalar/Havalimani/Istanbul/Ulasim.aspx" rel="external">DHMİ İstanbul Havalimanı ulaşım bilgileri</a></li></ul>
-        <p>Yeni bir karar yayımlandıysa ancak hesaplayıcı henüz farklı görünüyorsa belge bağlantısıyla <Link href="/iletisim/">tarife düzeltmesi bildirin</Link>.</p>
+        <p>M11 metro trafikten daha az etkilenir. Havaist ve İETT, güzergâhı uygun yolcular için daha ekonomik olabilir. Birden fazla yolcu, fazla bagaj veya kapıdan kapıya ulaşım gerektiğinde taksi daha pratik bir seçenek olabilir.</p>
+        <p><Link href="/">Türkiye geneli taksi hesaplayıcısına</Link>, <Link href="/istanbul-taksi-ucreti/">İstanbul taksi tarifesi rehberine</Link> veya <Link href="/havalimani-taksi-ucretleri/">havalimanı taksi rehberleri merkezine</Link> geçebilirsiniz. Şehirler arası planlama için <Link href="/sehirler/">yayımlanmış şehir tarifelerini</Link> inceleyin.</p>
       </section>
     </ArticlePage>
   );
