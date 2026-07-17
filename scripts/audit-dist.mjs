@@ -94,7 +94,7 @@ for (const slug of ['ankara-taksi-ucreti','antalya-taksi-ucreti','istanbul-taksi
 }
 const expectedCityTitles = {
   'ankara-taksi-ucreti': 'Ankara Taksi Ücreti Hesaplama (2026) – Güncel Tarife',
-  'istanbul-taksi-ucreti': 'İstanbul Taksi Ücreti Hesaplama | Güncel Fiyatlar 2026',
+  'istanbul-taksi-ucreti': 'İstanbul Taksi Ücreti [2026] – Hesaplama Aracı',
   'antalya-taksi-ucreti': 'Antalya Taksi Ücreti Hesaplama | Güncel Tarife 2026',
   'izmir-taksi-ucreti': 'İzmir Taksi Ücreti Hesaplama | Güncel Fiyatlar 2026',
 };

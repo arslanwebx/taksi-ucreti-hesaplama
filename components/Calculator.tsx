@@ -32,7 +32,7 @@ function sourceName(sourceUrl: string) {
 
 type DistancePreset = { name: string; distanceKm: number };
 
-export function Calculator({ fixedCity, distancePresets = [] }: { fixedCity?: string; distancePresets?: readonly DistancePreset[] }) {
+export function Calculator({ fixedCity, distancePresets = [], allowWaitingInput = true }: { fixedCity?: string; distancePresets?: readonly DistancePreset[]; allowWaitingInput?: boolean }) {
   const id = useId().replace(/:/g, '');
   const listRef = useRef<HTMLDivElement>(null);
   const available = useMemo(
@@ -102,6 +102,17 @@ export function Calculator({ fixedCity, distancePresets = [] }: { fixedCity?: st
       });
     }
   }, [fixedCity]);
+
+  useEffect(() => {
+    const loadExternalDistance = (event: Event) => {
+      const distanceKm = (event as CustomEvent<{ distanceKm?: number }>).detail?.distanceKm;
+      if (!Number.isFinite(distanceKm)) return;
+      loadDistance(distanceKm!);
+      setFeedback(`Yaklaşık ${distanceKm} km hesaplayıcıya yüklendi. Mesafeyi gerekirse düzenleyebilirsiniz.`);
+    };
+    window.addEventListener('taxi-distance-load', loadExternalDistance);
+    return () => window.removeEventListener('taxi-distance-load', loadExternalDistance);
+  });
 
   useEffect(() => {
     if (fixedCity) return;
@@ -180,7 +191,7 @@ export function Calculator({ fixedCity, distancePresets = [] }: { fixedCity?: st
       return;
     }
     const distanceKm = parseDecimal(km);
-    const waitingMinutes = selected.waitingFarePerMinute && showExtras ? parseDecimal(waiting || '0') : 0;
+    const waitingMinutes = allowWaitingInput && selected.waitingFarePerMinute && showExtras ? parseDecimal(waiting || '0') : 0;
     const additional = showExtras ? parseDecimal(extra || '0') : 0;
     if (!Number.isFinite(distanceKm) || distanceKm < 0.1 || distanceKm > 500) {
       setError('Mesafeyi 0,1 ile 500 km arasında girin.');
@@ -359,12 +370,12 @@ export function Calculator({ fixedCity, distancePresets = [] }: { fixedCity?: st
           <label className="extras-toggle">
             <input type="checkbox" checked={showExtras} onChange={(event) => { setShowExtras(event.target.checked); setResult(null); }}/>
             <span className="switch" aria-hidden="true"/>
-            <span><strong>Bekleme ve ek yol ücretleri</strong><small>Varsa bekleme süresi, köprü, tünel veya otoyol tutarı</small></span>
+            <span><strong>{allowWaitingInput ? 'Bekleme ve ek yol ücretleri' : 'Ek yol ücretleri'}</strong><small>{allowWaitingInput ? 'Varsa bekleme süresi, köprü, tünel veya otoyol tutarı' : 'Varsa köprü, tünel veya otoyol tutarı'}</small></span>
           </label>
 
           {showExtras && (
             <div className="optional-fields">
-              {selected?.waitingFarePerMinute !== undefined && (
+              {allowWaitingInput && selected?.waitingFarePerMinute !== undefined && (
                 <div className="field">
                   <label htmlFor={`${id}-waiting`}>Bekleme süresi</label>
                   <div className="input-suffix"><input id={`${id}-waiting`} value={waiting} onChange={(event) => { setWaiting(event.target.value); setResult(null); }} inputMode="decimal"/><span>dk</span></div>

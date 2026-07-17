@@ -1,1 +1,10 @@
-import { CityFareArticle, cityFareMetadata } from '@/components/CityFareArticle';import { publishedCities } from '@/src/data/cities';const city=publishedCities.find((item)=>item.slug==='istanbul')!;export const metadata=cityFareMetadata(city);export default function Page(){return <CityFareArticle city={city}/>}
+import type { Metadata } from 'next';
+import { IstanbulFareArticle, istanbulPageDescription } from '@/components/IstanbulFareArticle';
+import { pageMetadata } from '@/lib/seo';
+
+const seoTitle = 'İstanbul Taksi Ücreti [2026] – Hesaplama Aracı';
+export const metadata: Metadata = pageMetadata(seoTitle, istanbulPageDescription, '/istanbul-taksi-ucreti/', 'article');
+
+export default function Page() {
+  return <IstanbulFareArticle/>;
+}

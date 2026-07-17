@@ -60,6 +60,8 @@ table caption{text-align:left;padding:11px 15px;background:var(--cream);color:va
 .fare-answer-box dd{margin:0;font-weight:900;font-size:1.05rem}
 .fare-answer-box p{margin:14px 0 0;font-size:.82rem}
 .category-tariff-grid.single-fare{grid-template-columns:1fr}
+.table-load-button{white-space:nowrap;border:1px solid var(--dark);border-radius:8px;background:var(--yellow-soft);padding:7px 10px;font-size:.76rem;font-weight:850}
+.table-load-button:hover{background:var(--yellow)}
 @media(max-width:580px){
   .quick-fare-summary{padding:16px;margin-top:24px!important}
   .quick-fare-summary .table-wrap{overflow-x:auto}
