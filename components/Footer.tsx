@@ -3,7 +3,7 @@ import { Logo } from './Logo';
 import { site } from '@/src/data/site';
 
 const guides = [['Şehirler', '/sehirler/'], ['Havalimanı ücretleri', '/havalimani-taksi-ucretleri/'], ['Blog', '/blog/'], ['Site haritası', '/sitemap/']] as const;
-const policies = [['Hakkımızda', '/hakkimizda/'], ['İletişim', '/iletisim/'], ['Gizlilik', '/gizlilik-politikasi/'], ['Çerezler', '/cerez-politikasi/'], ['Kullanım koşulları', '/kullanim-kosullari/'], ['Sorumluluk reddi', '/sorumluluk-reddi/']] as const;
+const policies = [['Veri Kaynakları', '/veri-kaynaklari-ve-hesaplama-yontemi/'], ['Hakkımızda', '/hakkimizda/'], ['İletişim', '/iletisim/'], ['Gizlilik', '/gizlilik-politikasi/'], ['Çerezler', '/cerez-politikasi/'], ['Kullanım koşulları', '/kullanim-kosullari/'], ['Sorumluluk reddi', '/sorumluluk-reddi/']] as const;
 
 export function Footer() {
   return (
