@@ -52,10 +52,20 @@
 table caption{text-align:left;padding:11px 15px;background:var(--cream);color:var(--muted);font-weight:750}
 .optional-label{font-weight:500;color:var(--muted)}
 .destination-field{grid-column:1/-1}
+.fare-answer-box{margin:0 0 30px!important;padding:24px;background:linear-gradient(135deg,var(--yellow-soft),white);border:2px solid var(--dark);border-radius:16px;box-shadow:5px 5px 0 var(--yellow)}
+.fare-answer-box>strong{display:block;font-size:1.2rem;margin-bottom:14px}
+.fare-answer-box dl{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin:0}
+.fare-answer-box dl div{display:grid;gap:3px;padding:12px;background:white;border:1px solid var(--line);border-radius:10px}
+.fare-answer-box dt{font-size:.76rem;color:var(--muted);font-weight:750}
+.fare-answer-box dd{margin:0;font-weight:900;font-size:1.05rem}
+.fare-answer-box p{margin:14px 0 0;font-size:.82rem}
+.category-tariff-grid.single-fare{grid-template-columns:1fr}
 @media(max-width:580px){
   .quick-fare-summary{padding:16px;margin-top:24px!important}
   .quick-fare-summary .table-wrap{overflow-x:auto}
   th,td{padding:10px 12px}
+  .fare-answer-box{padding:16px}
+  .fare-answer-box dl{grid-template-columns:1fr 1fr}
 }
 @media(min-width:581px) and (max-width:1000px){
   .article-grid{grid-template-columns:repeat(2,minmax(0,1fr))}

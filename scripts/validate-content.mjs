@@ -82,8 +82,9 @@ if (!calculatorSource.includes(warning)) errors.push('Tahmini tarife uyarısı h
 if (!calculatorSource.includes('kaynağını açın') || !calculatorSource.includes('Tarife referansı:') || !calculatorSource.includes('Son kontrol:')) {
   errors.push('Hesap sonucunda kaynak, referans veya son kontrol bilgisi eksik.');
 }
-for (const categoryLabel of ['Sarı Taksi Ücreti', 'Turkuaz Taksi Ücreti', 'Siyah VIP Taksi Ücreti']) {
-  if (!calculatorLogicSource.includes(categoryLabel)) errors.push(`Hesaplayıcıda ${categoryLabel} eksik.`);
+if (!calculatorSource.includes('Sarı taksi')) errors.push('Hesaplayıcıda Sarı taksi tarifesi eksik.');
+if (/Turkuaz|Siyah VIP/.test(calculatorSource) || /meterMultiplier|minimumMultiplier/.test(calculatorLogicSource)) {
+  errors.push('Hesaplayıcıda sarı taksi dışı kategori veya türetilmiş kategori oranı kaldı.');
 }
 
 const fareSlugs = new Set(fares.map((fare) => fare.slug));

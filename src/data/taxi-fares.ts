@@ -122,6 +122,7 @@ export const taxiFares: TaxiFare[] = [
     openingFare: 65,
     perKmFare: 40,
     minimumFare: 200,
+    waitingFarePerMinute: 7,
     dataStatus: "Yetkili meslek kuruluşu kaynak kaydı",
     referenceDate: "01.03.2026",
     lastVerified: "2026-07-16",

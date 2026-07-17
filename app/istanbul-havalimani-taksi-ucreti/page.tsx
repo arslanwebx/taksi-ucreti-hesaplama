@@ -3,10 +3,11 @@ import Link from 'next/link';
 import { ArticlePage } from '@/components/ArticlePage';
 import { Calculator } from '@/components/Calculator';
 import { TableOfContents } from '@/components/TableOfContents';
-import { fareCategories, faresByCategory, formatDate, money, publishedCities } from '@/src/data/cities';
+import { formatDate, money, publishedCities } from '@/src/data/cities';
 import { istanbulAirportQuickRouteNames, istanbulAirportRoutes } from '@/src/data/istanbul-airport-routes';
 import { canonical, site } from '@/src/data/site';
 import { pageMetadata } from '@/lib/seo';
+import { calculateFare } from '@/lib/taxi-calculator';
 
 const city = publishedCities.find((item) => item.slug === 'istanbul')!;
 const title = 'İstanbul Havalimanı Taksi Ücreti – Hesaplama Aracı (2026)';
@@ -15,7 +16,7 @@ const path = '/istanbul-havalimani-taksi-ucreti/';
 const quickRoutes = istanbulAirportRoutes.filter((route) =>
   (istanbulAirportQuickRouteNames as readonly string[]).includes(route.name),
 );
-const yellowEstimate = (distanceKm: number) => faresByCategory(city, distanceKm)[0]!.total;
+const yellowEstimate = (distanceKm: number) => calculateFare(city, distanceKm).total;
 const faqs = [
   { question: 'İstanbul Havalimanı ile Taksim arası taksi kaç TL tutar?', answer: `Yaklaşık 42 km için sarı taksi tahmini ${money(yellowEstimate(42))} tutar. Bekleme ve ücretli yollar dahil değildir; gerçek taksimetre tutarı rotaya göre değişir.` },
   { question: 'İstanbul Havalimanı ile Sultanahmet arası taksi kaç TL tutar?', answer: `Yaklaşık 47 km için sarı taksi tahmini ${money(yellowEstimate(47))} tutar. Bu bir planlama değeridir; bekleme ve varsa ücretli yol bedeli ayrıca eklenir.` },
@@ -30,7 +31,6 @@ const faqs = [
 export const metadata: Metadata = pageMetadata(title, description, path, 'article');
 
 export default function IstanbulAirport() {
-  const categories = fareCategories(city);
   const webApplicationSchema = {
     '@context': 'https://schema.org',
     '@type': 'WebApplication',
@@ -91,10 +91,10 @@ export default function IstanbulAirport() {
         <div className="table-wrap">
           <table>
             <caption>Ücretli geçişler hariç yaklaşık taksimetre tutarları</caption>
-            <thead><tr><th scope="col">Varış noktası</th><th scope="col">Yaklaşık yol</th><th scope="col">Sarı taksi</th><th scope="col">Turkuaz taksi</th><th scope="col">Ücretli yol notu</th></tr></thead>
+            <thead><tr><th scope="col">Varış noktası</th><th scope="col">Yaklaşık yol</th><th scope="col">Sarı taksi</th><th scope="col">Ücretli yol notu</th></tr></thead>
             <tbody>{istanbulAirportRoutes.map((route) => {
-              const estimates = faresByCategory(city, route.distanceKm);
-              return <tr key={route.name}><th scope="row">{route.name}</th><td>{route.distanceKm} km</td><td>{money(estimates[0]!.total)}</td><td>{money(estimates[1]!.total)}</td><td>{route.paidRoadNote}</td></tr>;
+              const estimate = calculateFare(city, route.distanceKm);
+              return <tr key={route.name}><th scope="row">{route.name}</th><td>{route.distanceKm} km</td><td>{money(estimate.total)}</td><td>{route.paidRoadNote}</td></tr>;
             })}</tbody>
           </table>
         </div>
@@ -103,17 +103,13 @@ export default function IstanbulAirport() {
 
       <section id="tarife">
         <h2>2026 İstanbul taksi tarifesi</h2>
-        <div className="table-wrap"><table><caption>16 Şubat 2026’dan itibaren geçerli İBB tarifesi</caption><thead><tr><th scope="col">Taksi türü</th><th scope="col">Açılış</th><th scope="col">Kilometre</th><th scope="col">Dakika</th><th scope="col">Minimum</th></tr></thead><tbody>{categories.map((category) => <tr key={category.id}><th scope="row">{category.label}</th><td>{money(category.tariff.openingFare)}</td><td>{money(category.tariff.perKmFare)}</td><td>{money(category.tariff.waitingFarePerMinute ?? 0)}</td><td>{money(category.tariff.minimumFare)}</td></tr>)}</tbody></table></div>
+        <div className="table-wrap"><table><caption>16 Şubat 2026’dan itibaren geçerli İBB sarı taksi tarifesi</caption><thead><tr><th scope="col">Taksi türü</th><th scope="col">Açılış</th><th scope="col">Kilometre</th><th scope="col">Dakika</th><th scope="col">Minimum</th></tr></thead><tbody><tr><th scope="row">Sarı taksi</th><td>{money(city.openingFare)}</td><td>{money(city.perKmFare)}</td><td>{money(city.waitingFarePerMinute ?? 0)}</td><td>{money(city.minimumFare)}</td></tr></tbody></table></div>
         <p>Değerler <a href={city.sourceUrl} rel="external">12 Şubat 2026 tarihli 263 sayılı İBB Meclis Kararına dayanan resmî taksi tarifesinden</a> alınmıştır. Belge 16 Şubat 2026’dan itibaren geçerlidir ve <time dateTime={city.lastVerified}>{formatDate(city.lastVerified)}</time> tarihinde kontrol edilmiştir. Güncel belgeler <a href="https://tuhim.ibb.gov.tr/ucret-tarifeler/" rel="external">TUHİM ücret tarifeleri arşivinde</a> yayımlanır.</p>
       </section>
 
       <section id="taksi-turleri">
-        <h2>Sarı, turkuaz ve siyah taksi arasındaki farklar</h2>
-        <ul>
-          <li><strong>Sarı taksi:</strong> Standart ve en yaygın seçenektir; tablolardaki ana tahmin bu tarifeyi esas alır.</li>
-          <li><strong>Turkuaz taksi:</strong> Daha yüksek araç segmentidir ve resmî açılış, kilometre, zaman ve minimum ücretleri sarı taksiden yüksektir.</li>
-          <li><strong>Siyah/VIP taksi:</strong> En yüksek segmenttir; daha geniş araç sunabilir ve resmî tarifesi belirgin biçimde daha yüksektir.</li>
-        </ul>
+        <h2>Sarı taksi tarifesi ve ek ücretler</h2>
+        <p>Bu sayfa ve hesaplayıcı yalnızca standart sarı taksi tarifesini gösterir. Böylece farklı araç kategorileriyle karışmadan, en yaygın taksi türü için tek ve kaynakla doğrulanmış tahmin sunulur.</p>
         <h3>Gece tarifesi ve trafik</h3>
         <p>İstanbul’da ayrı gündüz ve gece taksi tarifesi yoktur. Ancak yoğun trafikte taksimetrenin zaman tarifesi devreye girebildiği için aynı güzergâhın son tutarı değişebilir.</p>
         <h3>Köprü, tünel ve otoyol bedelleri</h3>

@@ -2,8 +2,6 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
   calculateFare,
-  calculateCategoryFares,
-  categoryTariff,
   fareQualityLabel,
   formatCurrency,
   normalizeCitySearch,
@@ -27,30 +25,18 @@ test('minimum fare is a threshold rather than an added fee', () => {
   assert.equal(result.total, 200);
 });
 
-test('all three Turkish taxi categories are calculated from the shared tariff', () => {
-  const categories = calculateCategoryFares({ openingFare: 65.4, perKmFare: 43.56, minimumFare: 210 }, 10);
-  assert.deepEqual(categories.map(({ id, label, total }) => ({ id, label, total })), [
-    { id: 'yellow', label: 'Sarı Taksi Ücreti', total: 501 },
-    { id: 'turquoise', label: 'Turkuaz Taksi Ücreti', total: 576.11 },
-    { id: 'black', label: 'Siyah VIP Taksi Ücreti', total: 851.68 },
-  ]);
-});
-
-test('category multipliers reproduce the published Istanbul 2026 tariff components', () => {
-  const istanbul = { openingFare: 65.4, perKmFare: 43.56, minimumFare: 210 };
-  assert.deepEqual(categoryTariff(istanbul, 'turquoise'), {
-    openingFare: 75.21, perKmFare: 50.09, minimumFare: 240, waitingFarePerMinute: undefined,
-  });
-  assert.deepEqual(categoryTariff(istanbul, 'black'), {
-    openingFare: 111.18, perKmFare: 74.05, minimumFare: 360, waitingFarePerMinute: undefined,
-  });
-});
-
 test('documented waiting charge and additional toll are calculated', () => {
   const result = calculateFare({ ...standard, waitingFarePerMinute: 5 }, 2, 10, 50);
   assert.equal(result.waiting, 50);
   assert.equal(result.additional, 50);
   assert.equal(result.total, 245);
+});
+
+test('Ankara 2026 yellow taxi tariff includes documented waiting and minimum fare', () => {
+  const result = calculateFare({ ...standard, waitingFarePerMinute: 7 }, 2, 10);
+  assert.deepEqual(result, {
+    opening: 65, distance: 80, waiting: 70, additional: 0, subtotal: 215, adjustment: 0, total: 215,
+  });
 });
 
 test('missing waiting tariff does not invent a waiting charge', () => {
