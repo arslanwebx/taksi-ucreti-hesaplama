@@ -230,6 +230,11 @@ h1,h2,h3,h4,strong,b,button,label,summary{letter-spacing:-.02em}
   .footer-contact-note{margin-top:6px}
 }
 
+@media(min-width:1001px){
+  .footer-grid{grid-template-columns:1.05fr .8fr .9fr 1.25fr}
+  .footer-contact-links a{white-space:nowrap}
+}
+
 /* Three taxi category fares */
 .fare-result header h3{font-size:clamp(2rem,4vw,3rem);line-height:1;letter-spacing:-.045em;white-space:nowrap;margin-top:7px;font-variant-numeric:tabular-nums}
 .category-fare-results{display:grid;gap:9px;margin:18px 0 8px}
