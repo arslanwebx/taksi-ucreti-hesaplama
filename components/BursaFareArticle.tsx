@@ -9,7 +9,8 @@ import { canonical, site } from '@/src/data/site';
 
 const city = taxiFareBySlug.bursa!;
 const path = '/bursa-taksi-ucreti/';
-const title = 'Bursa Taksi Ücreti 2026: Güncel KM ve İndi Bindi Hesaplama';
+const seoTitle = 'Bursa Taksi Ücreti 2026: Anında Hesaplama';
+const h1 = 'Bursa Taksi Ücreti Hesaplama 2026';
 const description = 'Bursa taksi ücreti için 2026 açılış, kilometre ve indi-bindi tarifesini; Bursa Otogar, Ulucami, Görükle ve Mudanya rota tahminleriyle inceleyin.';
 const officialCouncilDecision = 'https://www.bursa.bel.tr/dosyalar/meclis_kararlari/260129102727_20.01.2026-Kararlar-imzasiz.pdf';
 const municipalTaxiService = 'https://www.bursa.bel.tr/hizmet-kat/zabita-18';
@@ -41,7 +42,7 @@ export function BursaFareArticle() {
   };
 
   return (
-    <ArticlePage title={title} description={description} path={path} modified={city.lastVerified} category="Şehirler" readingMinutes={8} faqs={faqs} additionalSchemas={[webApplicationSchema]}>
+    <ArticlePage title={seoTitle} heading={h1} description={description} path={path} modified={city.lastVerified} category="Şehirler" readingMinutes={8} faqs={faqs} additionalSchemas={[webApplicationSchema]}>
       <p className="notice"><strong>Kısa cevap:</strong> Bursa taksi ücreti, 52 TL açılış ve kilometre başına 45 TL üzerinden ilerler. Açılış ile mesafe toplamı 150 TL’nin altında kalırsa indi-bindi olarak 150 TL uygulanır.</p>
 
       <section className="fare-answer-box" aria-label="Bursa 2026 sarı taksi tarifesi özeti">
