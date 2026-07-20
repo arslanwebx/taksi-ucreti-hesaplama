@@ -55,6 +55,10 @@ const home = readFileSync(join(outputDirectory, 'index.html'), 'utf8');
 if (/2026 taksi tarifesi karşılaştırması/i.test(home) || /id="tarife-karsilastirma"/i.test(home)) errors.push('Ana sayfadaki 81 şehir karşılaştırma tablosu kaldırılmadı.');
 if (!home.includes('<title>Taksi Ücreti Hesaplama 2026 | 81 İl Güncel Taksi Tarifesi</title>')) errors.push('Ana sayfa title değeri hedef metinle eşleşmiyor.');
 if (!home.includes('Şehrinizi seçin, mesafeyi girin ve açılış, kilometre ve minimum ücret tarifesine göre Taksi Ücreti Hesaplama sonucunu saniyeler içinde görüntüleyin. 81 il ve kaynak bilgileri.')) errors.push('Ana sayfa meta açıklaması hedef metinle eşleşmiyor.');
+const tariffTable = home.match(/id="guncel-taksi-tarifeleri"[\s\S]*?<\/section>/i)?.[0] ?? '';
+if ((tariffTable.match(/<tbody>/g)?.length ?? 0) !== 1 || (tariffTable.match(/<tr/g)?.length ?? 0) !== 7) errors.push('Ana sayfadaki altı şehirlik tarife tablosu taranabilir HTML olarak üretilmedi.');
+const routeTable = home.match(/id="populer-taksi-rotalari"[\s\S]*?<\/section>/i)?.[0] ?? '';
+if ((routeTable.match(/<tbody>/g)?.length ?? 0) !== 1 || (routeTable.match(/<tr/g)?.length ?? 0) !== 11) errors.push('Ana sayfadaki on rotalık tahmin tablosu taranabilir HTML olarak üretilmedi.');
 const cityOptions = home.match(/role="option"/g)?.length ?? 0;
 if (cityOptions !== 81) errors.push(`Şehir seçicisinde 81 yerine ${cityOptions} seçenek var.`);
 const optionSlugs = [...home.matchAll(/id="[^"]*-option-([a-z-]+)"/g)].map((match) => match[1]);
@@ -67,7 +71,7 @@ if ((cityDirectoryBlock.match(/<button/g)?.length ?? 0) !== 10) errors.push('Pop
 if (cityDirectoryBlock.includes('class="all-cities"')) errors.push('Ana sayfa ilk HTML çıktısında 81 şehir adı ikinci kez listelenmemeli.');
 const faqBlock = home.match(/class="faq"[\s\S]*?class="author-box/i)?.[0] ?? '';
 const faqCount = faqBlock.match(/<details/g)?.length ?? 0;
-if (faqCount !== 10) errors.push(`Ana sayfada 10 yerine ${faqCount} SSS var.`);
+if (faqCount !== 11) errors.push(`Ana sayfada 11 yerine ${faqCount} SSS var.`);
 const cityGuideBlock = home.match(/id="sehir-hesaplayicilari"[\s\S]*?<\/section>/i)?.[0] ?? '';
 if ((cityGuideBlock.match(/class="article-card"/g)?.length ?? 0) !== 4) errors.push('Ana sayfa popüler şehir rehberlerinde dört mevcut şehir kartı bulunmalı.');
 if ((cityGuideBlock.match(/<h3>/g)?.length ?? 0) !== 4 || /<article class="article-card"[\s\S]*?<h2>/i.test(cityGuideBlock)) errors.push('Ana sayfa popüler şehir kartları H3 kullanmalı.');
@@ -129,4 +133,4 @@ else {
   if (!/^User-agent:\s*\*/mi.test(robots) || !/^Allow:\s*\/$/mi.test(robots) || !robots.includes(`${productionOrigin}/sitemap.xml`)) errors.push('robots.txt beklenen tarama ve sitemap kurallarını içermiyor.');
 }
 if (errors.length) { console.error(errors.join('\n')); process.exit(1); }
-console.log(`${htmlFiles.length} HTML sayfası; 81 şehir seçeneği, 10 SSS, yazar kutuları, Google etiketi, sitemap.xml, canonical, H1, meta, JSON-LD ve iç bağlantılar doğrulandı.`);
+console.log(`${htmlFiles.length} HTML sayfası; 81 şehir seçeneği, 11 SSS, yazar kutuları, Google etiketi, sitemap.xml, canonical, H1, meta, JSON-LD ve iç bağlantılar doğrulandı.`);

@@ -240,6 +240,10 @@ h1,h2,h3,h4,strong,b,button,label,summary{letter-spacing:-.02em}
 .home-article .calc-heading{padding:17px 30px}
 @media(min-width:581px){.home-article .calc-heading p{white-space:nowrap}}
 
+.home-article .table-wrap caption{padding:0 0 12px;text-align:left;color:var(--muted);font-size:.9rem;font-weight:750}
+.home-article .table-wrap td,.home-article .table-wrap th{white-space:nowrap}
+.home-article .table-note{max-width:860px;margin:16px 0 0;color:var(--muted);font-size:.9rem}
+
 /* Three taxi category fares */
 .fare-result header h3{font-size:clamp(2rem,4vw,3rem);line-height:1;letter-spacing:-.045em;white-space:nowrap;margin-top:7px;font-variant-numeric:tabular-nums}
 .category-fare-results{display:grid;gap:9px;margin:18px 0 8px}
