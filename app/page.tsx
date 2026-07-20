@@ -10,11 +10,11 @@ import { canonical, site } from '@/src/data/site';
 import { pageMetadata } from '@/lib/seo';
 
 const title = 'Taksi Ücreti Hesaplama 2026 | 81 İl Güncel Taksi Tarifesi';
-const description = 'Şehrinizi seçin, mesafeyi girin ve açılış, kilometre ve minimum ücret tarifesine göre tahmini taksi ücretinizi hesaplayın. 81 il ve kaynak bilgileri.';
+const description = 'Şehrinizi seçin, mesafeyi girin ve açılış, kilometre ve minimum ücret tarifesine göre Taksi Ücreti Hesaplama sonucunu saniyeler içinde görüntüleyin. 81 il ve kaynak bilgileri.';
 export const metadata: Metadata = pageMetadata(title, description, '/');
 
 const faqs = [
-  ['Taksi ücreti nasıl hesaplanır?', 'Açılış ücretine araçla gidilecek mesafenin kilometre karşılığı eklenir. Belgelenmiş bir bekleme tarifesi varsa bekleme tutarı, kullanıcının girdiği köprü veya otoyol bedeli de hesaba katılır. Toplam minimum ücretin altında kalırsa minimum ücret uygulanır.'],
+  ['Taksi Ücreti Hesaplama nasıl yapılır?', 'Açılış ücretine araçla gidilecek mesafenin kilometre karşılığı eklenir. Belgelenmiş bir bekleme tarifesi varsa bekleme tutarı, kullanıcının girdiği köprü veya otoyol bedeli de hesaba katılır. Toplam minimum ücretin altında kalırsa minimum ücret uygulanır.'],
   ['İndi bindi ücreti nedir?', 'İndi bindi, kısa yolculuklarda uygulanan minimum yolculuk ücretidir. Hesaplanan tutarın üzerine eklenen ikinci bir ücret değildir.'],
   ['Taksi kilometre ücreti şehirden şehre değişir mi?', 'Evet. Açılış, kilometre ve minimum ücretler il bazında değişebilir. Bazı ilçelerde veya belgelenmiş araç türlerinde farklı yerel tarifeler de bulunabilir.'],
   ['Hangi mesafeyi girmeliyim?', 'Bir harita uygulamasındaki araçla gidilecek yol mesafesini kullanın. Kuş uçuşu uzaklık taksi rotasını doğru yansıtmaz.'],
@@ -48,7 +48,7 @@ export default function HomePage() {
       <header className="hero home-hero">
         <div className="container">
           <h1>Taksi Ücreti Hesaplama</h1>
-          <p className="lead">Şehrinizi seçin ve araçla gidilecek mesafeyi girin. Güncel açılış, kilometre ve minimum ücret tarifesine göre tahmini taksi ücretinizi saniyeler içinde hesaplayın.</p>
+          <p className="lead">Şehrinizi seçin ve araçla gidilecek mesafeyi girin. Güncel açılış, kilometre ve minimum ücret tarifesine göre Taksi Ücreti Hesaplama sonucunu saniyeler içinde görüntüleyin.</p>
         </div>
       </header>
 
@@ -57,7 +57,7 @@ export default function HomePage() {
 
         <section className="section soft" id="hesaplama-yontemi">
           <div className="container">
-            <div className="section-heading"><h2>Taksi Ücreti Nasıl Hesaplanır?</h2><p>Temel hesap, seçilen şehrin tarife kaydı ve araçla gidilecek mesafe üzerinden yapılır.</p></div>
+            <div className="section-heading"><h2>Taksi Ücreti Hesaplama Nasıl Yapılır?</h2><p>Temel hesap, seçilen şehrin tarife kaydı ve araçla gidilecek mesafe üzerinden yapılır.</p></div>
             <div className="calculation-steps">
               <article><span>1</span><h3>Açılış ücreti</h3><p>Taksimetrenin yolculuk başında kullandığı başlangıç tutarıdır.</p></article>
               <article><span>2</span><h3>Mesafe bedeli</h3><p>Girilen kilometre, şehirdeki kilometre tarifesiyle çarpılır.</p></article>
