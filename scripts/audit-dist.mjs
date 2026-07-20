@@ -54,7 +54,7 @@ for (const { file, html } of pages) {
 const home = readFileSync(join(outputDirectory, 'index.html'), 'utf8');
 if (/2026 taksi tarifesi karşılaştırması/i.test(home) || /id="tarife-karsilastirma"/i.test(home)) errors.push('Ana sayfadaki 81 şehir karşılaştırma tablosu kaldırılmadı.');
 if (!home.includes('<title>Taksi Ücreti Hesaplama 2026 | 81 İl Güncel Taksi Tarifesi</title>')) errors.push('Ana sayfa title değeri hedef metinle eşleşmiyor.');
-if (!home.includes('Şehrinizi seçin, mesafeyi girin ve açılış, kilometre ve minimum ücret tarifesine göre tahmini taksi ücretinizi hesaplayın. 81 il ve kaynak bilgileri.')) errors.push('Ana sayfa meta açıklaması hedef metinle eşleşmiyor.');
+if (!home.includes('Şehrinizi seçin, mesafeyi girin ve açılış, kilometre ve minimum ücret tarifesine göre Taksi Ücreti Hesaplama sonucunu saniyeler içinde görüntüleyin. 81 il ve kaynak bilgileri.')) errors.push('Ana sayfa meta açıklaması hedef metinle eşleşmiyor.');
 const cityOptions = home.match(/role="option"/g)?.length ?? 0;
 if (cityOptions !== 81) errors.push(`Şehir seçicisinde 81 yerine ${cityOptions} seçenek var.`);
 const optionSlugs = [...home.matchAll(/id="[^"]*-option-([a-z-]+)"/g)].map((match) => match[1]);
