@@ -165,6 +165,10 @@ h1,h2,h3,h4,strong,b,button,label,summary{letter-spacing:-.02em}
 .page-header h1.post-title{font-size:clamp(2.1rem,4.5vw,3.75rem)}
 .article-meta-author{text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:3px}
 
+/* Use the same restrained H1 scale on every standard content page. */
+.page-header h1,.page-header h1.post-title{font-size:clamp(2.1rem,4.5vw,3.75rem)}
+@media(max-width:800px){.page-header h1,.page-header h1.post-title{font-size:clamp(2rem,9.75vw,3.15rem)}}
+
 @media(max-width:1000px){
   .calculator-insights{grid-template-columns:1fr}
   .tariff-summary{border-right:0;border-bottom:1px solid var(--line)}
