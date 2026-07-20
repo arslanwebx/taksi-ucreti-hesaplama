@@ -49,7 +49,6 @@ export default function HomePage() {
         <div className="container">
           <h1>Taksi Ücreti Hesaplama</h1>
           <p className="lead">Şehrinizi seçin ve araçla gidilecek mesafeyi girin. Güncel açılış, kilometre ve minimum ücret tarifesine göre tahmini taksi ücretinizi saniyeler içinde hesaplayın.</p>
-          <p className="hero-trust"><span>81 il</span><span>Tarife kaynağı ve kontrol tarihi</span><span>Ücretsiz hesaplama</span></p>
         </div>
       </header>
 

@@ -93,10 +93,10 @@ for (const slug of ['ankara-taksi-ucreti','antalya-taksi-ucreti','istanbul-taksi
   if (!/class="toc"[\s\S]*?aria-expanded="false"/i.test(html)) errors.push(`${slug}: İçindekiler kapalı başlamıyor.`);
 }
 const expectedCityTitles = {
-  'ankara-taksi-ucreti': 'Ankara Taksi Ücretleri 2026: Güncel Tarife ve Hesaplama',
+  'ankara-taksi-ucreti': 'Ankara Taksi Ücreti 2026: Güncel Tarife ve Hesaplama',
   'istanbul-taksi-ucreti': 'İstanbul Taksi Ücreti [2026] – Hesaplama Aracı',
-  'antalya-taksi-ucreti': 'Antalya Taksi Ücretleri 2026: Güncel Fiyatlar ve Hesaplama',
-  'izmir-taksi-ucreti': 'İzmir Taksi Ücretleri 2026: Hemen Hesaplama',
+  'antalya-taksi-ucreti': 'Antalya Taksi Ücreti 2026: Güncel Fiyatlar ve Hesaplama',
+  'izmir-taksi-ucreti': 'İzmir Taksi Ücreti 2026: Hemen Hesaplama',
 };
 for (const [slug, expectedTitle] of Object.entries(expectedCityTitles)) {
   const html = readFileSync(join(outputDirectory, slug, 'index.html'), 'utf8');

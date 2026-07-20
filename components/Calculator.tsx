@@ -277,12 +277,11 @@ export function Calculator({ fixedCity, distancePresets = [], allowWaitingInput 
   }
 
   return (
-    <section className="calculator" aria-labelledby={`${id}-title`} id={fixedCity ? undefined : 'hesaplayici'}>
+    <section className="calculator" aria-labelledby={fixedCity ? `${id}-title` : undefined} aria-label={fixedCity ? undefined : 'Taksi ücreti hesaplayıcı'} id={fixedCity ? undefined : 'hesaplayici'}>
       <div className="calc-heading">
         <div>
           {fixedCity
-            ? <h3 id={`${id}-title`}>Yolculuk bilgileri</h3>
-            : <h2 id={`${id}-title`}>Taksi ücretini hesaplayın</h2>}
+            && <h3 id={`${id}-title`}>Yolculuk bilgileri</h3>}
           <p>Şehri seçin, araçla gidilecek mesafeyi yazın ve tarife dökümünü görün.</p>
         </div>
         <span className="calc-badge">81 il</span>
