@@ -219,6 +219,8 @@ h1,h2,h3,h4,strong,b,button,label,summary{letter-spacing:-.02em}
 .footer-contact-links{max-width:100%}
 .footer-contact-links a{overflow-wrap:anywhere}
 .footer-contact-note{max-width:280px;margin:8px 0 0}
+.footer-social-heading{margin-top:18px!important}
+.footer-social-links span{color:#bdb8ab}
 @media(max-width:580px){
   .footer-links{gap:10px}
   .footer-contact-note{margin-top:6px}
