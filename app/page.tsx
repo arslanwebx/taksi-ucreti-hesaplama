@@ -37,7 +37,7 @@ const cityCalculatorPaths: Record<HomepageCitySlug, string> = {
   ankara: '/ankara-taksi-ucreti/',
   izmir: '/izmir-taksi-ucreti/',
   antalya: '/antalya-taksi-ucreti/',
-  bursa: '/sehirler/',
+  bursa: '/bursa-taksi-ucreti/',
   adana: '/sehirler/',
 };
 const tariffCities = homepageCitySlugs.map((slug) => ({ city: taxiFareBySlug[slug]!, href: cityCalculatorPaths[slug] }));
