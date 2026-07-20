@@ -141,7 +141,7 @@ export function CityFareArticle({ city }: { city: PublishedCity }) {
 
       <section className="source-box" id="kaynak">
         <h2>Kaynak ve doğrulama</h2>
-        <p><strong>Tarife referansı:</strong> {city.referenceDate}. Kayıt <time dateTime={city.lastVerified}>{formatDate(city.lastVerified)}</time> tarihinde yeniden kontrol edildi.</p>
+        <p><strong>Tarife referansı:</strong> {city.referenceDate}. Kayıt <time dateTime={city.lastVerified}>{formatDate(city.lastVerified)}</time> tarihinde yeniden kontrol edildi. Kaynak seçimi ve doğrulama yaklaşımı için <Link href="/veri-kaynaklari-ve-hesaplama-yontemi/">tarife veri yöntemini</Link> inceleyin.</p>
         <ul>
           {city.slug === 'antalya'
             ? <li><a href={municipal.url} rel="external">{municipal.label}</a></li>

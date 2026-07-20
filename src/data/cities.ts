@@ -35,7 +35,7 @@ const articleDetails: Record<string, ArticleDetails> = {
       'AŞTİ çevresinde yalnızca resmî taksi sırasını kullanın.',
       'Esenboğa yolculuklarında güncel araç rotası mesafesini haritadan teyit edin.',
     ],
-    airport: { name: 'Esenboğa Havalimanı', path: '/havalimani-taksi-ucretleri/' },
+    airport: { name: 'Esenboğa Havalimanı', path: '/havalimani-taksi-ucretleri/#esenboga' },
     districts: ['Kızılay', 'AŞTİ', 'Çankaya', 'Keçiören', 'Batıkent', 'Sincan'],
     routes: [
       { name: 'Kızılay – AŞTİ', km: 6 },
@@ -50,7 +50,7 @@ const articleDetails: Record<string, ArticleDetails> = {
       'Çevre ilçelerde araca binmeden önce yerel tarifenin geçerli olup olmadığını kontrol edin.',
       'Konak, Bornova ve Karşıyaka arasındaki rota seçimi gerçek mesafeyi etkiler.',
     ],
-    airport: { name: 'Adnan Menderes Havalimanı', path: '/havalimani-taksi-ucretleri/' },
+    airport: { name: 'Adnan Menderes Havalimanı', path: '/havalimani-taksi-ucretleri/#adnan-menderes' },
     districts: ['Konak', 'Bornova', 'Karşıyaka', 'Gaziemir'],
     routes: [
       { name: 'Konak – Bornova', km: 12 },
@@ -65,7 +65,7 @@ const articleDetails: Record<string, ArticleDetails> = {
       'Alanya ve Gazipaşa gibi dış ilçelerde yerel tarifeyi ayrıca doğrulayın.',
       'Lara, Kundu ve Belek yönünde güncel navigasyon mesafesini kullanın.',
     ],
-    airport: { name: 'Antalya Havalimanı', path: '/havalimani-taksi-ucretleri/' },
+    airport: { name: 'Antalya Havalimanı', path: '/havalimani-taksi-ucretleri/#antalya-havalimani' },
     districts: ['Lara', 'Konyaaltı', 'Kundu', 'Belek'],
     routes: [
       { name: 'Kaleiçi – Konyaaltı', km: 8 },
