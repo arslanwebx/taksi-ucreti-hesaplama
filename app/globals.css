@@ -221,9 +221,9 @@ h1,h2,h3,h4,strong,b,button,label,summary{letter-spacing:-.02em}
 .footer-contact-note{max-width:280px;margin:8px 0 0}
 .footer-social-links{display:flex;gap:10px;list-style:none;padding:0;margin:22px 0 0}
 .footer-social-links li{padding:0}
-.footer-social-links a,.footer-social-links span{width:38px;height:38px;display:grid;place-items:center;border:1px solid #4a4a42;border-radius:50%;color:#eeeadd;transition:background .15s ease,border-color .15s ease,color .15s ease,transform .15s ease}
-.footer-social-links a:hover{background:var(--yellow);border-color:var(--yellow);color:var(--dark);transform:translateY(-2px)}
-.footer-social-links span{color:#77736a;cursor:default}
+.footer-social-links a,.footer-social-links span{width:38px;height:38px;display:grid;place-items:center;border:1px solid var(--yellow);border-radius:50%;background:var(--yellow);color:var(--dark);transition:background .15s ease,border-color .15s ease,color .15s ease,transform .15s ease}
+.footer-social-links a:hover{background:#fff2a1;border-color:#fff2a1;color:var(--dark);transform:translateY(-2px)}
+.footer-social-links span{background:transparent;color:var(--yellow);cursor:default}
 .footer-social-links svg{width:18px;height:18px;fill:currentColor}
 @media(max-width:580px){
   .footer-links{gap:10px}
