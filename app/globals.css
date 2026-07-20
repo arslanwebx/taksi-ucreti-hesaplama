@@ -161,6 +161,10 @@ h1,h2,h3,h4,strong,b,button,label,summary{letter-spacing:-.02em}
 .article-content>section[id]{scroll-margin-top:100px}
 .policy-links{margin-top:18px!important;padding-top:14px;border-top:1px solid var(--line);font-weight:800}
 
+/* Article pages use a calmer title scale than standalone utility pages. */
+.page-header h1.post-title{font-size:clamp(2.1rem,4.5vw,3.75rem)}
+.article-meta-author{text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:3px}
+
 @media(max-width:1000px){
   .calculator-insights{grid-template-columns:1fr}
   .tariff-summary{border-right:0;border-bottom:1px solid var(--line)}

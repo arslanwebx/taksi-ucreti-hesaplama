@@ -43,7 +43,7 @@ export function BursaFareArticle() {
 
   return (
     <ArticlePage title={seoTitle} heading={h1} description={description} path={path} modified={city.lastVerified} category="Şehirler" readingMinutes={8} faqs={faqs} additionalSchemas={[webApplicationSchema]}>
-      <p className="notice"><strong>Kısa cevap:</strong> Bursa taksi ücreti, 52 TL açılış ve kilometre başına 45 TL üzerinden ilerler. Açılış ile mesafe toplamı 150 TL’nin altında kalırsa indi-bindi olarak 150 TL uygulanır.</p>
+      <p className="notice"><strong>Kısa cevap:</strong> Bursa’da taksimetre 52 TL açılış ücretiyle başlar ve gidilen her kilometrede 45 TL artar.<br />Temel tutar, açılış ücreti ile gerçek araç mesafesinin kilometre bedelinin toplamından oluşur.<br />Bu toplam 150 TL’nin altında kalırsa kısa yolculuklarda indi-bindi olarak 150 TL uygulanır.</p>
 
       <section className="fare-answer-box" aria-label="Bursa 2026 sarı taksi tarifesi özeti">
         <strong>Bursa sarı taksi tarifesi</strong>
