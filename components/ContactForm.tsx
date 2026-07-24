@@ -2,7 +2,28 @@
 
 import { useState } from 'react';
 
-const formEndpoint = process.env.NEXT_PUBLIC_FORM_ENDPOINT || 'https://formsubmit.co/ajax/iletisim@taksiucreti-hesaplama.blog';
+const formEndpoint = process.env.NEXT_PUBLIC_FORM_ENDPOINT;
+
+type FormSubmitResponse = {
+  success?: boolean | string;
+  message?: unknown;
+  error?: unknown;
+  errors?: unknown;
+};
+
+function getFormSubmitError(data: FormSubmitResponse) {
+  if (typeof data.message === 'string' && data.message.trim()) return data.message;
+  if (typeof data.error === 'string' && data.error.trim()) return data.error;
+  if (Array.isArray(data.errors)) {
+    const messages = data.errors.flatMap((error) => {
+      if (typeof error === 'string') return error;
+      if (error && typeof error === 'object' && 'message' in error && typeof error.message === 'string') return error.message;
+      return [];
+    });
+    if (messages.length) return messages.join(' ');
+  }
+  return '';
+}
 
 export function ContactForm() {
   const [subject, setSubject] = useState('');
@@ -14,19 +35,37 @@ export function ContactForm() {
     event.preventDefault();
     const form = event.currentTarget;
     if (!form.reportValidity()) return;
+    if (!formEndpoint) {
+      const configurationError = 'Form gönderim adresi yapılandırılmamış. Lütfen site yöneticisiyle iletişime geçin.';
+      console.error('Contact form configuration error: NEXT_PUBLIC_FORM_ENDPOINT is unavailable.');
+      setStatus(configurationError);
+      return;
+    }
     setSending(true); setStatus('Gönderiliyor…');
     try {
+      const formData = new FormData(form);
+      formData.set('_subject', 'Yeni İletişim Mesajı - Taksi Ücreti Hesaplama');
+      formData.set('_template', 'table');
       const response = await fetch(formEndpoint, {
         method: 'POST',
-        body: new FormData(form),
+        body: formData,
         headers: { Accept: 'application/json' },
       });
-      const data = await response.json().catch(() => ({})) as { message?: string; success?: string };
-      if (!response.ok || data.success === 'false') throw new Error(data.message);
+      const data = await response.json().catch(() => ({})) as FormSubmitResponse;
+      if (!response.ok || data.success === false || data.success === 'false') {
+        const error = new Error(getFormSubmitError(data) || `Form gönderilemedi (${response.status}).`);
+        error.name = 'FormSubmitError';
+        throw error;
+      }
       form.reset(); setSubject('');
       setStatus('Mesajınız gönderildi. Teşekkür ederiz.');
-    } catch {
-      setStatus('Gönderim tamamlanamadı. Lütfen yeniden deneyin veya e-posta gönderin.');
+    } catch (error) {
+      console.error('Contact form submission failed:', error);
+      setStatus(
+        error instanceof Error && error.name === 'FormSubmitError'
+          ? error.message
+          : 'Gönderim tamamlanamadı. Lütfen yeniden deneyin veya e-posta gönderin.',
+      );
     } finally { setSending(false); }
   }
 
