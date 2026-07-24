@@ -3,7 +3,7 @@
 import { useRef, useState } from 'react';
 import { canonical, site } from '@/src/data/site';
 
-const formEndpoint = `https://formsubmit.co/ajax/${site.contactEmail}`;
+const formEndpoint = process.env.NEXT_PUBLIC_FORM_ENDPOINT || `https://formsubmit.co/ajax/${site.contactEmail}`;
 const contactPageUrl = canonical('/iletisim/');
 const genericError = `Mesaj gönderilemedi. Lütfen biraz sonra tekrar deneyin veya ${site.contactEmail} adresine e-posta gönderin.`;
 
