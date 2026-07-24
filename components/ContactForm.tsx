@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-const formEndpoint = process.env.NEXT_PUBLIC_FORM_ENDPOINT;
+const formEndpoint = process.env.NEXT_PUBLIC_FORM_ENDPOINT || 'https://formsubmit.co/iletisim@taksiucreti-hesaplama.blog';
 
 export function ContactForm() {
   const [subject, setSubject] = useState('');
@@ -16,7 +16,6 @@ export function ContactForm() {
     if (!form.reportValidity()) return;
     setSending(true); setStatus('Gönderiliyor…');
     try {
-      if (!formEndpoint) throw new Error('Form endpoint is not configured.');
       const response = await fetch(formEndpoint, {
         method: 'POST',
         body: new FormData(form),
