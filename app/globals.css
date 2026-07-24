@@ -240,8 +240,11 @@ h1,h2,h3,h4,strong,b,button,label,summary{letter-spacing:-.02em}
 
 @media(min-width:1001px){
   .footer-grid{grid-template-columns:1.05fr .8fr .9fr 1.25fr}
-  .footer-contact-links a{white-space:nowrap}
+.footer-contact-links a{white-space:nowrap}
 }
+
+/* Labels are intentionally bold; entered values should remain easy to read. */
+.field input,.field select,.contact-form input,.contact-form select,.contact-form textarea{font-weight:400}
 
 /* Homepage calculator: keep the page heading as the only primary heading. */
 .home-article .calculator-section{padding-top:0}

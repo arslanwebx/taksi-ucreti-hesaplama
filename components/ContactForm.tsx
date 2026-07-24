@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 
+const formEndpoint = process.env.NEXT_PUBLIC_FORM_ENDPOINT;
+
 export function ContactForm() {
   const [subject, setSubject] = useState('');
   const [status, setStatus] = useState('');
@@ -14,15 +16,20 @@ export function ContactForm() {
     if (!form.reportValidity()) return;
     setSending(true); setStatus('Gönderiliyor…');
     try {
-      const response = await fetch('/api/contact', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(Object.fromEntries(new FormData(form))) });
-      const data = await response.json() as { message?: string };
-      setStatus(data.message ?? 'İşlem tamamlanamadı.');
+      if (!formEndpoint) throw new Error('Form endpoint is not configured.');
+      const response = await fetch(formEndpoint, {
+        method: 'POST',
+        body: new FormData(form),
+        headers: { Accept: 'application/json' },
+      });
+      const data = await response.json().catch(() => ({})) as { message?: string };
+      setStatus(data.message ?? (response.ok ? 'Mesajınız gönderildi. Teşekkür ederiz.' : 'İşlem tamamlanamadı.'));
       if (response.ok) { form.reset(); setSubject(''); }
     } catch { setStatus('Bağlantı kurulamadı. Yeniden deneyin veya e-posta gönderin.'); }
     finally { setSending(false); }
   }
 
-  return <form className="contact-form" action="/api/contact" method="post" onSubmit={submit}>
+  return <form className="contact-form" action={formEndpoint} method="post" onSubmit={submit}>
     <label>Adınız<input name="name" autoComplete="name" required maxLength={100}/></label>
     <label>E-posta adresiniz<input name="email" type="email" autoComplete="email" required maxLength={200}/></label>
     <label>Konu<select name="subject" required value={subject} onChange={(event) => setSubject(event.target.value)}><option value="">Seçin</option><option>Tarife hatası bildir</option><option>Hesaplama sorunu</option><option>İçerik düzeltme talebi</option><option>Genel iletişim</option></select></label>
