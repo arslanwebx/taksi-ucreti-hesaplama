@@ -75,7 +75,7 @@ export const pages: readonly PolicyPage[] = [
   ]},
   {heading:'Talepleriniz ve iletişim',paragraphs:[
     'Hakkınızda gönderdiğiniz iletişim verilerine erişme, yanlış bilgiyi düzeltme veya uygun koşullarda silme talebinizi iletebilirsiniz. Talebin size ait olduğunu doğrulamak için makul ek bilgi istenebilir.',
-    'Analitik ölçümü tarayıcı ayarları, içerik engelleyici veya Google Analytics devre dışı bırakma araçlarıyla sınırlandırabilirsiniz. Gizlilik soruları için iletişim sayfasını ya da iletisim@taksiucreti-hesaplama.blog adresini kullanın.'
+    'Analitik ölçümü tarayıcı ayarları, içerik engelleyici veya Google Analytics devre dışı bırakma araçlarıyla sınırlandırabilirsiniz. Gizlilik soruları için iletişim sayfasını ya da merhaba@taksiucreti-hesaplama.blog adresini kullanın.'
   ],links:[{label:'İletişim sayfası',href:'/iletisim/'}]}
  ]},
 

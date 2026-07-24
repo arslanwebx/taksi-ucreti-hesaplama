@@ -1,8 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import { site } from '@/src/data/site';
 
-const formEndpoint = process.env.NEXT_PUBLIC_FORM_ENDPOINT;
+const formEndpoint = process.env.NEXT_PUBLIC_FORM_ENDPOINT ?? `https://formsubmit.co/ajax/${site.contactEmail}`;
 
 type FormSubmitResponse = {
   success?: boolean | string;

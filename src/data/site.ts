@@ -3,7 +3,7 @@ export const site = {
   url: 'https://taksiucreti-hesaplama.blog',
   titlePattern: '%s | Taksi Ücreti Hesaplama',
   description: 'Şehrinizi ve mesafeyi seçerek güncel taksi ücretini hesaplayın. Açılış, kilometre, indi bindi ve bekleme tarifelerini inceleyin.',
-  contactEmail: 'iletisim@taksiucreti-hesaplama.blog',
+  contactEmail: 'merhaba@taksiucreti-hesaplama.blog',
   author: { name: 'Oğuzhan Arslan', url: '/yazar/oguzhan-arslan/' },
   publisher: 'Taksi Ücreti Hesaplama',
   analyticsId: 'G-9DE2SY0711',

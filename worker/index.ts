@@ -2,7 +2,7 @@ interface AssetBinding { fetch(request: Request): Promise<Response> }
 interface Env { ASSETS: AssetBinding; CONTACT_WEBHOOK_URL?: string }
 const allowedSubjects = new Set(['Tarife hatası bildir','Hesaplama sorunu','İçerik düzeltme talebi','Genel iletişim']);
 const SITE_VERSION = 'next-2026-07-16.1';
-const CONTACT_EMAIL = 'iletisim@taksiucreti-hesaplama.blog';
+const CONTACT_EMAIL = 'merhaba@taksiucreti-hesaplama.blog';
 const rateLimits = new Map<string,{ count:number; resetAt:number }>();
 const json=(body:object,status=200,extraHeaders:Record<string,string>={})=>new Response(JSON.stringify(body),{status,headers:{'content-type':'application/json; charset=utf-8','cache-control':'no-store','x-site-version':SITE_VERSION,...extraHeaders}});
 export default {
