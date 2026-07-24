@@ -1,84 +1,117 @@
 'use client';
 
-import { useState } from 'react';
-import { site } from '@/src/data/site';
+import { useRef, useState } from 'react';
+import { canonical, site } from '@/src/data/site';
 
-const formEndpoint = process.env.NEXT_PUBLIC_FORM_ENDPOINT ?? `https://formsubmit.co/ajax/${site.contactEmail}`;
+const formEndpoint = `https://formsubmit.co/ajax/${site.contactEmail}`;
+const contactPageUrl = canonical('/iletisim/');
+const genericError = `Mesaj gönderilemedi. Lütfen biraz sonra tekrar deneyin veya ${site.contactEmail} adresine e-posta gönderin.`;
 
-type FormSubmitResponse = {
-  success?: boolean | string;
-  message?: unknown;
-  error?: unknown;
-  errors?: unknown;
-};
+type FieldName = 'name' | 'email' | 'subject' | 'message';
+type FormValues = Record<FieldName | 'honey', string>;
+type FormSubmitResponse = { success?: boolean | string };
 
-function getFormSubmitError(data: FormSubmitResponse) {
-  if (typeof data.message === 'string' && data.message.trim()) return data.message;
-  if (typeof data.error === 'string' && data.error.trim()) return data.error;
-  if (Array.isArray(data.errors)) {
-    const messages = data.errors.flatMap((error) => {
-      if (typeof error === 'string') return error;
-      if (error && typeof error === 'object' && 'message' in error && typeof error.message === 'string') return error.message;
-      return [];
-    });
-    if (messages.length) return messages.join(' ');
-  }
-  return '';
+const initialValues: FormValues = { name: '', email: '', subject: '', message: '', honey: '' };
+
+function validate(values: FormValues) {
+  const errors: Partial<Record<FieldName, string>> = {};
+  if (values.name.length < 2) errors.name = 'Ad soyad en az 2 karakter olmalıdır.';
+  if (!/^\S+@\S+\.\S+$/.test(values.email)) errors.email = 'Geçerli bir e-posta adresi girin.';
+  if (values.subject.length < 3) errors.subject = 'Konu en az 3 karakter olmalıdır.';
+  if (values.message.length < 10) errors.message = 'Mesaj en az 10 karakter olmalıdır.';
+  return errors;
 }
 
 export function ContactForm() {
-  const [subject, setSubject] = useState('');
+  const [values, setValues] = useState<FormValues>(initialValues);
+  const [errors, setErrors] = useState<Partial<Record<FieldName, string>>>({});
   const [status, setStatus] = useState('');
   const [sending, setSending] = useState(false);
-  const tariff = subject === 'Tarife hatası bildir';
+  const inFlight = useRef(false);
+
+  function updateField(field: keyof FormValues, value: string) {
+    setValues((current) => ({ ...current, [field]: value }));
+    if (field !== 'honey') setErrors((current) => ({ ...current, [field]: undefined }));
+    setStatus('');
+  }
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const form = event.currentTarget;
-    if (!form.reportValidity()) return;
-    if (!formEndpoint) {
-      const configurationError = 'Form gönderim adresi yapılandırılmamış. Lütfen site yöneticisiyle iletişime geçin.';
-      console.error('Contact form configuration error: NEXT_PUBLIC_FORM_ENDPOINT is unavailable.');
-      setStatus(configurationError);
+    if (sending || inFlight.current) return;
+
+    const trimmed = Object.fromEntries(
+      Object.entries(values).map(([key, value]) => [key, value.trim()]),
+    ) as FormValues;
+    const validationErrors = validate(trimmed);
+    setErrors(validationErrors);
+    setStatus('');
+
+    if (trimmed.honey || Object.keys(validationErrors).length > 0) {
+      if (trimmed.honey) setStatus(genericError);
       return;
     }
-    setSending(true); setStatus('Gönderiliyor…');
+
+    inFlight.current = true;
+    setSending(true);
     try {
-      const formData = new FormData(form);
-      formData.set('_subject', 'Yeni İletişim Mesajı - Taksi Ücreti Hesaplama');
-      formData.set('_template', 'table');
       const response = await fetch(formEndpoint, {
         method: 'POST',
-        body: formData,
-        headers: { Accept: 'application/json' },
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          name: trimmed.name,
+          email: trimmed.email,
+          subject: trimmed.subject,
+          message: trimmed.message,
+          _subject: 'Taksi Ücreti Hesaplama - Yeni İletişim Mesajı',
+          _template: 'table',
+          _honey: trimmed.honey,
+          _url: contactPageUrl,
+        }),
       });
-      const data = await response.json().catch(() => ({})) as FormSubmitResponse;
-      if (!response.ok || data.success === false || data.success === 'false') {
-        const error = new Error(getFormSubmitError(data) || `Form gönderilemedi (${response.status}).`);
-        error.name = 'FormSubmitError';
-        throw error;
-      }
-      form.reset(); setSubject('');
-      setStatus('Mesajınız gönderildi. Teşekkür ederiz.');
-    } catch (error) {
-      console.error('Contact form submission failed:', error);
-      setStatus(
-        error instanceof Error && error.name === 'FormSubmitError'
-          ? error.message
-          : 'Gönderim tamamlanamadı. Lütfen yeniden deneyin veya e-posta gönderin.',
-      );
-    } finally { setSending(false); }
+      const data = await response.json().catch(() => null) as FormSubmitResponse | null;
+      const wasSuccessful = data?.success === true || data?.success === 'true';
+
+      if (!response.ok || !wasSuccessful) throw new Error('FormSubmit submission failed');
+
+      setValues(initialValues);
+      setErrors({});
+      setStatus('Mesajınız başarıyla gönderildi. En kısa sürede size dönüş yapacağız.');
+    } catch {
+      setStatus(genericError);
+    } finally {
+      inFlight.current = false;
+      setSending(false);
+    }
   }
 
-  return <form className="contact-form" action={formEndpoint} method="post" onSubmit={submit}>
-    <input type="hidden" name="_subject" value="Taksi Ücreti Hesaplama - Yeni iletişim formu mesajı"/>
-    <label>Adınız<input name="name" autoComplete="name" required maxLength={100}/></label>
-    <label>E-posta adresiniz<input name="email" type="email" autoComplete="email" required maxLength={200}/></label>
-    <label>Konu<select name="subject" required value={subject} onChange={(event) => setSubject(event.target.value)}><option value="">Seçin</option><option>Tarife hatası bildir</option><option>Hesaplama sorunu</option><option>İçerik düzeltme talebi</option><option>Genel iletişim</option></select></label>
-    {tariff && <fieldset><legend>Tarife bildirimi ayrıntıları</legend><label>Şehir<input name="city" required maxLength={100}/></label><label>Bildirilen tarife<input name="reportedTariff" required maxLength={300} placeholder="Açılış, kilometre ve minimum tutar"/></label><label>Yürürlük tarihi<input name="effectiveDate" required type="date"/></label><label>Resmî kaynak bağlantısı<input name="source" required type="url" maxLength={500} placeholder="https://"/></label></fieldset>}
-    <label>Mesajınız<textarea name="message" required minLength={10} maxLength={4000}/></label>
-    <label className="hp" aria-hidden="true">Web sitesi<input name="website" tabIndex={-1} autoComplete="off"/></label>
-    <label className="privacy-check"><input name="privacy" type="checkbox" required/><span>Gizlilik politikasını okudum ve form verilerimin talebim için işlenmesini kabul ediyorum.</span></label>
-    <button className="button" type="submit" disabled={sending}>{sending ? 'Gönderiliyor…' : 'Mesajı gönder'}</button><p className="status" role="status" aria-live="polite">{status}</p>
+  return <form className="contact-form" noValidate onSubmit={submit}>
+    <label htmlFor="contact-name">Ad Soyad
+      <input id="contact-name" name="name" value={values.name} onChange={(event) => updateField('name', event.target.value)} autoComplete="name" required minLength={2} maxLength={100} aria-describedby={errors.name ? 'contact-name-error' : undefined} aria-invalid={Boolean(errors.name)} />
+    </label>
+    {errors.name && <p className="field-error" id="contact-name-error" role="alert">{errors.name}</p>}
+
+    <label htmlFor="contact-email">E-posta
+      <input id="contact-email" name="email" type="email" value={values.email} onChange={(event) => updateField('email', event.target.value)} autoComplete="email" required maxLength={200} aria-describedby={errors.email ? 'contact-email-error' : undefined} aria-invalid={Boolean(errors.email)} />
+    </label>
+    {errors.email && <p className="field-error" id="contact-email-error" role="alert">{errors.email}</p>}
+
+    <label htmlFor="contact-subject">Konu
+      <select id="contact-subject" name="subject" value={values.subject} onChange={(event) => updateField('subject', event.target.value)} required aria-describedby={errors.subject ? 'contact-subject-error' : undefined} aria-invalid={Boolean(errors.subject)}>
+        <option value="">Seçin</option><option value="Tarife hatası bildir">Tarife hatası bildir</option><option value="Hesaplama sorunu">Hesaplama sorunu</option><option value="İçerik düzeltme talebi">İçerik düzeltme talebi</option><option value="Genel iletişim">Genel iletişim</option>
+      </select>
+    </label>
+    {errors.subject && <p className="field-error" id="contact-subject-error" role="alert">{errors.subject}</p>}
+
+    <label htmlFor="contact-message">Mesaj
+      <textarea id="contact-message" name="message" value={values.message} onChange={(event) => updateField('message', event.target.value)} required minLength={10} maxLength={4000} aria-describedby={errors.message ? 'contact-message-error' : undefined} aria-invalid={Boolean(errors.message)} />
+    </label>
+    {errors.message && <p className="field-error" id="contact-message-error" role="alert">{errors.message}</p>}
+
+    <label className="hp" htmlFor="contact-honey" aria-hidden="true">Web sitesi
+      <input id="contact-honey" name="_honey" value={values.honey} onChange={(event) => updateField('honey', event.target.value)} tabIndex={-1} autoComplete="off" />
+    </label>
+
+    <button className="button" type="submit" disabled={sending}>{sending ? 'Gönderiliyor...' : 'Mesajı gönder'}</button>
+    <p className="status" role="status" aria-live="polite">{status}</p>
   </form>;
 }
