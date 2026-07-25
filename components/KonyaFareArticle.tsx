@@ -9,7 +9,7 @@ import { canonical, site } from '@/src/data/site';
 const city = taxiFareBySlug.konya!;
 const path = '/konya-taksi-ucreti/';
 const seoTitle = 'Konya Taksi Ücreti 2026: Güncel Açılış ve Fiyatı Hesaplama';
-const h1 = 'Konya Taksi Ücreti 2026: Güncel Tarife ve Hesaplama';
+const h1 = 'Konya Taksi Ücreti Hesaplama 2026';
 const description = 'Konya taksi ücreti hesaplama aracıyla mesafeye göre tahmini fiyatı öğrenin. 2026 açılış, kilometre ve indi-bindi tarifesini inceleyin.';
 const exampleDistances = [1, 2, 3, 4, 5, 7, 10, 15, 20, 25, 30, 40, 50] as const;
 
