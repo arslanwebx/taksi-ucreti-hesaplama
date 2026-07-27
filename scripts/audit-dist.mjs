@@ -73,8 +73,8 @@ const faqBlock = home.match(/class="faq"[\s\S]*?class="author-box/i)?.[0] ?? '';
 const faqCount = faqBlock.match(/<details/g)?.length ?? 0;
 if (faqCount !== 11) errors.push(`Ana sayfada 11 yerine ${faqCount} SSS var.`);
 const cityGuideBlock = home.match(/id="sehir-hesaplayicilari"[\s\S]*?<\/section>/i)?.[0] ?? '';
-if ((cityGuideBlock.match(/class="article-card"/g)?.length ?? 0) !== 5) errors.push('Ana sayfa popüler şehir rehberlerinde beş mevcut şehir kartı bulunmalı.');
-if ((cityGuideBlock.match(/<h3>/g)?.length ?? 0) !== 5 || /<article class="article-card"[\s\S]*?<h2>/i.test(cityGuideBlock)) errors.push('Ana sayfa popüler şehir kartları H3 kullanmalı.');
+if ((cityGuideBlock.match(/class="article-card"/g)?.length ?? 0) !== 6) errors.push('Ana sayfa popüler şehir rehberlerinde altı mevcut şehir kartı bulunmalı.');
+if ((cityGuideBlock.match(/<h3>/g)?.length ?? 0) !== 6 || /<article class="article-card"[\s\S]*?<h2>/i.test(cityGuideBlock)) errors.push('Ana sayfa popüler şehir kartları H3 kullanmalı.');
 if (cityGuideBlock.includes('<time')) errors.push('Ana sayfa şehir kartlarında tekrarlanan güncelleme tarihleri gösterilmemeli.');
 if (/Yoğun trafik<\/strong>|traffic=high/i.test(home)) errors.push('Belgesiz yoğun trafik katsayısı ana sayfadan kaldırılmadı.');
 if (!home.includes('Sarı taksi')) errors.push('Ana hesaplayıcıda Sarı taksi tarifesi bulunmalı.');
@@ -86,11 +86,11 @@ for (const schemaType of ['WebSite','WebPage','Organization','Person','Breadcrum
 }
 
 const blog = readFileSync(join(outputDirectory, 'blog', 'index.html'), 'utf8');
-if ((blog.match(/class="article-card"/g)?.length ?? 0) !== 8) errors.push('Blog arşivinde sekiz yazının tamamı bulunmalı.');
+if ((blog.match(/class="article-card"/g)?.length ?? 0) !== 9) errors.push('Blog arşivinde dokuz yazının tamamı bulunmalı.');
 if (/class="card-link"/i.test(blog)) errors.push('Blog arşivindeki yinelenen kart CTA metinleri kaldırılmadı.');
 if ((blog.match(/href="\/yazar\/oguzhan-arslan\/"/g)?.length ?? 0) < 8) errors.push('Blog arşivindeki her yazar adı profil sayfasına bağlanmalı.');
 if (!blog.match(/<nav[^>]+id="primary-navigation"[\s\S]*?href="\/iletisim\/"[\s\S]*?<\/nav>/i)) errors.push('Ana menüde iletişim sayfası bağlantısı bulunmalı.');
-for (const slug of ['ankara-taksi-ucreti','antalya-taksi-ucreti','bursa-taksi-ucreti','istanbul-taksi-ucreti','izmir-taksi-ucreti','istanbul-havalimani-taksi-ucreti','taksi-ucreti-nasil-hesaplanir','indi-bindi-ucreti-nedir']) {
+for (const slug of ['ankara-taksi-ucreti','antalya-taksi-ucreti','bursa-taksi-ucreti','konya-taksi-ucreti','istanbul-taksi-ucreti','izmir-taksi-ucreti','istanbul-havalimani-taksi-ucreti','taksi-ucreti-nasil-hesaplanir','indi-bindi-ucreti-nedir']) {
   const html = readFileSync(join(outputDirectory, slug, 'index.html'), 'utf8');
   if ((html.match(/class="author-box/g)?.length ?? 0) !== 1) errors.push(`${slug}: tek yazar kutusu bulunmalı.`);
   if (!html.includes('class="article-meta"')) errors.push(`${slug}: yazı üst bilgisi bulunamadı.`);

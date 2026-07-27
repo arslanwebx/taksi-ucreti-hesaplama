@@ -16,6 +16,7 @@
 .article-card p{font-size:.9rem;line-height:1.58;overflow-wrap:anywhere}
 .article-card-author{font-size:.78rem;margin:9px 0 15px}
 .mini-avatar{flex:0 0 auto}
+.author-avatar,.mini-avatar{object-fit:cover;object-position:center 26%}
 .card-link{font-size:.9rem;line-height:1.45;overflow-wrap:anywhere}
 #son-rehberler .article-card{padding:22px}
 #son-rehberler .article-card h2{font-size:clamp(1.08rem,1.35vw,1.24rem)}
