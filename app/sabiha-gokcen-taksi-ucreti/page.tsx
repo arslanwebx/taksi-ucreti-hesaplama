@@ -81,6 +81,7 @@ export default function SabihaGokcenTaxiFarePage() {
     <section id="terminal">
       <h2>Terminal çıkışı, trafik ve ücretli geçişler</h2>
       <p>Terminal çıkışındaki resmî taksi yönlendirmelerini izleyin, plakayı not edin ve taksimetrenin yolculuk başında açıldığını kontrol edin. TEM ve bağlantı yollarında trafik yoğunluğu, düşük hızda geçen sürenin toplamı etkilemesine neden olabilir.</p>
+      <figure className="article-inline-image"><img src="/blog/sabiha-gokcen-taksi-terminal-960.jpg" srcSet="/blog/sabiha-gokcen-taksi-terminal-480.jpg 480w, /blog/sabiha-gokcen-taksi-terminal-960.jpg 960w" sizes="(max-width: 908px) calc(100vw - 48px), 860px" alt="Sabiha Gökçen Havalimanı terminali önündeki sarı taksi ve bagajlar" width="960" height="640" loading="lazy" decoding="async"/><figcaption>Terminal çıkışında resmî taksi sırasını kullanın; gerçek ücret rota, trafik ve varsa ücretli geçişlere göre değişir.</figcaption></figure>
       <p>Anadolu Yakası rotalarında ücretli geçiş gerekmeyebilir. Avrupa Yakası’na geçerken köprü veya Avrasya Tüneli kullanılacaksa bu bedel taksimetre tahmininden ayrı olarak eklenebilir. Rota tercihini yolculuk başlamadan önce netleştirin.</p>
     </section>
 

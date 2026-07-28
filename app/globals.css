@@ -84,6 +84,7 @@ h1,h2,h3,h4,strong,b,button,label,summary{letter-spacing:-.02em}
 .article-card-image:hover img{transform:scale(1.025)}
 .article-card-author{margin-bottom:0}
 .article-featured-image{width:100%;height:auto;aspect-ratio:3/2;object-fit:cover;margin-top:28px;border:1px solid var(--line);border-radius:16px;box-shadow:0 12px 36px rgba(50,42,13,.1)}
+.article-inline-image{margin:28px 0}.article-inline-image img{width:100%;height:auto;aspect-ratio:3/2;object-fit:cover;border:1px solid var(--line);border-radius:16px;box-shadow:0 10px 30px rgba(50,42,13,.08)}.article-inline-image figcaption{margin-top:9px;color:var(--muted);font-size:.82rem;line-height:1.5}
 
 /* Homepage calculator and content hierarchy */
 :focus-visible{outline:3px solid #8c6800;outline-offset:3px}
