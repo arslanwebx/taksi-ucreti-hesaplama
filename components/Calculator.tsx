@@ -91,6 +91,7 @@ export function Calculator({ fixedCity, distancePresets = [] }: { fixedCity?: st
           </div>
         )}
       </section>
+      <p className="calculator-disclaimer">Uyarı: Bekleme süresi, trafik nedeniyle düşük hız, yolcu talebiyle verilen molalar, bagaj işlemleri ve benzeri durumlarda taksimetre ücreti artabilir. Köprü, tünel ve otoyol geçiş ücretleri hesaplamaya dahil değildir; bu güzergâhlar kullanılırsa ödenen geçiş bedelleri toplam ücrete eklenir.</p>
     </section>
   );
 }

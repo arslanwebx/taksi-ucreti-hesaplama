@@ -15,7 +15,7 @@ export const istanbulPageDescription = 'İstanbul taksi ücretini 2026 güncel t
 const taksimKadikoy = istanbulRoutes.find((route) => route.name === 'Taksim – Kadıköy')!;
 const faqs = [
   { question: 'İstanbul taksi kilometre ücreti ne kadar?', answer: '16 Şubat 2026’dan itibaren geçerli İBB tarifesinde sarı taksi kilometre ücreti 43,56 TL’dir.' },
-  { question: 'İstanbul indi-bindi ücreti ne kadar?', answer: 'Sarı takside minimum yolculuk, yaygın adıyla indi-bindi ücreti 210 TL’dir. Hesaplanan tutar bunun altında kalırsa 210 TL uygulanır; ayrıca eklenmez.' },
+  { question: 'İstanbul indi-bindi ücreti ne kadar?', answer: 'Sarı takside minimum yolculuk, yaygın adıyla indi-bindi ücreti 230 TL’dir. Hesaplanan tutar bunun altında kalırsa 230 TL uygulanır; ayrıca eklenmez.' },
   { question: 'İstanbul taksilerinde gece tarifesi var mı?', answer: 'İBB tarifesinde ayrı bir gece tarifesi yer almaz. Aynı sarı taksi tarifesi uygulanır; rota ve düşük hızda geçen süre toplamı değiştirebilir.' },
   { question: 'İstanbul taksisinde bekleme süresi nasıl hesaplanır?', answer: 'Resmî tarifede sarı taksi zaman ücreti 544,45 TL/saat ve dönüşüm hızı 12,50 km/saattir. Taksimetre düşük hızda mesafe ve zaman ölçümü arasında dönüşüm uygular; bu nedenle hesaplayıcı mesafe ücretinin üzerine tüm bekleme dakikalarını ayrıca eklemez.' },
   { question: 'Köprü ve tünel ücretleri taksi fiyatına dahil mi?', answer: 'Hayır. Kullanılan köprü, Avrasya Tüneli veya ücretli otoyol bedeli taksimetre tahmininden ayrı olarak yolcuya eklenebilir.' },

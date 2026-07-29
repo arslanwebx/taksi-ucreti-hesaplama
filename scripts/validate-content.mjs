@@ -63,7 +63,7 @@ for (const item of fares) {
 }
 
 const checkpoints = {
-  istanbul: [65.4, 43.56, 210],
+  istanbul: [71.94, 47.92, 230],
   ankara: [65, 40, 200],
   izmir: [40, 54, 210],
   antalya: [50, 50, 200],
