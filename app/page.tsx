@@ -78,7 +78,7 @@ export default function HomePage() {
       <header className="hero home-hero">
         <div className="container">
           <h1>Taksi Ücreti Hesaplama</h1>
-          <p className="lead">Şehrinizi seçin ve araçla gidilecek mesafeyi girin. Güncel açılış, kilometre ve minimum ücret tarifesine göre Taksi Ücreti Hesaplama sonucunu saniyeler içinde görüntüleyin.</p>
+          <p className="lead">Şehrinizi seçin ve araçla gidilecek mesafeyi girin. Güncel açılış, kilometre ve minimum ücret tarifesine göre tahmini taksi ücretinizi saniyeler içinde hesaplayın.</p>
         </div>
       </header>
 

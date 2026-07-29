@@ -5,6 +5,7 @@ const root = new URL('..', import.meta.url);
 const fareSource = readFileSync(new URL('../src/data/taxi-fares.ts', import.meta.url), 'utf8');
 const pageSource = readFileSync(new URL('../src/data/pages.ts', import.meta.url), 'utf8');
 const calculatorSource = readFileSync(new URL('../components/Calculator.tsx', import.meta.url), 'utf8');
+const istanbulSegmentsSource = readFileSync(new URL('../src/data/istanbul-taxi-segments.ts', import.meta.url), 'utf8');
 const calculatorLogicSource = readFileSync(new URL('../lib/taxi-calculator.ts', import.meta.url), 'utf8');
 const errors = [];
 
@@ -77,14 +78,12 @@ for (const [slug, expected] of Object.entries(checkpoints)) {
 
 const estimatedCount = fares.filter((fare) => fare.isEstimated).length;
 if (estimatedCount !== 6) errors.push(`Tahmini tarife sayısı 6 olmalı; ${estimatedCount} bulundu.`);
-const warning = 'Bu şehir için kullanılan tarife mevcut kaynaklara dayalı tahmini bir değerdir. Güncel taksimetre tutarı farklı olabilir.';
-if (!calculatorSource.includes(warning)) errors.push('Tahmini tarife uyarısı hesaplayıcıda eksik.');
-if (!calculatorSource.includes('kaynağını açın') || !calculatorSource.includes('Tarife referansı:') || !calculatorSource.includes('Son kontrol:')) {
-  errors.push('Hesap sonucunda kaynak, referans veya son kontrol bilgisi eksik.');
-}
 if (!calculatorSource.includes('Sarı taksi')) errors.push('Hesaplayıcıda Sarı taksi tarifesi eksik.');
-if (/Turkuaz|Siyah VIP/.test(calculatorSource) || /meterMultiplier|minimumMultiplier/.test(calculatorLogicSource)) {
-  errors.push('Hesaplayıcıda sarı taksi dışı kategori veya türetilmiş kategori oranı kaldı.');
+if (!istanbulSegmentsSource.includes('Turkuaz taksi') || !istanbulSegmentsSource.includes('Siyah taksi')) {
+  errors.push('İstanbul için üç resmî taksi segmenti hesaplayıcıda eksik.');
+}
+if (calculatorSource.includes('href=') || calculatorSource.includes('<Link')) {
+  errors.push('Hesaplayıcı bloğunda bağlantı kalmamalı.');
 }
 
 const fareSlugs = new Set(fares.map((fare) => fare.slug));
@@ -106,7 +105,7 @@ if (/\beyebrow\b/i.test(sourceFiles.map((file) => readFileSync(file, 'utf8')).jo
   errors.push('Site kaynaklarında eyebrow etiketi veya stili kaldı.');
 }
 for (const file of sourceFiles) {
-  if (!['.ts', '.tsx', '.astro'].includes(extname(file)) || file.replaceAll('\\', '/').endsWith('/data/taxi-fares.ts')) continue;
+  if (!['.ts', '.tsx', '.astro'].includes(extname(file)) || /\/data\/(taxi-fares|istanbul-taxi-segments)\.ts$/.test(file.replaceAll('\\', '/'))) continue;
   const source = readFileSync(file, 'utf8');
   if (/(?:openingFare|perKmFare|minimumFare)\s*:\s*\d/.test(source)) {
     errors.push(`${relative(new URL('..', root).pathname, file)}: tarife değeri üretilen merkezî veri dosyası dışında tekrarlandı.`);

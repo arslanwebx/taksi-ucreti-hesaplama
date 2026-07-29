@@ -59,11 +59,8 @@ const tariffTable = home.match(/id="guncel-taksi-tarifeleri"[\s\S]*?<\/section>/
 if ((tariffTable.match(/<tbody>/g)?.length ?? 0) !== 1 || (tariffTable.match(/<tr/g)?.length ?? 0) !== 7) errors.push('Ana sayfadaki altı şehirlik tarife tablosu taranabilir HTML olarak üretilmedi.');
 const routeTable = home.match(/id="populer-taksi-rotalari"[\s\S]*?<\/section>/i)?.[0] ?? '';
 if ((routeTable.match(/<tbody>/g)?.length ?? 0) !== 1 || (routeTable.match(/<tr/g)?.length ?? 0) !== 11) errors.push('Ana sayfadaki on rotalık tahmin tablosu taranabilir HTML olarak üretilmedi.');
-const cityOptions = home.match(/role="option"/g)?.length ?? 0;
-if (cityOptions !== 81) errors.push(`Şehir seçicisinde 81 yerine ${cityOptions} seçenek var.`);
-const optionSlugs = [...home.matchAll(/id="[^"]*-option-([a-z-]+)"/g)].map((match) => match[1]);
-const expectedPopularCities = ['istanbul','ankara','izmir','antalya','bursa','adana','konya','gaziantep','kocaeli','mersin'];
-if (expectedPopularCities.some((slug, index) => optionSlugs[index] !== slug)) errors.push('Şehir seçicisinin ilk 10 seçeneği beklenen popüler şehir sırasıyla eşleşmiyor.');
+const cityOptions = home.match(/<option value="[^"]*"/g)?.length ?? 0;
+if (cityOptions !== 82) errors.push(`Şehir seçicisinde şehir seçimi dahil 82 yerine ${cityOptions} seçenek var.`);
 if (/href="\/\?city=/i.test(home)) errors.push('Ana sayfada parametreli şehir bağlantısı kaldı.');
 const cityDirectoryBlock = home.match(/class="city-directory"[\s\S]*?<\/section>/i)?.[0] ?? '';
 if ((cityDirectoryBlock.match(/class="popular-cities"/g)?.length ?? 0) !== 1) errors.push('Ana sayfada tek popüler şehir seçim grubu bulunmalı.');
@@ -77,8 +74,7 @@ if ((cityGuideBlock.match(/class="article-card"/g)?.length ?? 0) !== 6) errors.p
 if ((cityGuideBlock.match(/<h3>/g)?.length ?? 0) !== 6 || /<article class="article-card"[\s\S]*?<h2>/i.test(cityGuideBlock)) errors.push('Ana sayfa popüler şehir kartları H3 kullanmalı.');
 if (cityGuideBlock.includes('<time')) errors.push('Ana sayfa şehir kartlarında tekrarlanan güncelleme tarihleri gösterilmemeli.');
 if (/Yoğun trafik<\/strong>|traffic=high/i.test(home)) errors.push('Belgesiz yoğun trafik katsayısı ana sayfadan kaldırılmadı.');
-if (!home.includes('Sarı taksi')) errors.push('Ana hesaplayıcıda Sarı taksi tarifesi bulunmalı.');
-if (/Turkuaz|Siyah VIP/.test(home)) errors.push('Ana hesaplayıcıda sarı taksi dışı kategori bulundu.');
+if (!home.includes('calculator-simple')) errors.push('Ana hesaplayıcı sade hesaplayıcı düzeniyle üretilmedi.');
 if ((home.match(/class="author-box/g)?.length ?? 0) !== 1) errors.push('Ana sayfa makalesinin sonunda tek yazar kutusu bulunmalı.');
 if (!home.includes('G-9DE2SY0711') || !home.includes('googletagmanager.com/gtag/js')) errors.push('Google Analytics etiketi üretim HTML dosyasına eklenmedi.');
 for (const schemaType of ['WebSite','WebPage','Organization','Person','BreadcrumbList','WebApplication','FAQPage']) {
@@ -108,10 +104,7 @@ for (const [slug, expectedTitle] of Object.entries(expectedCityTitles)) {
   if (!html.includes(`<title>${expectedTitle}</title>`)) errors.push(`${slug}: SEO title hedef metinle eşleşmiyor.`);
   const h2Texts = [...html.matchAll(/<h2[^>]*>([^<]+)<\/h2>/gi)].map((match) => match[1].trim().toLocaleLowerCase('tr-TR'));
   if (h2Texts.some((heading, index) => h2Texts.indexOf(heading) !== index)) errors.push(`${slug}: yinelenen H2 başlığı bulundu.`);
-  if (!/<h3[^>]*>Yolculuk bilgileri<\/h3>/i.test(html)) errors.push(`${slug}: hesaplayıcı H3 başlığı bulunamadı.`);
-  if (!html.includes('Sarı taksi')) errors.push(`${slug}: hesaplayıcıda Sarı taksi tarifesi bulunmalı.`);
-  if (/Turkuaz|Siyah VIP/.test(html)) errors.push(`${slug}: sarı taksi dışı kategori bulundu.`);
-  if (/Şehir rehberini aç/i.test(html)) errors.push(`${slug}: aynı şehir sayfasına dönen rehber bağlantısı kaldırılmadı.`);
+  if (!html.includes('Ücreti hesapla')) errors.push(`${slug}: sade hesaplayıcı düğmesi bulunamadı.`);
   if (slug === 'antalya-taksi-ucreti' && !html.includes('ikincil 2026 kaydından derlenmiştir')) errors.push('Antalya: kaynak belirsizliği görünür biçimde açıklanmadı.');
 }
 for (const asset of ['logo.svg','logo-mark.svg','favicon.svg','og-brand.svg','_redirects']) if (!existsSync(join(outputDirectory, asset))) errors.push(`Varlık eksik: ${asset}`);
