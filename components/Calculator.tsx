@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import {
   calculateFare,
+  canLinkToTariffSource,
   fareQualityLabel,
   formatCurrency,
   normalizeCitySearch,
@@ -415,7 +416,7 @@ export function Calculator({ fixedCity, distancePresets = [], allowWaitingInput 
               <span><strong>Kaynak niteliği:</strong> {fareQualityLabel(result.city.isEstimated, result.city.dataStatus)}</span>
               <span><strong>Tarife referansı:</strong> {result.city.referenceDate}</span>
               <span><strong>Son kontrol:</strong> {formatDate(result.city.lastVerified)}</span>
-              <a href={result.city.sourceUrl} target="_blank" rel="noopener noreferrer">{sourceName(result.city.sourceUrl)} kaynağını açın</a>
+              {canLinkToTariffSource(result.city.sourceUrl) && <a href={result.city.sourceUrl} target="_blank" rel="noopener noreferrer">{sourceName(result.city.sourceUrl)} kaynağını açın</a>}
             </div>
             {result.city.isEstimated && <p className="estimated-warning">Bu şehir için kullanılan tarife mevcut kaynaklara dayalı tahmini bir değerdir. Güncel taksimetre tutarı farklı olabilir.</p>}
             {!result.city.isEstimated && tariffSourceNeedsCaution(result.city.dataStatus) && <p className="estimated-warning">Tarife rakamları ikincil bir kayıttan derlenmiştir. Yolculuk öncesinde belediyenin UKOME arşivini ve araçtaki onaylı fiyat tarife kartını kontrol edin.</p>}
@@ -444,7 +445,7 @@ export function Calculator({ fixedCity, distancePresets = [], allowWaitingInput 
                 </dl>
               </article>
             </div>
-            <p><strong>Referans:</strong> {selected.referenceDate} · <a href={selected.sourceUrl} target="_blank" rel="noopener noreferrer">Kaynağı inceleyin</a></p>
+            <p><strong>Referans:</strong> {selected.referenceDate}{canLinkToTariffSource(selected.sourceUrl) && <> · <a href={selected.sourceUrl} target="_blank" rel="noopener noreferrer">Kaynağı inceleyin</a></>}</p>
           </section>
           <section className="popular-calculations" aria-labelledby={`${id}-popular-title`}>
             <div className="insight-heading"><div><h3 id={`${id}-popular-title`}>Popüler Taksi Mesafeleri</h3><p>{selected.city} için ek ücret girilmeden hesaplanır.</p></div></div>

@@ -5,7 +5,7 @@ import { Calculator } from './Calculator';
 import { TableOfContents } from './TableOfContents';
 import { formatDate, money, type PublishedCity } from '@/src/data/cities';
 import { pageMetadata } from '@/lib/seo';
-import { calculateFare, tariffSourceNeedsCaution } from '@/lib/taxi-calculator';
+import { calculateFare, canLinkToTariffSource, tariffSourceNeedsCaution } from '@/lib/taxi-calculator';
 
 const trafficLawUrl = 'https://www.mevzuat.gov.tr/mevzuatmetin/1.5.2918.pdf';
 const municipalLinks: Record<string, { label: string; url: string }> = {
@@ -75,6 +75,7 @@ export function CityFareArticle({ city }: { city: PublishedCity }) {
     mistake: 'Güncel araç rotası yerine kuş uçuşu mesafeyi kullanmak tahmini yanıltabilir.',
   };
   const municipal = municipalLinks[city.slug] ?? { label: `${city.city} belediyesi`, url: city.sourceUrl };
+  const showTariffSourceLink = canLinkToTariffSource(city.sourceUrl);
   const breakEven = Math.max(0, (city.minimumFare - city.openingFare) / city.perKmFare);
   const examples = [3, 10, 20].map((km) => ({ km, fare: calculateFare(city, km) }));
   const faqs = [
@@ -145,7 +146,7 @@ export function CityFareArticle({ city }: { city: PublishedCity }) {
         <ul>
           {city.slug === 'antalya'
             ? <li><a href={municipal.url} rel="external">{municipal.label}</a></li>
-            : <><li><a href={city.sourceUrl} rel="external">Kullanılan tarife kaynağını aç</a></li><li><a href={municipal.url} rel="external">{municipal.label}</a></li></>}
+            : <>{showTariffSourceLink && <li><a href={city.sourceUrl} rel="external">Kullanılan tarife kaynağını aç</a></li>}{showTariffSourceLink && <li><a href={municipal.url} rel="external">{municipal.label}</a></li>}</>}
           <li><a href={trafficLawUrl} rel="external">2918 sayılı Karayolları Trafik Kanunu</a></li>
         </ul>
         <p>Yeni bir karar yayımlandığı hâlde burada farklı bir tarife görüyorsanız belge bağlantısıyla <Link href="/iletisim/">düzeltme talebi gönderin</Link>.</p>

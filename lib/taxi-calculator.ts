@@ -90,6 +90,15 @@ export function fareQualityLabel(isEstimated: boolean, dataStatus: string): stri
   return 'İkincil kaynak kaydı';
 }
 
+export function canLinkToTariffSource(sourceUrl: string): boolean {
+  try {
+    const hostname = new URL(sourceUrl).hostname.replace(/^www\./, '').toLowerCase();
+    return hostname !== 'hemenhesap.com';
+  } catch {
+    return false;
+  }
+}
+
 export function tariffSourceNeedsCaution(dataStatus: string): boolean {
   return /[İi]kincil|kontrolü önerilir|teyidi bekliyor/i.test(dataStatus);
 }
