@@ -119,6 +119,10 @@ else {
   const urls = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
   if (urls.length < 20) errors.push(`sitemap.xml yalnızca ${urls.length} adres içeriyor.`);
   for (const url of urls) if (!url.startsWith(`${productionOrigin}/`) || url.includes('?')) errors.push(`Sitemap içinde geçersiz adres: ${url}`);
+  if (new Set(urls).size !== urls.length) errors.push('Sitemap içinde yinelenen URL bulundu.');
+  if ((xml.match(/<lastmod>/g)?.length ?? 0) !== urls.length) errors.push('Sitemap içindeki her URL için lastmod bulunmalı.');
+  if ((xml.match(/<changefreq>/g)?.length ?? 0) !== urls.length) errors.push('Sitemap içindeki her URL için changefreq bulunmalı.');
+  if ((xml.match(/<priority>/g)?.length ?? 0) !== urls.length) errors.push('Sitemap içindeki her URL için priority bulunmalı.');
 }
 const robotsPath = join(outputDirectory, 'robots.txt');
 if (!existsSync(robotsPath)) errors.push('robots.txt üretilmedi.');
