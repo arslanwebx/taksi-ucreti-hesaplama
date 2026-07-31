@@ -114,6 +114,8 @@ if (!/<h1[^>]*>Ankara Taksi Ücreti Hesaplama 2026<\/h1>/i.test(ankaraHtml)) err
 if ((ankaraHtml.match(/Ankara taksi hesaplama nasıl yapılır\?/g)?.length ?? 0) < 2) errors.push('Ankara: yeni FAQ görünür içerik ve FAQPage şemasında birlikte bulunmalı.');
 if (!ankaraHtml.includes('"@type":"HowTo"') || (ankaraHtml.match(/"@type":"HowToStep"/g)?.length ?? 0) !== 5) errors.push('Ankara: beş adımlı HowTo şeması eksik.');
 if (!ankaraHtml.includes('alt="Ankara taksi ücreti hesaplama 2026 - güncel tarife"')) errors.push('Ankara: hedef görsel alt metni eksik.');
+if (!ankaraHtml.includes('"datePublished":"2026-07-16"') || !ankaraHtml.includes('"dateModified":"2026-07-30"')) errors.push('Ankara: yayın ve güncelleme tarihleri şemada doğru ayrılmalı.');
+if (!ankaraHtml.includes('<time dateTime="2026-07-30">30 Temmuz 2026</time>')) errors.push('Ankara: görünür güncelleme tarihi 30 Temmuz 2026 olmalı.');
 const citiesHtml = readFileSync(join(outputDirectory, 'sehirler', 'index.html'), 'utf8');
 if (!/<a[^>]+href="\/ankara-taksi-ucreti\/"[^>]*>Ankara taksi ücreti hesaplama<\/a>/i.test(citiesHtml)) errors.push('Şehirler: Ankara hedef anchor metni eksik.');
 for (const asset of ['logo.svg','logo-mark.svg','favicon.svg','og-brand.svg','_redirects']) if (!existsSync(join(outputDirectory, asset))) errors.push(`Varlık eksik: ${asset}`);

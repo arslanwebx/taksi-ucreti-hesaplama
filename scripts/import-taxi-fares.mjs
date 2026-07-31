@@ -68,6 +68,7 @@ const officialSourceOverrides = {
   ankara: {
     sourceUrl: 'https://www.ankesob.org.tr/birlik-ucret-tarifeleri-degerlendirme-komisyonu/',
     dataStatus: 'Yetkili meslek kuruluşu kaynak kaydı',
+    lastVerified: '2026-07-30',
     note: 'Tarife rakamları 1 Mart 2026 Ankara kaydıdır; bağlantı yetkili fiyat tarifesi komisyonu kaynağıdır.',
   },
   antalya: {
@@ -115,7 +116,7 @@ const records = dataRows.map((row, rowIndex) => {
   const tenKm = asPositiveNumber(row[index['10 km Tahmini (TL)']], '10 km tahmini', city);
   let dataStatus = asText(row[index['Veri Durumu']]);
   let referenceDate = asDateText(row[index['Referans / Yürürlük']]);
-  const lastVerified = asDateText(row[index['Son Kontrol']]);
+  let lastVerified = asDateText(row[index['Son Kontrol']]);
   let sourceUrl = asText(row[index['Kaynak URL']]);
   const implementationStatus = asText(row[index['Codex Kullanımı']]);
   let note = asText(row[index.Not]);
@@ -124,6 +125,7 @@ const records = dataRows.map((row, rowIndex) => {
   if (sourceOverride) {
     ({ sourceUrl, dataStatus, note } = sourceOverride);
     if (sourceOverride.referenceDate) referenceDate = sourceOverride.referenceDate;
+    if (sourceOverride.lastVerified) lastVerified = sourceOverride.lastVerified;
   }
   const isEstimated = /tahmini|teyit gerekli|ilçe bazlı|genelleme riski/i.test(`${dataStatus} ${note}`);
 

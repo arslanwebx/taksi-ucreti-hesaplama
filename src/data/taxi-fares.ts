@@ -125,7 +125,7 @@ export const taxiFares: TaxiFare[] = [
     waitingFarePerMinute: 7,
     dataStatus: "Yetkili meslek kuruluşu kaynak kaydı",
     referenceDate: "01.03.2026",
-    lastVerified: "2026-07-16",
+    lastVerified: "2026-07-30",
     sourceUrl: "https://www.ankesob.org.tr/birlik-ucret-tarifeleri-degerlendirme-komisyonu/",
     implementationStatus: "Aktif",
     note: "Tarife rakamları 1 Mart 2026 Ankara kaydıdır; bağlantı yetkili fiyat tarifesi komisyonu kaynağıdır.",

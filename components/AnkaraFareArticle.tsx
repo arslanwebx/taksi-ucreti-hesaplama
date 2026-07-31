@@ -53,7 +53,7 @@ export function AnkaraFareArticle() {
   };
 
   return (
-    <ArticlePage title={ankaraSeoTitle} heading={ankaraPageTitle} description={ankaraPageDescription} path="/ankara-taksi-ucreti/" modified={city.lastVerified} category="Şehirler" readingMinutes={8} faqs={faqs} additionalSchemas={[webApplicationSchema, howToSchema]} featuredImageAlt="Ankara taksi ücreti hesaplama 2026 - güncel tarife">
+    <ArticlePage title={ankaraSeoTitle} heading={ankaraPageTitle} description={ankaraPageDescription} path="/ankara-taksi-ucreti/" published="2026-07-16" modified={city.lastVerified} category="Şehirler" readingMinutes={8} faqs={faqs} additionalSchemas={[webApplicationSchema, howToSchema]} featuredImageAlt="Ankara taksi ücreti hesaplama 2026 - güncel tarife">
       <p>Ankara taksi ücreti sabit değildir. Açılış ücretine gidilen yol, varsa bekleme süresi ve bilinen ek yol bedelleri eklenir; hesap 200 TL’nin altında kalırsa minimum ücret uygulanır.</p>
       <section className="fare-answer-box" aria-label="Ankara 2026 taksi tarifesi özeti">
         <strong>Ankara sarı taksi tarifesi</strong>
