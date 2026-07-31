@@ -126,7 +126,7 @@ export default function IstanbulAirport() {
       <section id="alternatifler">
         <h2>Taksi dışındaki ulaşım seçenekleri</h2>
         <p>M11 metro trafikten daha az etkilenir. Havaist ve İETT, güzergâhı uygun yolcular için daha ekonomik olabilir. Birden fazla yolcu, fazla bagaj veya kapıdan kapıya ulaşım gerektiğinde taksi daha pratik bir seçenek olabilir.</p>
-        <p><Link href="/">Türkiye geneli taksi hesaplayıcısına</Link>, <Link href="/istanbul-taksi-ucreti/">İstanbul taksi tarifesi rehberine</Link> veya <Link href="/havalimani-taksi-ucretleri/">havalimanı taksi rehberleri merkezine</Link> geçebilirsiniz. Şehirler arası planlama için <Link href="/sehirler/">yayımlanmış şehir tarifelerini</Link> inceleyin.</p>
+        <p><Link href="/">Türkiye geneli taksi hesaplayıcısına</Link>, <Link href="/istanbul-taksi-ucreti/">İstanbul taksi ücreti hesaplama sayfasına</Link> veya <Link href="/havalimani-taksi-ucretleri/">havalimanı taksi rehberleri merkezine</Link> geçebilirsiniz. Şehirler arası planlama için <Link href="/sehirler/">yayımlanmış şehir tarifelerini</Link> inceleyin.</p>
       </section>
     </ArticlePage>
   );

@@ -82,6 +82,9 @@ const officialSourceOverrides = {
     dataStatus: 'Resmî belediye meclis kararı',
     note: '17 Nisan 2026 tarihli resmî toplantı tutanağında ticari taksi tarifesi değişikliği oybirliğiyle kabul edilmiştir.',
   },
+  istanbul: {
+    lastVerified: '2026-07-30',
+  },
 };
 
 let workbook;

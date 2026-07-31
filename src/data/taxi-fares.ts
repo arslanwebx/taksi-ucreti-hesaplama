@@ -654,7 +654,7 @@ export const taxiFares: TaxiFare[] = [
     waitingFarePerMinute: 9.98,
     dataStatus: "20 Temmuz 2026 İBB Meclis kararı",
     referenceDate: "20.07.2026",
-    lastVerified: "2026-07-29",
+    lastVerified: "2026-07-30",
     sourceUrl: "https://www.haberturk.com/bilgi/foto/zamli-taksi-ucretleri-2026-yeni-taksi-acilis-ucreti-ve-kisa-mesafe-indi-bindi-ne-kadar-oldu-3899248",
     implementationStatus: "Aktif",
     note: "Codex uygulamasında kaynak URL ve son kontrol tarihiyle birlikte kullanın.",
