@@ -20,5 +20,5 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="tr" className={poppins.variable}><head><script src="https://quge5.com/88/tag.min.js" data-zone="265759" async data-cfasync="false"/></head><body><a className="skip-link" href="#main">İçeriğe geç</a><Header/><main id="main">{children}</main><Footer/><GoogleAnalytics/></body></html>;
+  return <html lang="tr" className={poppins.variable}><body><a className="skip-link" href="#main">İçeriğe geç</a><Header/><main id="main">{children}</main><Footer/><GoogleAnalytics/></body></html>;
 }
