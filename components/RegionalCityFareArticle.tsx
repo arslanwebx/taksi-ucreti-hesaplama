@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { ArticlePage } from './ArticlePage';
 import { Calculator } from './Calculator';
+import { CalculatorWithAds } from './CalculatorWithAds';
 import { TableOfContents } from './TableOfContents';
 import { calculateFare } from '@/lib/taxi-calculator';
 import { antalyaRoutes } from '@/src/data/antalya-routes';
@@ -90,7 +91,7 @@ export function RegionalCityFareArticle({ slug }: { slug: RegionalSlug }) {
         <p>Kaynak: <a href={city.sourceUrl} rel="external">{slug === 'izmir' ? 'İzmir Büyükşehir Belediyesi Meclis tutanağı' : 'Antalya UKOME arşivi ve ikincil tarife kaydı'}</a> · Son kontrol: <time dateTime={city.lastVerified}>{formatDate(city.lastVerified)}</time></p>
       </section>
       <TableOfContents items={[{ id: 'hesaplama', label: `${city.city} hesaplayıcı` }, { id: 'rotalar', label: 'Popüler rota tahminleri' }, { id: 'tarife', label: 'Tarife ve kapsamı' }, { id: 'hizli', label: 'Hızlı mesafe örnekleri' }, { id: 'havalimani', label: `${config.airportName} özeti` }, { id: 'sik-sorulan-sorular', label: 'Sık sorulan sorular' }]}/>
-      <section id="hesaplama"><h2>{city.city} için taksi tutarını hesaplayın</h2><p>Şehir seçili gelir. Popüler rotayı yükleyebilir veya güncel araç mesafesini elle yazabilirsiniz.</p><Calculator fixedCity={slug} distancePresets={config.routes}/></section>
+      <section id="hesaplama"><h2>{city.city} için taksi tutarını hesaplayın</h2><p>Şehir seçili gelir. Popüler rotayı yükleyebilir veya güncel araç mesafesini elle yazabilirsiniz.</p><CalculatorWithAds><Calculator fixedCity={slug} distancePresets={config.routes}/></CalculatorWithAds></section>
       {slug === 'izmir' ? <>{routeTable}{tariffTable}</> : <>{tariffTable}{routeTable}</>}
       <section id="hizli"><h2>{city.city} hızlı mesafe örnekleri</h2><div className="table-wrap"><table><thead><tr><th scope="col">Mesafe</th><th scope="col">Tahmini sarı taksi ücreti</th></tr></thead><tbody>{quickDistances.map((km) => <tr key={km}><th scope="row">{km} km</th><td>{money(calculateFare(city, km).total)}</td></tr>)}</tbody></table></div></section>
       <section id="havalimani"><h2>{config.airportName} için kısa not</h2><p>Bu sayfa genel şehir tarifesine odaklanır. Terminal ve transfer ayrıntıları için <Link href={`/havalimani-taksi-ucretleri/#${config.airportAnchor}`}>havalimanı taksi rehberindeki ilgili bölümü</Link> kullanın.</p></section>

@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { ArticlePage } from './ArticlePage';
 import { Calculator } from './Calculator';
+import { CalculatorWithAds } from './CalculatorWithAds';
 import { TableOfContents } from './TableOfContents';
 import { calculateFare } from '@/lib/taxi-calculator';
 import { ankaraRoutes } from '@/src/data/ankara-routes';
@@ -80,7 +81,7 @@ export function AnkaraFareArticle() {
       <section id="hesaplama">
         <h2>Ankara taksi ücreti hesaplama</h2>
         <p>Mesafeyi elle yazın, hızlı mesafe düğmelerini kullanın veya popüler bir Ankara rotasını seçerek yaklaşık kilometreyi yükleyin. Bekleme dakikası ve bildiğiniz yol ücretleri isteğe bağlıdır.</p>
-        <Calculator fixedCity="ankara" distancePresets={ankaraRoutes}/>
+        <CalculatorWithAds><Calculator fixedCity="ankara" distancePresets={ankaraRoutes}/></CalculatorWithAds>
       </section>
 
       <section id="tarife">

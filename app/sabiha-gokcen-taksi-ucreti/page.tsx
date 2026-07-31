@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArticlePage } from '@/components/ArticlePage';
 import { Calculator } from '@/components/Calculator';
+import { CalculatorWithAds } from '@/components/CalculatorWithAds';
 import { TableOfContents } from '@/components/TableOfContents';
 import { calculateFare } from '@/lib/taxi-calculator';
 import { formatDate, money, publishedCities } from '@/src/data/cities';
@@ -60,7 +61,7 @@ export default function SabihaGokcenTaxiFarePage() {
     <section id="hesaplama">
       <h2>Sabiha Gökçen taksi ücreti hesaplama</h2>
       <p>Varış noktasını seçerek yaklaşık mesafeyi yükleyin veya haritadaki güncel araç mesafesini yazın. İstanbul seçili gelir; Sabiha Gökçen, Pendik’te ve İstanbul sarı taksi tarifesi kapsamındadır.</p>
-      <Calculator fixedCity="istanbul" distancePresets={sabihaGokcenRoutes} allowWaitingInput={false}/>
+      <CalculatorWithAds><Calculator fixedCity="istanbul" distancePresets={sabihaGokcenRoutes} allowWaitingInput={false}/></CalculatorWithAds>
       <p>Sonuç tahminidir. Taksimetre düşük hızda mesafe ve zaman ölçümü arasında kendi dönüşüm kuralıyla çalışır; bilinen köprü, tünel veya otoyol bedelini ek yol ücreti alanına ayrıca yazabilirsiniz.</p>
     </section>
 

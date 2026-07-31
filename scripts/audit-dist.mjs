@@ -137,6 +137,20 @@ const redirects = readFileSync(join(outputDirectory, '_redirects'), 'utf8');
 if (!redirects.includes('/taksi-rehberi/ /yazar/oguzhan-arslan/ 301')) errors.push('Eski yazar URL yönlendirmesi eksik.');
 if (!existsSync(join(outputDirectory, 'yazar', 'oguzhan-arslan', 'index.html'))) errors.push('Yazar profil sayfası üretilmedi.');
 if (!existsSync(join(outputDirectory, 'sitemap', 'index.html'))) errors.push('HTML site haritası üretilmedi.');
+
+const bannerCount = (html) => html.match(/class="calculator-banner-ad"/g)?.length ?? 0;
+for (const slug of ['', 'ankara-taksi-ucreti', 'antalya-taksi-ucreti', 'bursa-taksi-ucreti', 'istanbul-taksi-ucreti', 'izmir-taksi-ucreti', 'konya-taksi-ucreti', 'istanbul-havalimani-taksi-ucreti', 'sabiha-gokcen-taksi-ucreti']) {
+  const html = slug ? readFileSync(join(outputDirectory, slug, 'index.html'), 'utf8') : home;
+  if (bannerCount(html) !== 2) errors.push(`${slug || 'Ana sayfa'}: hesaplayıcı için tam iki adet 300x250 banner bulunmalı.`);
+  if (!/class="calculator-ad-group"[\s\S]*?class="calculator-banner-ad"[\s\S]*?class="calculator[^"]*"[\s\S]*?class="calculator-banner-ad"/i.test(html)) errors.push(`${slug || 'Ana sayfa'}: bannerlar hesaplayıcının üstünde ve altında olmalı.`);
+}
+for (const slug of ['blog', 'sehirler', 'havalimani-taksi-ucretleri', 'indi-bindi-ucreti-nedir', 'iletisim', 'hakkimizda', 'gizlilik-politikasi', 'kullanim-kosullari', 'cerez-politikasi', 'sorumluluk-reddi', 'sitemap']) {
+  const html = readFileSync(join(outputDirectory, slug, 'index.html'), 'utf8');
+  if (bannerCount(html) !== 0) errors.push(`${slug}: hesaplayıcı dışındaki sayfada banner bulunmamalı.`);
+}
+const headers = readFileSync(join(outputDirectory, '_headers'), 'utf8');
+if (!headers.includes('https://www.highperformanceformat.com') || !headers.includes('https://pl30626339.effectivecpmnetwork.com')) errors.push('Reklam alan adı CSP izinlerinde eksik.');
+if (!home.includes('https://pl30626339.effectivecpmnetwork.com/3e/ca/bf/3ecabf4c4eb5a33bf9402323077afa1b.js')) errors.push('Adsterra sosyal bar betiği sayfa sonuna eklenmedi.');
 const sitemapPath = join(outputDirectory, 'sitemap.xml');
 if (!existsSync(sitemapPath)) errors.push('GSC için sitemap.xml üretilmedi.');
 else {

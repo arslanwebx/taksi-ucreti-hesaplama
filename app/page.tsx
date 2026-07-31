@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Calculator } from '@/components/Calculator';
+import { CalculatorWithAds } from '@/components/CalculatorWithAds';
 import { AuthorBox } from '@/components/AuthorBox';
 import { BlogCard } from '@/components/BlogCard';
 import { CityDirectory } from '@/components/CityDirectory';
@@ -83,7 +84,7 @@ export default function HomePage() {
       </header>
 
       <article className="home-article">
-        <section className="section calculator-section"><div className="container"><Calculator/></div></section>
+        <section className="section calculator-section"><div className="container"><CalculatorWithAds><Calculator/></CalculatorWithAds></div></section>
 
         <section className="section soft" id="hesaplama-yontemi">
           <div className="container">
