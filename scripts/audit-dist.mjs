@@ -93,7 +93,7 @@ for (const slug of ['ankara-taksi-ucreti','antalya-taksi-ucreti','bursa-taksi-uc
   if (!/class="toc"[\s\S]*?aria-expanded="false"/i.test(html)) errors.push(`${slug}: İçindekiler kapalı başlamıyor.`);
 }
 const expectedCityTitles = {
-  'ankara-taksi-ucreti': 'Ankara Taksi Ücreti 2026: Güncel Tarife ve Hesaplama',
+  'ankara-taksi-ucreti': 'Ankara Taksi Ücreti Hesaplama 2026 (Kaç TL Tutar?)',
   'istanbul-taksi-ucreti': 'İstanbul Taksi Ücreti [2026] – Hesaplama Aracı',
   'antalya-taksi-ucreti': 'Antalya Taksi Ücreti 2026: Güncel Fiyatlar ve Hesaplama',
   'bursa-taksi-ucreti': 'Bursa Taksi Ücreti 2026: Anında Hesaplama',
@@ -107,6 +107,15 @@ for (const [slug, expectedTitle] of Object.entries(expectedCityTitles)) {
   if (!html.includes('Ücreti hesapla')) errors.push(`${slug}: sade hesaplayıcı düğmesi bulunamadı.`);
   if (slug === 'antalya-taksi-ucreti' && !html.includes('ikincil 2026 kaydından derlenmiştir')) errors.push('Antalya: kaynak belirsizliği görünür biçimde açıklanmadı.');
 }
+const ankaraHtml = readFileSync(join(outputDirectory, 'ankara-taksi-ucreti', 'index.html'), 'utf8');
+const ankaraDescription = 'Ankara taksi ücreti hesaplama aracıyla açılış, km ve indi-bindi tarifesine göre 2026 güncel ücretinizi saniyeler içinde öğrenin.';
+if (!ankaraHtml.includes(`<meta name="description" content="${ankaraDescription}"/>`)) errors.push('Ankara: hedef meta açıklaması eksik.');
+if (!/<h1[^>]*>Ankara Taksi Ücreti Hesaplama 2026<\/h1>/i.test(ankaraHtml)) errors.push('Ankara: hedef H1 eksik.');
+if ((ankaraHtml.match(/Ankara taksi hesaplama nasıl yapılır\?/g)?.length ?? 0) < 2) errors.push('Ankara: yeni FAQ görünür içerik ve FAQPage şemasında birlikte bulunmalı.');
+if (!ankaraHtml.includes('"@type":"HowTo"') || (ankaraHtml.match(/"@type":"HowToStep"/g)?.length ?? 0) !== 5) errors.push('Ankara: beş adımlı HowTo şeması eksik.');
+if (!ankaraHtml.includes('alt="Ankara taksi ücreti hesaplama 2026 - güncel tarife"')) errors.push('Ankara: hedef görsel alt metni eksik.');
+const citiesHtml = readFileSync(join(outputDirectory, 'sehirler', 'index.html'), 'utf8');
+if (!/<a[^>]+href="\/ankara-taksi-ucreti\/"[^>]*>Ankara taksi ücreti hesaplama<\/a>/i.test(citiesHtml)) errors.push('Şehirler: Ankara hedef anchor metni eksik.');
 for (const asset of ['logo.svg','logo-mark.svg','favicon.svg','og-brand.svg','_redirects']) if (!existsSync(join(outputDirectory, asset))) errors.push(`Varlık eksik: ${asset}`);
 const redirects = readFileSync(join(outputDirectory, '_redirects'), 'utf8');
 if (!redirects.includes('/taksi-rehberi/ /yazar/oguzhan-arslan/ 301')) errors.push('Eski yazar URL yönlendirmesi eksik.');

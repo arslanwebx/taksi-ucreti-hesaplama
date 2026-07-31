@@ -18,7 +18,7 @@ export default function CitiesPage() {
       <section>
         <h2>Ayrıntılı şehir rehberleri</h2>
         <p>İnce içerik üretmemek için yalnızca kapsamlı biçimde hazırlanan şehir rehberleri ayrı sayfa olarak yayımlanır. Diğer iller için ana hesaplayıcıyı kullanabilirsiniz.</p>
-        <div className="article-grid">{cityPosts.map((post) => <BlogCard key={post.path} {...post}/>)}</div>
+        <div className="article-grid">{cityPosts.map((post) => <BlogCard key={post.path} {...post} title={post.path === '/ankara-taksi-ucreti/' ? 'Ankara taksi ücreti hesaplama' : post.title}/>)}</div>
       </section>
       <section>
         <h2>Diğer şehirlerde nasıl hesaplama yapılır?</h2>

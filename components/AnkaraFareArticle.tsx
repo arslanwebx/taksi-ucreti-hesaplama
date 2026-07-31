@@ -9,7 +9,8 @@ import { canonical, site } from '@/src/data/site';
 
 const city = publishedCities.find((item) => item.slug === 'ankara')!;
 export const ankaraPageTitle = 'Ankara Taksi Ücreti Hesaplama 2026';
-export const ankaraPageDescription = 'Ankara taksi ücretini 2026 güncel tarifesiyle hesaplayın. Açılış, kilometre, indi-bindi, bekleme ücretleri ve popüler rota tahminlerini görün.';
+export const ankaraSeoTitle = 'Ankara Taksi Ücreti Hesaplama 2026 (Kaç TL Tutar?)';
+export const ankaraPageDescription = 'Ankara taksi ücreti hesaplama aracıyla açılış, km ve indi-bindi tarifesine göre 2026 güncel ücretinizi saniyeler içinde öğrenin.';
 
 const faqs = [
   { question: 'Ankara taksi açılış ücreti ne kadar?', answer: '1 Mart 2026 tarihli Ankara tarifesinde sarı taksi açılış ücreti 65 TL’dir.' },
@@ -20,6 +21,7 @@ const faqs = [
   { question: 'Ankara taksilerinde kredi kartı geçer mi?', answer: 'Kart kabulü araca ve ödeme cihazının çalışmasına göre değişebilir. Kartla ödeyecekseniz yolculuk başlamadan önce sürücüye sormanız uygundur.' },
   { question: 'Kızılay ile Esenboğa Havalimanı taksi ücreti ne kadar?', answer: `Yaklaşık 30 km için bekleme ve ek yol bedeli olmadan sarı taksi tahmini ${money(calculateFare(city, 30).total)} tutar. Başlangıç adresi, rota ve trafik gerçek tutarı değiştirebilir.` },
   { question: 'AŞTİ ile Kızılay taksi ücreti ne kadar?', answer: `Yaklaşık 6 km için bekleme ve ek yol bedeli olmadan sarı taksi tahmini ${money(calculateFare(city, 6).total)} tutar. Gerçek rota ve trafik sonucu değiştirebilir.` },
+  { question: 'Ankara taksi hesaplama nasıl yapılır?', answer: 'Açılış ücretine mesafenin 40 TL kilometre ücretiyle çarpımı eklenir ve sonuç 200 TL indi-bindi tabanıyla karşılaştırılır. Mesafeyi sayfadaki hesaplayıcıya girip “Ücreti hesapla” düğmesine basarak anında tahmini sonucu görebilirsiniz.' },
 ];
 
 export function AnkaraFareArticle() {
@@ -35,9 +37,23 @@ export function AnkaraFareArticle() {
     offers: { '@type': 'Offer', price: '0', priceCurrency: 'TRY' },
     publisher: { '@type': 'Organization', name: site.publisher, url: site.url },
   };
+  const howToSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'HowTo',
+    name: 'Ankara taksi ücreti nasıl hesaplanır?',
+    description: 'Ankara sarı taksi tarifesinde açılış, mesafe, bekleme ve minimum ücret adımlarıyla tahmini tutarı hesaplama yöntemi.',
+    inLanguage: 'tr-TR',
+    step: [
+      { '@type': 'HowToStep', position: 1, name: 'Açılış ücretini not edin', text: 'Hesaba 65 TL açılış ücretiyle başlayın.' },
+      { '@type': 'HowToStep', position: 2, name: 'Mesafeyi girin', text: 'Araçla gidilecek mesafeyi kilometre olarak girin.' },
+      { '@type': 'HowToStep', position: 3, name: 'Mesafe bedelini hesaplayın', text: 'Mesafeyi 40 TL kilometre ücretiyle çarpın.' },
+      { '@type': 'HowToStep', position: 4, name: 'Varsa beklemeyi ekleyin', text: 'Varsa bekleme süresini 7 TL dakika tarifesiyle hesaplayıp toplama ekleyin.' },
+      { '@type': 'HowToStep', position: 5, name: 'Minimum ücretle karşılaştırın', text: 'Toplamı 200 TL indi-bindi taban ücretiyle karşılaştırın ve yüksek olan tutarı esas alın.' },
+    ],
+  };
 
   return (
-    <ArticlePage title={ankaraPageTitle} description={ankaraPageDescription} path="/ankara-taksi-ucreti/" modified={city.lastVerified} category="Şehirler" readingMinutes={8} faqs={faqs} additionalSchemas={[webApplicationSchema]}>
+    <ArticlePage title={ankaraSeoTitle} heading={ankaraPageTitle} description={ankaraPageDescription} path="/ankara-taksi-ucreti/" modified={city.lastVerified} category="Şehirler" readingMinutes={8} faqs={faqs} additionalSchemas={[webApplicationSchema, howToSchema]} featuredImageAlt="Ankara taksi ücreti hesaplama 2026 - güncel tarife">
       <p>Ankara taksi ücreti sabit değildir. Açılış ücretine gidilen yol, varsa bekleme süresi ve bilinen ek yol bedelleri eklenir; hesap 200 TL’nin altında kalırsa minimum ücret uygulanır.</p>
       <section className="fare-answer-box" aria-label="Ankara 2026 taksi tarifesi özeti">
         <strong>Ankara sarı taksi tarifesi</strong>
@@ -86,7 +102,7 @@ export function AnkaraFareArticle() {
 
       <section id="uygulama">
         <h2>Ankara’da taksimetre ve yolculuk notları</h2>
-        <ul><li>Hesap yalnızca doğrulanmış Ankara sarı taksi tarifesini kullanır; İstanbul’dan kategori oranı türetilmez.</li><li>Ayrı bir gece tarifesi belirtilmez. Trafikte oluşan bekleme toplamı değiştirebilir.</li><li>Esenboğa yolculukları sabit fiyat değildir; gerçek mesafe ve bekleme taksimetreye yansır.</li><li>Kartla ödeme yapacaksanız cihaz durumunu binmeden önce teyit edin.</li></ul>
+        <ul><li>Hesap yalnızca doğrulanmış Ankara sarı taksi tarifesini kullanır; İstanbul’dan kategori oranı türetilmez.</li><li>Ankara’da İstanbul’daki gibi turkuaz veya VIP taksi kategorisi yoktur; tüm şehirde tek tip sarı taksi tarifesi uygulanır.</li><li>Ayrı bir gece tarifesi belirtilmez. Trafikte oluşan bekleme toplamı değiştirebilir.</li><li>Esenboğa yolculukları sabit fiyat değildir; gerçek mesafe ve bekleme taksimetreye yansır.</li><li>Kartla ödeme yapacaksanız cihaz durumunu binmeden önce teyit edin.</li></ul>
         <p><Link href="/">Ana taksi hesaplayıcısını</Link> kullanabilir, <Link href="/sehirler/">şehir tarifeleri merkezine</Link> dönebilir, <Link href="/indi-bindi-ucreti-nedir/">indi-bindi ücretinin nasıl uygulandığını</Link> veya <Link href="/taksi-ucreti-nasil-hesaplanir/">taksi ücretinin hesaplama adımlarını</Link> okuyabilirsiniz.</p>
       </section>
 
@@ -94,6 +110,7 @@ export function AnkaraFareArticle() {
         <h2>Tarife kaynağı ve doğrulama</h2>
         <p><strong>Geçerlilik tarihi:</strong> 1 Mart 2026 · <strong>Son kontrol:</strong> <time dateTime={city.lastVerified}>{formatDate(city.lastVerified)}</time></p>
         <p>Tarife değerleri, yetkili meslek kuruluşu olan <a href={city.sourceUrl} rel="external">Ankara Esnaf ve Sanatkârlar Odaları Birliği Ücret Tarifeleri Değerlendirme Komisyonu</a> kaydıyla izlenir. Yeni bir tarife kartı yayımlandığında merkezi veri güncellenmelidir.</p>
+        <p>Bazı kaynaklarda önceki yıllara ait tarife rakamları dolaşabiliyor; bu sayfadaki değerler ANKESOB kaydına dayanır ve her kontrolde tarihiyle birlikte güncellenir.</p>
       </section>
     </ArticlePage>
   );
