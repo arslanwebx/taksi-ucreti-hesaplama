@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArticlePage } from '@/components/ArticlePage';
 import { Calculator } from '@/components/Calculator';
-import { CalculatorWithAds } from '@/components/CalculatorWithAds';
 import { TableOfContents } from '@/components/TableOfContents';
 import { formatDate, money, publishedCities } from '@/src/data/cities';
 import { istanbulAirportQuickRouteNames, istanbulAirportRoutes } from '@/src/data/istanbul-airport-routes';
@@ -84,7 +83,7 @@ export default function IstanbulAirport() {
       <section id="hesaplama">
         <h2>İstanbul Havalimanı taksi ücreti hesaplama</h2>
         <p>Varış noktasını seçerek yaklaşık mesafeyi yükleyin veya haritadaki güncel araç mesafesini elle yazın. Bekleme dakikası ve bildiğiniz geçiş bedelleri isteğe bağlıdır.</p>
-        <CalculatorWithAds><Calculator fixedCity="istanbul" distancePresets={istanbulAirportRoutes}/></CalculatorWithAds>
+        <Calculator fixedCity="istanbul" distancePresets={istanbulAirportRoutes}/>
         <p>Hesaplayıcı, İBB’nin yayımladığı zaman tarifesini yalnızca girdiğiniz bekleme dakikalarına uygular. Trafikte taksimetre mesafe ve zaman ölçümü arasında kendi dönüşüm kuralıyla çalıştığından sonuç kesin fiyat değil, karşılaştırılabilir bir planlama tahminidir.</p>
       </section>
 

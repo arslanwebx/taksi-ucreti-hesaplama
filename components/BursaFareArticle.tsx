@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import { ArticlePage } from './ArticlePage';
 import { Calculator } from './Calculator';
-import { CalculatorWithAds } from './CalculatorWithAds';
 import { TableOfContents } from './TableOfContents';
 import { bursaRoutes } from '@/src/data/bursa-routes';
 import { taxiFareBySlug } from '@/src/data/taxi-fares';
@@ -70,7 +69,7 @@ export function BursaFareArticle() {
       <section id="hesaplama">
         <h2>Bursa taksi ücreti hesaplama</h2>
         <p>Haritadaki araç mesafesini girin veya aşağıdaki Bursa rota örneklerinden birini seçin. Hesap, yalnızca Bursa için kayıtlı sarı taksi tarifesini kullanır.</p>
-        <CalculatorWithAds><Calculator fixedCity="bursa" distancePresets={bursaRoutes}/></CalculatorWithAds>
+        <Calculator fixedCity="bursa" distancePresets={bursaRoutes}/>
       </section>
 
       <section id="tarife">

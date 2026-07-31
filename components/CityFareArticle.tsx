@@ -2,7 +2,6 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 import { ArticlePage } from './ArticlePage';
 import { Calculator } from './Calculator';
-import { CalculatorWithAds } from './CalculatorWithAds';
 import { TableOfContents } from './TableOfContents';
 import { formatDate, money, type PublishedCity } from '@/src/data/cities';
 import { pageMetadata } from '@/lib/seo';
@@ -105,7 +104,7 @@ export function CityFareArticle({ city }: { city: PublishedCity }) {
       <section id="hesaplama">
         <h2>{city.city} taksi ücreti hesaplama</h2>
         <p>Harita uygulamasında araçla gidilecek yaklaşık mesafeyi bulun ve kilometreyi girin. Köprü, tünel, otoyol veya bildiğiniz başka bir ek tutar varsa ek ücret alanını açın. Hesaplayıcı trafik ya da bekleme için kendiliğinden ücret eklemez.</p>
-        <CalculatorWithAds><Calculator fixedCity={city.slug}/></CalculatorWithAds>
+        <Calculator fixedCity={city.slug}/>
         <p>Sonucu sabit fiyat olarak değil, yolculuk bütçesi için bir planlama değeri olarak kullanın. Haritanın önerdiği rotalar arasında kilometre farkı varsa her rotayı ayrı hesaplayarak olası aralığı görebilirsiniz.</p>
       </section>
 

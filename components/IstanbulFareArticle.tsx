@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import { ArticlePage } from './ArticlePage';
 import { Calculator } from './Calculator';
-import { CalculatorWithAds } from './CalculatorWithAds';
 import { LoadCalculatorDistanceButton } from './LoadCalculatorDistanceButton';
 import { TableOfContents } from './TableOfContents';
 import { calculateFare } from '@/lib/taxi-calculator';
@@ -85,7 +84,7 @@ export function IstanbulFareArticle() {
       <section id="hesaplama">
         <h2>İstanbul taksi ücreti hesaplama</h2>
         <p>İstanbul seçili gelir. Haritadaki araç mesafesini yazın veya popüler bir rotayı seçerek yaklaşık kilometreyi yükleyin; mesafe alanını daha sonra elle değiştirebilirsiniz.</p>
-        <CalculatorWithAds><Calculator fixedCity="istanbul" distancePresets={istanbulRoutes} allowWaitingInput={false}/></CalculatorWithAds>
+        <Calculator fixedCity="istanbul" distancePresets={istanbulRoutes} allowWaitingInput={false}/>
         <p>Sonuç yalnızca doğrulanmış sarı taksi tarifesiyle hesaplanır. Gerçek taksimetre tutarı düşük hızda geçen süreyi kendi dönüşüm kuralıyla işler; ücretli geçiş tutarını biliyorsanız ek yol ücreti alanına yazabilirsiniz.</p>
       </section>
 
