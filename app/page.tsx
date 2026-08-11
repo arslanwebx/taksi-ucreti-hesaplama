@@ -21,7 +21,7 @@ const faqs = [
   ['Taksi kilometre ücreti şehirden şehre değişir mi?', 'Evet. Açılış, kilometre ve minimum ücretler il bazında değişebilir. Bazı ilçelerde veya belgelenmiş araç türlerinde farklı yerel tarifeler de bulunabilir.'],
   ['Hangi mesafeyi girmeliyim?', 'Bir harita uygulamasındaki araçla gidilecek yol mesafesini kullanın. Kuş uçuşu uzaklık taksi rotasını doğru yansıtmaz.'],
   ['Trafik taksi ücretini artırır mı?', 'Trafik gerçek taksimetre tutarını etkileyebilir. Ancak sitede belgelenmiş bir bekleme tarifesi olmayan şehirler için otomatik bekleme ücreti eklenmez.'],
-  ['Bekleme ücreti hesaplamaya dahil mi?', 'Yalnızca seçilen şehir kaydında dakika başına belgelenmiş bir bekleme tarifesi varsa bekleme alanı gösterilir. Mevcut veri setinde bu alanı destekleyen şehir bulunmadığından bekleme ücreti otomatik eklenmez.'],
+  ['Bekleme ücreti hesaplamaya dahil mi?', 'Ana hesaplayıcı mesafe bazlı tahmin verir. Seçilen şehirde belgelenmiş bir zaman tarifesi varsa gerçek taksimetrede bekleme veya düşük hız nedeniyle ayrıca uygulanabilir; örneğin Adana kaydında bu tutar dakikada 5 TL’dir.'],
   ['Köprü ve otoyol ücretleri dahil mi?', 'Hayır. Bildiğiniz köprü, tünel veya otoyol bedelini ek geçiş ücreti alanına ayrıca yazmanız gerekir.'],
   ['Gece tarifesi uygulanıyor mu?', 'Türkiye genelinde geçerli tek bir gece tarifesi yoktur. Hesaplayıcı, şehir kaydında belgelenmeyen bir gece katsayısı uygulamaz.'],
   ['Taksi Ücreti Hesaplama sonucu kesin midir?', 'Hayır. Sonuç planlama amaçlı tahmindir. Gerçek rota, trafik, yerel uygulama, tarife değişikliği ve ücretli geçişler nedeniyle taksimetre tutarı farklı olabilir.'],
@@ -38,7 +38,7 @@ const cityCalculatorPaths: Record<HomepageCitySlug, string> = {
   izmir: '/izmir-taksi-ucreti/',
   antalya: '/antalya-taksi-ucreti/',
   bursa: '/bursa-taksi-ucreti/',
-  adana: '/sehirler/',
+  adana: '/adana-taksi-ucreti-hesaplama/',
 };
 const tariffCities = homepageCitySlugs.map((slug) => ({ city: taxiFareBySlug[slug]!, href: cityCalculatorPaths[slug] }));
 const popularRouteInputs: { city: HomepageCitySlug; route: string; distance: string; km: number }[] = [
@@ -51,7 +51,7 @@ const popularRouteInputs: { city: HomepageCitySlug; route: string; distance: str
   { city: 'antalya', route: 'Antalya Otogar → Lara', distance: 'Yaklaşık 15 km', km: 15 },
   { city: 'antalya', route: 'Antalya Havalimanı → Kaleiçi', distance: 'Yaklaşık 14 km', km: 14 },
   { city: 'bursa', route: 'Bursa Otogar → Ulucami', distance: 'Yaklaşık 12 km', km: 12 },
-  { city: 'adana', route: 'Adana Havalimanı → Seyhan', distance: 'Yaklaşık 7 km', km: 7 },
+  { city: 'adana', route: 'Çukurova Havalimanı → Adana merkez', distance: 'Yaklaşık 35 km', km: 35 },
 ];
 const popularRoutes = popularRouteInputs.map((route) => {
   const tariff = taxiFareBySlug[route.city]!;

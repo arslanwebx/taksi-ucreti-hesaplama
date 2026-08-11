@@ -7,7 +7,7 @@ import { taxiFares } from '@/src/data/taxi-fares';
 import { pageMetadata } from '@/lib/seo';
 
 const title = 'Şehir Taksi Ücreti Hesaplama';
-const description = 'Türkiye’nin 81 ilinde taksi ücreti hesaplayın; İstanbul, Ankara, İzmir ve Antalya için ayrıntılı şehir rehberlerini inceleyin.';
+const description = 'Türkiye’nin 81 ilinde taksi ücreti hesaplayın; Adana, İstanbul, Ankara, İzmir ve diğer şehirler için ayrıntılı tarife rehberlerini inceleyin.';
 export const metadata: Metadata = pageMetadata(title, description, '/sehirler/');
 
 export default function CitiesPage() {

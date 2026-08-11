@@ -65,6 +65,14 @@ const asDateText = (value) => {
 };
 const quote = (value) => JSON.stringify(value);
 const officialSourceOverrides = {
+  adana: {
+    sourceUrl: 'https://www.adana.bel.tr/panel/uploads/mecliskararlari_v/files/2025-aralik-pdfsi.pdf',
+    dataStatus: 'Resmî belediye meclis kararı',
+    referenceDate: '12.12.2025 tarihli 308 sayılı karar',
+    lastVerified: '2026-08-11',
+    note: 'Tarife 24 saat geçerlidir; zaman tarifesi 300 TL/saat (5 TL/dk) ve kısa mesafe ücreti 0-2,5 km için 170 TL olarak kabul edilmiştir.',
+    tariff: { openingFare: 45, perKmFare: 50, minimumFare: 170, waitingFarePerMinute: 5 },
+  },
   ankara: {
     sourceUrl: 'https://www.ankesob.org.tr/birlik-ucret-tarifeleri-degerlendirme-komisyonu/',
     dataStatus: 'Yetkili meslek kuruluşu kaynak kaydı',
@@ -112,9 +120,10 @@ const records = dataRows.map((row, rowIndex) => {
   const plateCode = asPositiveNumber(row[index.Plaka], 'Plaka', city);
   if (!Number.isInteger(plateCode)) throw new Error(`${city}: plaka kodu tam sayı olmalı.`);
   const region = asText(row[index['Bölge']]);
-  const openingFare = asPositiveNumber(row[index['Açılış (TL)']], 'Açılış ücreti', city);
-  const perKmFare = asPositiveNumber(row[index['Km Ücreti (TL)']], 'Kilometre ücreti', city);
-  const minimumFare = asPositiveNumber(row[index['Minimum / İndi-Bindi (TL)']], 'Minimum ücret', city);
+  let openingFare = asPositiveNumber(row[index['Açılış (TL)']], 'Açılış ücreti', city);
+  let perKmFare = asPositiveNumber(row[index['Km Ücreti (TL)']], 'Kilometre ücreti', city);
+  let minimumFare = asPositiveNumber(row[index['Minimum / İndi-Bindi (TL)']], 'Minimum ücret', city);
+  let waitingFarePerMinute;
   const fiveKm = asPositiveNumber(row[index['5 km Tahmini (TL)']], '5 km tahmini', city);
   const tenKm = asPositiveNumber(row[index['10 km Tahmini (TL)']], '10 km tahmini', city);
   let dataStatus = asText(row[index['Veri Durumu']]);
@@ -129,6 +138,9 @@ const records = dataRows.map((row, rowIndex) => {
     ({ sourceUrl, dataStatus, note } = sourceOverride);
     if (sourceOverride.referenceDate) referenceDate = sourceOverride.referenceDate;
     if (sourceOverride.lastVerified) lastVerified = sourceOverride.lastVerified;
+    if (sourceOverride.tariff) {
+      ({ openingFare, perKmFare, minimumFare, waitingFarePerMinute } = sourceOverride.tariff);
+    }
   }
   const isEstimated = /tahmini|teyit gerekli|ilçe bazlı|genelleme riski/i.test(`${dataStatus} ${note}`);
 
@@ -147,10 +159,10 @@ const records = dataRows.map((row, rowIndex) => {
 
   const calculatedFiveKm = Math.max(minimumFare, openingFare + 5 * perKmFare);
   const calculatedTenKm = Math.max(minimumFare, openingFare + 10 * perKmFare);
-  if (Math.abs(calculatedFiveKm - fiveKm) > 0.01) throw new Error(`${city}: 5 km tahmini uyuşmuyor. Excel=${fiveKm}, hesap=${calculatedFiveKm}.`);
-  if (Math.abs(calculatedTenKm - tenKm) > 0.01) throw new Error(`${city}: 10 km tahmini uyuşmuyor. Excel=${tenKm}, hesap=${calculatedTenKm}.`);
+  if (!sourceOverride?.tariff && Math.abs(calculatedFiveKm - fiveKm) > 0.01) throw new Error(`${city}: 5 km tahmini uyuşmuyor. Excel=${fiveKm}, hesap=${calculatedFiveKm}.`);
+  if (!sourceOverride?.tariff && Math.abs(calculatedTenKm - tenKm) > 0.01) throw new Error(`${city}: 10 km tahmini uyuşmuyor. Excel=${tenKm}, hesap=${calculatedTenKm}.`);
 
-  return { plateCode, city, slug, region, openingFare, perKmFare, minimumFare, dataStatus, referenceDate, lastVerified, sourceUrl, implementationStatus, note, isEstimated };
+  return { plateCode, city, slug, region, openingFare, perKmFare, minimumFare, waitingFarePerMinute, dataStatus, referenceDate, lastVerified, sourceUrl, implementationStatus, note, isEstimated };
 });
 
 const duplicate = (values) => values.find((value, position) => values.indexOf(value) !== position);
@@ -173,7 +185,7 @@ const recordLines = records.map((record) => `  {
     openingFare: ${record.openingFare},
     perKmFare: ${record.perKmFare},
     minimumFare: ${record.minimumFare},
-    dataStatus: ${quote(record.dataStatus)},
+${record.waitingFarePerMinute === undefined ? '' : `    waitingFarePerMinute: ${record.waitingFarePerMinute},\n`}    dataStatus: ${quote(record.dataStatus)},
     referenceDate: ${quote(record.referenceDate)},
     lastVerified: ${quote(record.lastVerified)},
     sourceUrl: ${quote(record.sourceUrl)},

@@ -26,6 +26,10 @@ export default function AirportIndex() {
         <h2>Antalya Havalimanı taksi yolculuğu</h2>
         <p>Kaleiçi, Lara ve Konyaaltı yönünde gerçek rota ile yerel tarife sonucu değiştirebilir. Planlama için <Link href="/antalya-taksi-ucreti/">Antalya taksi ücreti sayfasını</Link> inceleyin.</p>
       </section>
+      <section id="cukurova-havalimani">
+        <h2>Çukurova Havalimanı taksi yolculuğu</h2>
+        <p>Çukurova Uluslararası Havalimanı ile Adana’daki varış adresiniz arasındaki tutar gerçek araç rotasına göre değişir. Güncel resmî tarife ve mesafe hesabı için <Link href="/adana-taksi-ucreti-hesaplama/">Adana taksi ücreti hesaplama sayfasını</Link> kullanın.</p>
+      </section>
       <section>
         <h2>Doğru havalimanı tahmini</h2>
         <ol><li>Terminal ile tam varış adresi arasındaki araç yolunu bulun.</li><li>Şehir için kayıtlı sarı taksi tarifesini kullanın.</li><li>Yalnızca doğrulanmış bekleme tarifesi varsa süre ekleyin.</li><li>Köprü, tünel ve otoyol bedelini ayrıca yazın.</li></ol>

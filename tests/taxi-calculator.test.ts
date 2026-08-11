@@ -9,6 +9,7 @@ import {
   readCalculatorQuery,
   tariffSourceNeedsCaution,
 } from '../lib/taxi-calculator.ts';
+import { taxiFareBySlug } from '../src/data/taxi-fares.ts';
 
 const standard = { openingFare: 65, perKmFare: 40, minimumFare: 200 };
 
@@ -37,6 +38,16 @@ test('Ankara 2026 yellow taxi tariff includes documented waiting and minimum far
   assert.deepEqual(result, {
     opening: 65, distance: 80, waiting: 70, additional: 0, subtotal: 215, adjustment: 0, total: 215,
   });
+});
+
+test('Adana official tariff uses 45 TL opening, 50 TL per km and 170 TL minimum', () => {
+  const adana = taxiFareBySlug.adana!;
+  assert.deepEqual(
+    [adana.openingFare, adana.perKmFare, adana.minimumFare, adana.waitingFarePerMinute],
+    [45, 50, 170, 5],
+  );
+  assert.equal(calculateFare(adana, 2).total, 170);
+  assert.equal(calculateFare(adana, 10).total, 545);
 });
 
 test('missing waiting tariff does not invent a waiting charge', () => {

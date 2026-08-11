@@ -2,8 +2,8 @@ import type { ReactNode } from 'react';
 import { Breadcrumbs } from './Breadcrumbs';
 
 export function ContentShell({ title, titleClassName, description, path, meta, featuredImage, featuredImageAlt, children }: { title: string; titleClassName?: string; description: string; path: string; meta?: ReactNode; featuredImage?: string; featuredImageAlt?: string; children: ReactNode }) {
-  const smallImage = featuredImage?.replace(/\.jpg$/, '-480.jpg');
-  const mediumImage = featuredImage?.replace(/\.jpg$/, '-960.jpg');
+  const smallImage = featuredImage?.replace(/(\.[^.]+)$/, '-480$1');
+  const mediumImage = featuredImage?.replace(/(\.[^.]+)$/, '-960$1');
   return (
     <div className="container content-shell">
       <Breadcrumbs items={[{ name: 'Ana Sayfa', href: '/' }, { name: title, href: path }]} />

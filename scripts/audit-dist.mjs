@@ -70,8 +70,8 @@ const faqBlock = home.match(/class="faq"[\s\S]*?class="author-box/i)?.[0] ?? '';
 const faqCount = faqBlock.match(/<details/g)?.length ?? 0;
 if (faqCount !== 11) errors.push(`Ana sayfada 11 yerine ${faqCount} SSS var.`);
 const cityGuideBlock = home.match(/id="sehir-hesaplayicilari"[\s\S]*?<\/section>/i)?.[0] ?? '';
-if ((cityGuideBlock.match(/class="article-card"/g)?.length ?? 0) !== 6) errors.push('Ana sayfa popüler şehir rehberlerinde altı mevcut şehir kartı bulunmalı.');
-if ((cityGuideBlock.match(/<h3>/g)?.length ?? 0) !== 6 || /<article class="article-card"[\s\S]*?<h2>/i.test(cityGuideBlock)) errors.push('Ana sayfa popüler şehir kartları H3 kullanmalı.');
+if ((cityGuideBlock.match(/class="article-card"/g)?.length ?? 0) !== 7) errors.push('Ana sayfa popüler şehir rehberlerinde yedi mevcut şehir kartı bulunmalı.');
+if ((cityGuideBlock.match(/<h3>/g)?.length ?? 0) !== 7 || /<article class="article-card"[\s\S]*?<h2>/i.test(cityGuideBlock)) errors.push('Ana sayfa popüler şehir kartları H3 kullanmalı.');
 if (cityGuideBlock.includes('<time')) errors.push('Ana sayfa şehir kartlarında tekrarlanan güncelleme tarihleri gösterilmemeli.');
 if (/Yoğun trafik<\/strong>|traffic=high/i.test(home)) errors.push('Belgesiz yoğun trafik katsayısı ana sayfadan kaldırılmadı.');
 if (!home.includes('calculator-simple')) errors.push('Ana hesaplayıcı sade hesaplayıcı düzeniyle üretilmedi.');
@@ -82,17 +82,18 @@ for (const schemaType of ['WebSite','WebPage','Organization','Person','Breadcrum
 }
 
 const blog = readFileSync(join(outputDirectory, 'blog', 'index.html'), 'utf8');
-if ((blog.match(/class="article-card"/g)?.length ?? 0) !== 10) errors.push('Blog arşivinde on yazının tamamı bulunmalı.');
+if ((blog.match(/class="article-card"/g)?.length ?? 0) !== 11) errors.push('Blog arşivinde on bir yazının tamamı bulunmalı.');
 if (/class="card-link"/i.test(blog)) errors.push('Blog arşivindeki yinelenen kart CTA metinleri kaldırılmadı.');
 if ((blog.match(/href="\/yazar\/oguzhan-arslan\/"/g)?.length ?? 0) < 8) errors.push('Blog arşivindeki her yazar adı profil sayfasına bağlanmalı.');
 if (!blog.match(/<nav[^>]+id="primary-navigation"[\s\S]*?href="\/iletisim\/"[\s\S]*?<\/nav>/i)) errors.push('Ana menüde iletişim sayfası bağlantısı bulunmalı.');
-for (const slug of ['ankara-taksi-ucreti','antalya-taksi-ucreti','bursa-taksi-ucreti','konya-taksi-ucreti','istanbul-taksi-ucreti','izmir-taksi-ucreti','istanbul-havalimani-taksi-ucreti','sabiha-gokcen-taksi-ucreti','taksi-ucreti-nasil-hesaplanir','indi-bindi-ucreti-nedir']) {
+for (const slug of ['adana-taksi-ucreti-hesaplama','ankara-taksi-ucreti','antalya-taksi-ucreti','bursa-taksi-ucreti','konya-taksi-ucreti','istanbul-taksi-ucreti','izmir-taksi-ucreti','istanbul-havalimani-taksi-ucreti','sabiha-gokcen-taksi-ucreti','taksi-ucreti-nasil-hesaplanir','indi-bindi-ucreti-nedir']) {
   const html = readFileSync(join(outputDirectory, slug, 'index.html'), 'utf8');
   if ((html.match(/class="author-box/g)?.length ?? 0) !== 1) errors.push(`${slug}: tek yazar kutusu bulunmalı.`);
   if (!html.includes('class="article-meta"')) errors.push(`${slug}: yazı üst bilgisi bulunamadı.`);
   if (!/class="toc"[\s\S]*?aria-expanded="false"/i.test(html)) errors.push(`${slug}: İçindekiler kapalı başlamıyor.`);
 }
 const expectedCityTitles = {
+  'adana-taksi-ucreti-hesaplama': 'Adana Taksi Ücreti Hesaplama 2026 (Resmi Tarife: 45 TL Açılış)',
   'ankara-taksi-ucreti': 'Ankara Taksi Ücreti Hesaplama 2026 (Kaç TL Tutar?)',
   'istanbul-taksi-ucreti': 'İstanbul Taksi Ücreti [2026] – Hesaplama Aracı',
   'antalya-taksi-ucreti': 'Antalya Taksi Ücreti 2026: Güncel Fiyatlar ve Hesaplama',
@@ -106,6 +107,19 @@ for (const [slug, expectedTitle] of Object.entries(expectedCityTitles)) {
   if (h2Texts.some((heading, index) => h2Texts.indexOf(heading) !== index)) errors.push(`${slug}: yinelenen H2 başlığı bulundu.`);
   if (!html.includes('Ücreti hesapla')) errors.push(`${slug}: sade hesaplayıcı düğmesi bulunamadı.`);
   if (slug === 'antalya-taksi-ucreti' && !html.includes('ikincil 2026 kaydından derlenmiştir')) errors.push('Antalya: kaynak belirsizliği görünür biçimde açıklanmadı.');
+}
+const adanaHtml = readFileSync(join(outputDirectory, 'adana-taksi-ucreti-hesaplama', 'index.html'), 'utf8');
+if (!/<h1[^>]*>Adana Taksi Ücreti Hesaplama 2026<\/h1>/i.test(adanaHtml)) errors.push('Adana: hedef H1 eksik.');
+if (!adanaHtml.includes('alt="Adana taksi ücreti hesaplama 2026 - güncel tarife ve hesaplama aracı"')) errors.push('Adana: WebP öne çıkan görsel alt metni eksik.');
+if (!adanaHtml.includes('/blog/adana-taksi-ucreti-hesaplama-480.webp 480w') || !adanaHtml.includes('/blog/adana-taksi-ucreti-hesaplama-960.webp 960w')) errors.push('Adana: responsive WebP öne çıkan görseller eksik.');
+if (!adanaHtml.includes('/blog/adana-sari-taksi-seyhan-480.webp 480w') || !adanaHtml.includes('/blog/adana-sari-taksi-seyhan-960.webp 960w')) errors.push('Adana: responsive yazı içi görsel eksik.');
+if ((adanaHtml.match(/rel="external"/g)?.length ?? 0) !== 2) errors.push('Adana: içerikte tam iki güvenilir dış bağlantı bulunmalı.');
+if (!adanaHtml.includes('45 TL') || !adanaHtml.includes('50 TL/km') || !adanaHtml.includes('170 TL') || !adanaHtml.includes('5 TL/dk')) errors.push('Adana: resmî tarife değerleri görünür içerikte eksik.');
+if (!adanaHtml.includes('"@type":"FAQPage"') || !adanaHtml.includes('"@type":"HowTo"') || !adanaHtml.includes('"@type":"WebApplication"')) errors.push('Adana: FAQPage, HowTo veya WebApplication şeması eksik.');
+if (!adanaHtml.includes('"datePublished":"2026-08-11"') || !adanaHtml.includes('"dateModified":"2026-08-11"')) errors.push('Adana: yayın ve güncelleme tarihleri şemada eksik.');
+if (!home.includes('href="/adana-taksi-ucreti-hesaplama/"')) errors.push('Ana sayfa: Adana yazısına iç bağlantı eksik.');
+for (const [name, html] of [['hesaplama rehberi', readFileSync(join(outputDirectory, 'taksi-ucreti-nasil-hesaplanir', 'index.html'), 'utf8')], ['indi bindi rehberi', readFileSync(join(outputDirectory, 'indi-bindi-ucreti-nedir', 'index.html'), 'utf8')], ['havalimanı rehberi', readFileSync(join(outputDirectory, 'havalimani-taksi-ucretleri', 'index.html'), 'utf8')]]) {
+  if (!html.includes('href="/adana-taksi-ucreti-hesaplama/"')) errors.push(`${name}: Adana yazısına iç bağlantı eksik.`);
 }
 const ankaraHtml = readFileSync(join(outputDirectory, 'ankara-taksi-ucreti', 'index.html'), 'utf8');
 const ankaraDescription = 'Ankara taksi ücreti hesaplama aracıyla açılış, km ve indi-bindi tarifesine göre 2026 güncel ücretinizi saniyeler içinde öğrenin.';

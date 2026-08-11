@@ -10,8 +10,8 @@ type BlogCardProps = PostSummary & {
 
 function responsiveImage(image: string) {
   return {
-    small: image.replace(/\.jpg$/, '-480.jpg'),
-    medium: image.replace(/\.jpg$/, '-960.jpg'),
+    small: image.replace(/(\.[^.]+)$/, '-480$1'),
+    medium: image.replace(/(\.[^.]+)$/, '-960$1'),
   };
 }
 

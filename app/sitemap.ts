@@ -7,13 +7,13 @@ export const dynamic = 'force-static';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticEntries = [
-    { path: '/', modified: '2026-07-29', changeFrequency: 'weekly' as const, priority: 1 },
-    { path: '/blog/', modified: '2026-07-29', changeFrequency: 'weekly' as const, priority: 0.8 },
-    { path: '/sehirler/', modified: '2026-07-29', changeFrequency: 'weekly' as const, priority: 0.8 },
-    { path: '/havalimani-taksi-ucretleri/', modified: '2026-07-29', changeFrequency: 'weekly' as const, priority: 0.8 },
-    { path: '/yazar/oguzhan-arslan/', modified: '2026-07-27', changeFrequency: 'monthly' as const, priority: 0.5 },
+    { path: '/', modified: '2026-08-11', changeFrequency: 'weekly' as const, priority: 1 },
+    { path: '/blog/', modified: '2026-08-11', changeFrequency: 'weekly' as const, priority: 0.8 },
+    { path: '/sehirler/', modified: '2026-08-11', changeFrequency: 'weekly' as const, priority: 0.8 },
+    { path: '/havalimani-taksi-ucretleri/', modified: '2026-08-11', changeFrequency: 'weekly' as const, priority: 0.8 },
+    { path: '/yazar/oguzhan-arslan/', modified: '2026-08-11', changeFrequency: 'monthly' as const, priority: 0.5 },
     { path: '/iletisim/', modified: '2026-07-24', changeFrequency: 'yearly' as const, priority: 0.3 },
-    { path: '/sitemap/', modified: '2026-07-29', changeFrequency: 'monthly' as const, priority: 0.2 },
+    { path: '/sitemap/', modified: '2026-08-11', changeFrequency: 'monthly' as const, priority: 0.2 },
   ];
   const entries=[
     ...staticEntries,
