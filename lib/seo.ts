@@ -6,7 +6,7 @@ export function pageMetadata(title: string, description: string, path: string, t
   return {
     title: { absolute: fullTitle },
     description,
-    alternates: { canonical: canonical(path) },
+    alternates: { canonical: canonical(path), types: { 'application/rss+xml': canonical('/feed.xml') } },
     robots: { index: true, follow: true },
     openGraph: {
       type,

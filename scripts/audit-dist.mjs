@@ -77,6 +77,7 @@ if (/Yoğun trafik<\/strong>|traffic=high/i.test(home)) errors.push('Belgesiz yo
 if (!home.includes('calculator-simple')) errors.push('Ana hesaplayıcı sade hesaplayıcı düzeniyle üretilmedi.');
 if ((home.match(/class="author-box/g)?.length ?? 0) !== 1) errors.push('Ana sayfa makalesinin sonunda tek yazar kutusu bulunmalı.');
 if (!home.includes('G-9DE2SY0711') || !home.includes('googletagmanager.com/gtag/js')) errors.push('Google Analytics etiketi üretim HTML dosyasına eklenmedi.');
+if (!home.includes('<link rel="alternate" type="application/rss+xml" href="https://taksiucreti-hesaplama.blog/feed.xml"')) errors.push('RSS keşif bağlantısı sayfa metadata çıktısında eksik.');
 for (const schemaType of ['WebSite','WebPage','Organization','Person','BreadcrumbList','WebApplication','FAQPage']) {
   if (!home.includes(`"@type":"${schemaType}"`)) errors.push(`Ana sayfa JSON-LD grafiğinde ${schemaType} eksik.`);
 }
@@ -169,7 +170,16 @@ const robotsPath = join(outputDirectory, 'robots.txt');
 if (!existsSync(robotsPath)) errors.push('robots.txt üretilmedi.');
 else {
   const robots = readFileSync(robotsPath, 'utf8');
-  if (!/^User-agent:\s*\*/mi.test(robots) || !/^Allow:\s*\/$/mi.test(robots) || !robots.includes(`${productionOrigin}/sitemap.xml`)) errors.push('robots.txt beklenen tarama ve sitemap kurallarını içermiyor.');
+  if (!/^User-agent:\s*\*/mi.test(robots) || !/^Allow:\s*\/$/mi.test(robots) || !robots.includes(`${productionOrigin}/sitemap.xml`) || !robots.includes(`${productionOrigin}/feed.xml`)) errors.push('robots.txt beklenen tarama, sitemap ve RSS kurallarını içermiyor.');
+}
+const feedPath = join(outputDirectory, 'feed.xml');
+if (!existsSync(feedPath)) errors.push('Yeni yazı keşfi için feed.xml üretilmedi.');
+else {
+  const feed = readFileSync(feedPath, 'utf8');
+  if (!feed.includes('<rss version="2.0"') || !feed.includes('<language>tr-TR</language>')) errors.push('feed.xml geçerli RSS 2.0 temel alanlarını içermiyor.');
+  if (!feed.includes(`<atom:link href="${productionOrigin}/feed.xml" rel="self" type="application/rss+xml"/>`)) errors.push('feed.xml kendi canonical akış adresini bildirmiyor.');
+  if (!feed.includes(`<link>${productionOrigin}/adana-taksi-ucreti-hesaplama/</link>`)) errors.push('En yeni Adana yazısı RSS akışında bulunamadı.');
+  if ((feed.match(/<item>/g)?.length ?? 0) !== 11) errors.push('RSS akışında 11 yazının tamamı bulunmalı.');
 }
 if (errors.length) { console.error(errors.join('\n')); process.exit(1); }
 console.log(`${htmlFiles.length} HTML sayfası; 81 şehir seçeneği, 11 SSS, yazar kutuları, Google etiketi, sitemap.xml, canonical, H1, meta, JSON-LD ve iç bağlantılar doğrulandı.`);

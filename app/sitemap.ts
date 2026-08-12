@@ -13,7 +13,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: '/havalimani-taksi-ucretleri/', modified: '2026-08-11', changeFrequency: 'weekly' as const, priority: 0.8 },
     { path: '/yazar/oguzhan-arslan/', modified: '2026-08-11', changeFrequency: 'monthly' as const, priority: 0.5 },
     { path: '/iletisim/', modified: '2026-07-24', changeFrequency: 'yearly' as const, priority: 0.3 },
-    { path: '/sitemap/', modified: '2026-08-11', changeFrequency: 'monthly' as const, priority: 0.2 },
+    { path: '/sitemap/', modified: '2026-08-12', changeFrequency: 'monthly' as const, priority: 0.2 },
   ];
   const entries=[
     ...staticEntries,
